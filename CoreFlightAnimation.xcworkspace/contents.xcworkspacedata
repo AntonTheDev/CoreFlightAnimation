@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <FileRef
+      location = "group:CoreFlightAnimation/CoreFlightAnimationDemo/CoreFlightAnimationDemo.xcodeproj">
+   </FileRef>
    <Group
       location = "group:Source"
       name = "Source">
@@ -13,16 +16,6 @@
          <FileRef
             location = "group:FABasicAnimation.swift">
          </FileRef>
-         <Group
-            location = "group:Synchronization"
-            name = "Synchronization">
-            <FileRef
-               location = "group:FASynchronizedAnimation.swift">
-            </FileRef>
-            <FileRef
-               location = "group:FASynchronizedGroup.swift">
-            </FileRef>
-         </Group>
       </Group>
       <Group
          location = "group:FAInterpolation"

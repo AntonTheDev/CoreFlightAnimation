@@ -14,10 +14,10 @@ import QuartzCore
  The timing priority effect how the time is resynchronized across the animation group.
  If the FAAnimation is marked as primary
  
- - MaxTime: <#MaxTime description#>
- - MinTime: <#MinTime description#>
- - Median:  <#Median description#>
- - Average: <#Average description#>
+ - MaxTime: longest  duration in the synchronized group
+ - MinTime: shortest duration in the synchronized group
+ - Median:  median   duration in the synchronized group
+ - Average: average  duration in the synchronized group
  */
 public enum FAPrimaryTimingPriority : Int {
     case MaxTime
@@ -26,45 +26,120 @@ public enum FAPrimaryTimingPriority : Int {
     case Average
 }
 
+
+/**
+ Equatable Extension Implementation
+ */
+
+func ==(lhs:FAAnimationGroup, rhs:FAAnimationGroup) -> Bool {
+    return lhs.weakLayer == rhs.weakLayer &&
+        lhs.animationKey == rhs.animationKey
+}
+
+/**
+ *  Enhanced Animation Group with
+ *
+ */
+
 public class FAAnimationGroup : FASynchronizedGroup {
     
-    override public init() {
-        super.init()
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+    /**
+     Timing Priority to apply during synchronisation of hte animations
+     within the calling animationGroup.
+     
+     The more property animations within a group, the more likely some
+     animations will need more control over the synchronization of
+     the timing over others.
+     
+     There are 4 timing priorities to choose from:
+     
+        .MaxTime, .MinTime, .Median, and .Average
+     
+     By default .MaxTime is applied, so lets assume we have 4 animations:
+     
+        1. bounds
+        2. position
+        3. alpha
+        4. transform
+     
+     FABasicAnimation(s) are not defined as primary by default,
+     synchronization will figure out the relative progress for each
+     property animation within the group in flight, then adjust the
+     timing based on the remaining progress to the final destination
+     of the new animation being applied.
+     
+     Then based on .MaxTime, it will pick the longest duration form
+     all the synchronized property animations, and resynchronize the
+     others with a new duration, and apply it to the group itself.
+     
+     If the isPrimary flag is set on the bounds and position
+     animations, it will only include those two animation in
+     figuring out the the duration.
+     
+     Use .MinTime, to select the longest duration in the group
+     Use .MinTime, to select the shortest duration in the group
+     Use .Median,  to select the median duration in the group
+     Use .Average, to select the average duration in the group
+     
+     */
     public var primaryTimingPriority : FAPrimaryTimingPriority  {
         get { return _primaryTimingPriority }
         set { _primaryTimingPriority = newValue }
     }
-    
+
+    /**
+     Adjusts animation based on the progress form 0 - 1
+     
+     - parameter progress: scrub "to progress" value
+     */
     public func scrubToProgress(progress : CGFloat) {
         weakLayer?.speed = 0.0
         weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
     }
     
-    
+    /**
+     Attaches the specified animation, on the specified view, and relative
+     the progress value type defined in the method call
+     
+     Ommit both timeProgress and valueProgress, to trigger the animation specified
+     at the start of the calling animation group
+     
+     Ommit timeProgress, to trigger the animation specified
+     at the relative time progress of the calling animation group
+     
+     Ommit valueProgress, to trigger the animation specified
+     at the relative value progress of the calling animation group
+     
+     If both valueProgres, and timeProgress values are defined,
+     it will trigger the animation specified at the relative time
+     progress of the calling animation group
+     
+     - parameter animation:     the animation or animation group to attach
+     - parameter view:          the view to attach it to
+     - parameter timeProgress:  the relative time progress to trigger animation on the view
+     - parameter valueProgress: the relative value progress to trigger animation on the view
+     */
     public func triggerAnimation(animation : AnyObject,
-                          onView view : UIView,
-                          atTimeProgress timeProgress: CGFloat? = nil,
-                          atValueProgress valueProgress: CGFloat? = nil) {
+                                 onView view : UIView,
+                                        atTimeProgress timeProgress: CGFloat? = nil,
+                                                       atValueProgress valueProgress: CGFloat? = nil) {
         
-        attachTrigger(animation,
-                     onView : view,
-                     atTimeProgress : timeProgress,
-                     atValueProgress : valueProgress)
+        configureAnimationTrigger(animation,
+                                  onView : view,
+                                  atTimeProgress : timeProgress,
+                                  atValueProgress : valueProgress)
     }
-}
-
-//MARK: Public API
-
-extension FAAnimationGroup {
-
+    
+    
+    /**
+     Apply the animation's final state, animated by default but can ve disabled if needed
+     
+     This method runs through the animations within the current group and applies
+     the final values to the underlying layer.
+     
+     - parameter animated: disables animation, defauls to true
+     */
     public func applyFinalState(animated : Bool = true) {
-        // stopTriggerTimer()
         
         if let animationLayer = weakLayer {
             if animated {
@@ -74,7 +149,7 @@ extension FAAnimationGroup {
                 if animationKey == nil {
                     animationKey =  String(NSUUID().UUIDString)
                 }
-            
+                
                 startTime = animationLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
                 animationLayer.addAnimation(self, forKey: animationKey)
                 startTriggerTimer()
@@ -95,6 +170,336 @@ extension FAAnimationGroup {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+
+//MARK: - FASynchronizedGroup
+
+public class FASynchronizedGroup : CAAnimationGroup {
+    
+    internal var animationKey : String?
+    internal var _primaryTimingPriority : FAPrimaryTimingPriority = .MaxTime
+    
+    internal weak var weakLayer : CALayer? {
+        didSet {
+            if let currentAnimations = animations {
+                for animation in currentAnimations {
+                    if let customAnimation = animation as? FABasicAnimation {
+                        customAnimation.weakLayer = weakLayer
+                    }
+                }
+            }
+            
+            startTime = weakLayer?.convertTime(CACurrentMediaTime(), fromLayer: nil)
+        }
+    }
+
+    // The start time of the animation, set by the current time of
+    // the layer when it is added. Used by the springs to find the
+    // current velocity in motion
+    internal var startTime : CFTimeInterval? {
+        didSet {
+            if let currentAnimations = animations {
+                for animation in currentAnimations {
+                    if let customAnimation = animation as? FABasicAnimation {
+                        customAnimation.startTime = startTime
+                    }
+                }
+            }
+        }
+    }
+    
+    internal weak var primaryAnimation : FABasicAnimation?
+    internal var displayLink : CADisplayLink?
+    internal var _segmentArray = [AnimationTrigger]()
+    internal var segmentArray = [AnimationTrigger]()
+    
+    override init() {
+        super.init()
+        animations = [CAAnimation]()
+        fillMode = kCAFillModeForwards
+        removedOnCompletion = true
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override public func copyWithZone(zone: NSZone) -> AnyObject {
+        let animationGroup = super.copyWithZone(zone) as! FASynchronizedGroup
+        animationGroup.weakLayer                = weakLayer
+        animationGroup.startTime                = startTime
+        animationGroup.animationKey             = animationKey
+        animationGroup.segmentArray             = segmentArray
+        animationGroup.primaryAnimation         = primaryAnimation
+        animationGroup._segmentArray            = _segmentArray
+        animationGroup._primaryTimingPriority   = _primaryTimingPriority
+        return animationGroup
+    }
+    
+    final public func configureAnimationGroup(withLayer layer: CALayer?, animationKey key: String?) {
+        animationKey = key
+        weakLayer = layer
+    }
+    
+    final public func synchronizeAnimationGroup(withLayer layer: CALayer, animationKey key: String?) {
+        
+        configureAnimationGroup(withLayer: layer, animationKey: key)
+        
+        if let keys = weakLayer?.animationKeys() {
+            for key in Array(Set(keys)) {
+                if let oldAnimation = weakLayer?.animationForKey(key) as? FAAnimationGroup {
+                    oldAnimation.stopTriggerTimer()
+                    synchronizeAnimations(oldAnimation)
+                }
+            }
+        } else {
+            synchronizeAnimations(nil)
+        }
+    }
+}
+
+//MARK: - Synchronization Logic
+
+internal extension FASynchronizedGroup {
+    
+    func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
+        
+        var durationArray =  [Double]()
+        
+        var oldAnimations = animationDictionaryForGroup(oldAnimationGroup)
+        var newAnimations = animationDictionaryForGroup(self)
+        
+        // Find all Primary Animations
+        let filteredPrimaryAnimations = newAnimations.filter({ $0.1.isPrimary == true })
+        let filteredNonPrimaryAnimations = newAnimations.filter({ $0.1.isPrimary == false })
+        
+        var primaryAnimations = [String : FABasicAnimation]()
+        var nonPrimaryAnimations = [String : FABasicAnimation]()
+        
+        for result in filteredPrimaryAnimations {
+            primaryAnimations[result.0] = result.1
+        }
+        
+        for result in filteredNonPrimaryAnimations {
+            nonPrimaryAnimations[result.0] = result.1
+        }
+        
+        //If no animation is primary, all animations become primary
+        if primaryAnimations.count == 0 {
+            primaryAnimations = newAnimations
+            nonPrimaryAnimations = [String : FABasicAnimation]()
+        }
+        
+        for key in primaryAnimations.keys {
+            
+            if  let newPrimaryAnimation = primaryAnimations[key] {
+                let oldAnimation : FABasicAnimation? = oldAnimations[key]
+                
+                newPrimaryAnimation.synchronize(runningAnimation: oldAnimation)
+                
+                durationArray.append(newPrimaryAnimation.duration)
+                newAnimations[key] = newPrimaryAnimation
+            }
+        }
+        
+        animations = newAnimations.map {$1}
+        updateGroupDurationBasedOnTimePriority(durationArray)
+    }
+    
+    func updateGroupDurationBasedOnTimePriority(durationArray: Array<CFTimeInterval>) {
+        
+        switch _primaryTimingPriority {
+        case .MaxTime:
+            duration = durationArray.maxElement()!
+        case .MinTime:
+            duration = durationArray.minElement()!
+        case .Median:
+            duration = durationArray.sort(<)[durationArray.count / 2]
+        case .Average:
+            duration = durationArray.reduce(0, combine: +) / Double(durationArray.count)
+        }
+        
+        let filteredAnimation = animations!.filter({ $0.duration == duration })
+        
+        if let primaryDrivingAnimation = filteredAnimation.first as? FABasicAnimation {
+            primaryAnimation = primaryDrivingAnimation
+        }
+        
+        guard animations != nil else {
+            return
+        }
+        
+        var newAnimationsArray = [FABasicAnimation]()
+        newAnimationsArray.append(filteredAnimation.first! as! FABasicAnimation)
+        
+        let filteredNonAnimation = animations!.filter({ $0 != primaryAnimation })
+        
+        for animation in filteredNonAnimation {
+            animation.duration = duration
+            
+            if let customAnimation = animation as? FABasicAnimation {
+                
+                if customAnimation.easingFunction.isSpring() == false {
+                    customAnimation.synchronize()
+                }
+                
+                newAnimationsArray.append(customAnimation)
+            }
+        }
+    }
+    
+    func animationDictionaryForGroup(animationGroup : FASynchronizedGroup?) -> [String : FABasicAnimation] {
+        var animationDictionary = [String: FABasicAnimation]()
+        
+        if let group = animationGroup {
+            if let currentAnimations = group.animations {
+                for animation in currentAnimations {
+                    if let customAnimation = animation as? FABasicAnimation {
+                        animationDictionary[customAnimation.keyPath!] = customAnimation
+                    }
+                }
+            }
+        }
+        
+        return animationDictionary
+    }
+}
+
+
+//MARK: - AnimationTrigger
+
+public func ==(lhs:AnimationTrigger, rhs:AnimationTrigger) -> Bool {
+    return lhs.animatedView == rhs.animatedView &&
+        lhs.isTimedBased == rhs.isTimedBased &&
+        lhs.triggerProgessValue == rhs.triggerProgessValue &&
+        lhs.animationKey == rhs.animationKey
+}
+
+
+public class AnimationTrigger : Equatable {
+    public  var isTimedBased = true
+    public var triggerProgessValue : CGFloat?
+    public var animationKey : NSString?
+    public weak var animatedView : UIView?
+    public weak var animation : FAAnimationGroup?
+    
+    required public init() {
+        
+    }
+}
+
+
+//MARK: - AnimationTrigger Logic
+
+public extension FASynchronizedGroup {
+    
+    /**
+     This is the internal definition for creating a trigger
+     
+     - parameter animation:     the animation or animation group to attach
+     - parameter view:          the view to attach it to
+     - parameter timeProgress:  the relative time progress to trigger animation on the view
+     - parameter valueProgress: the relative value progress to trigger animation on the view
+     */
+    internal func configureAnimationTrigger(animation : AnyObject,
+                                            onView view : UIView,
+                                            atTimeProgress timeProgress: CGFloat? = 0.0,
+                                            atValueProgress valueProgress: CGFloat? = nil) {
+        
+        var progress : CGFloat = timeProgress ?? 0.0
+        var timeBased : Bool = true
+        
+        if valueProgress != nil {
+            progress = valueProgress!
+            timeBased = false
+        }
+        
+        var animationGroup : FAAnimationGroup?
+        
+        if let group = animation as? FAAnimationGroup {
+            animationGroup = group
+        } else if let animation = animation as? FABasicAnimation {
+            animationGroup = FAAnimationGroup()
+            animationGroup!.animations = [animation]
+        }
+        
+        guard animationGroup != nil else {
+            return
+        }
+        
+        animationGroup?.animationKey = String(NSUUID().UUIDString)
+        animationGroup?.weakLayer = view.layer
+        
+        let animationTrigger = AnimationTrigger()
+        animationTrigger.isTimedBased = timeBased
+        animationTrigger.triggerProgessValue = progress
+        animationTrigger.animationKey = animationGroup?.animationKey
+        animationTrigger.animatedView = view
+        
+        _segmentArray.append(animationTrigger)
+        view.appendAnimation(animationGroup!, forKey: animationGroup!.animationKey!)
+    }
+    
+    
+    /**
+     Starts a timer
+     */
+    func startTriggerTimer() {
+        
+        guard displayLink == nil && _segmentArray.count > 0 else {
+            return
+        }
+        
+        stopTriggerTimer()
+        segmentArray = _segmentArray
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(FAAnimationGroup.updateTrigger))
+        displayLink!.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        displayLink!.paused = false
+        
+        //print("START ++++++++ CALINK \(weakLayer?.description)  - \(displayLink)\n")
+    }
+    
+    /**
+     Stops the timer
+     */
+    func stopTriggerTimer() {
+        
+        guard displayLink != nil else {
+            return
+        }
+        
+        self.displayLink?.paused = true
+        
+        // print("STOP ++++++++ CALINK \(weakLayer?.description)  - \(displayLink)\n")
+        segmentArray = [AnimationTrigger]()
+        
+        self.displayLink?.removeFromRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        self.displayLink = nil
+    }
+    
+    /**
+     Triggers an animation if the value or time progress is met
+     */
+    func updateTrigger() {
+        
+        for segment in segmentArray {
+            if segment.isTimedBased && primaryAnimation?.timeProgress() >= segment.triggerProgessValue ||
+                !segment.isTimedBased && primaryAnimation?.valueProgress() >= segment.triggerProgessValue  {
+                
+                segmentArray.removeObject(segment)
+                segment.animatedView!.applyAnimation(forKey: segment.animationKey! as String)
+                
+                //print("TRIGGER  ++++++++ CALINK \(weakLayer?.description)  - \(displayLink)\n")
+            }
+            
+            if segmentArray.count <= 0 {
+                stopTriggerTimer()
+                return
             }
         }
     }
