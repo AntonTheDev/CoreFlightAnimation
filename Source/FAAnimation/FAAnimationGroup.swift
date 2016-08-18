@@ -8,11 +8,21 @@
 
 import Foundation
 import UIKit
-import QuartzCore
+
 
 /**
- The timing priority effect how the time is resynchronized across the animation group.
- If the FAAnimation is marked as primary
+ Equatable FAAnimationGroup Implementation
+ */
+
+func ==(lhs:FAAnimationGroup, rhs:FAAnimationGroup) -> Bool {
+    return lhs.weakLayer == rhs.weakLayer &&
+        lhs.animationKey == rhs.animationKey
+}
+
+
+/**
+ The timing priority effects how the time is resynchronized
+ across the animation group.
  
  - MaxTime: longest  duration in the synchronized group
  - MinTime: shortest duration in the synchronized group
@@ -26,20 +36,7 @@ public enum FAPrimaryTimingPriority : Int {
     case Average
 }
 
-
-/**
- Equatable Extension Implementation
- */
-
-func ==(lhs:FAAnimationGroup, rhs:FAAnimationGroup) -> Bool {
-    return lhs.weakLayer == rhs.weakLayer &&
-        lhs.animationKey == rhs.animationKey
-}
-
-/**
- *  Enhanced Animation Group with
- *
- */
+//MARK: - FAAnimationGroup
 
 public class FAAnimationGroup : FASynchronizedGroup {
     
@@ -129,7 +126,6 @@ public class FAAnimationGroup : FASynchronizedGroup {
                                   atTimeProgress : timeProgress,
                                   atValueProgress : valueProgress)
     }
-    
     
     /**
      Apply the animation's final state, animated by default but can ve disabled if needed
@@ -266,6 +262,12 @@ public class FASynchronizedGroup : CAAnimationGroup {
 
 internal extension FASynchronizedGroup {
     
+    
+    /**
+     Synchronizes the calling animation group with the passed animation group
+     
+     - parameter oldAnimationGroup: old animation in flight
+     */
     func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
         
         var durationArray =  [Double]()
@@ -310,6 +312,13 @@ internal extension FASynchronizedGroup {
         updateGroupDurationBasedOnTimePriority(durationArray)
     }
     
+    
+    /**
+     Updates and syncronizes animations based on timing priority 
+     if the primary animations
+     
+     - parameter durationArray: durations considered based on primary state of the animations
+     */
     func updateGroupDurationBasedOnTimePriority(durationArray: Array<CFTimeInterval>) {
         
         switch _primaryTimingPriority {
