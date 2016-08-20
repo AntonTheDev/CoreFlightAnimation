@@ -25,7 +25,7 @@ class ViewController: UIViewController {
         panRecognizer = UIPanGestureRecognizer(target:self, action: #selector(ViewController.respondToPanRecognizer(_:)))
         dragView.addGestureRecognizer(panRecognizer!)
         
-        gradient.colors = [ UIColor(rgba: "#007368").CGColor, UIColor(rgba: "#00a781").CGColor]
+        gradient.colors = [ UIColor(rgba: "#004e73").CGColor, UIColor(rgba: "#0072a7").CGColor]
         gradient.frame = view.bounds
         
         view.layer.addSublayer(gradient)
@@ -180,7 +180,7 @@ class ViewController: UIViewController {
     lazy var dragView: UIView = {
         var view = UIView(frame : CGRectZero)
         view.alpha = 1.0
-        view.backgroundColor = UIColor(rgba: "#006258")
+        view.backgroundColor = UIColor(rgba: "#2368c6")
         return view
     }()
     
@@ -188,7 +188,7 @@ class ViewController: UIViewController {
         var view = UIView(frame : CGRectZero)
         view.alpha = 0.0
         view.hidden =  true
-        view.backgroundColor = UIColor(rgba: "#006258")
+        view.backgroundColor = UIColor(rgba: "#2368c6")
         return view
     }()
     
@@ -196,7 +196,7 @@ class ViewController: UIViewController {
         var button = UIButton()
         button.setImage(UIImage(named:"settingsIcon"), forState: .Normal)
         button.imageEdgeInsets = UIEdgeInsetsMake(20, 20, 20, 20)
-        button.backgroundColor = UIColor(rgba: "#2364c6")
+        button.backgroundColor = UIColor(rgba: "#23c6a2")
         button.addTarget(self, action: #selector(ViewController.tappedShowConfig), forControlEvents: .TouchUpInside)
         return button
     }()
@@ -262,7 +262,7 @@ class ViewController: UIViewController {
         let button = UIButton(type: .Custom)
         button.setTitle("   ▲      Top and Expand                  ".uppercaseString, forState: .Normal)
         
-        button.backgroundColor = UIColor(rgba: "#2364c6")
+        button.backgroundColor = UIColor(rgba: "#23c6a2")
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel?.font = UIFont(name: "Helvetica", size: 11)
         button.titleLabel?.numberOfLines = 3
@@ -277,7 +277,7 @@ class ViewController: UIViewController {
         let button = UIButton(type: .Custom)
         button.setTitle("   ▼      Bottom and Expand          ".uppercaseString, forState: .Normal)
         
-        button.backgroundColor = UIColor(rgba: "#2364c6")
+        button.backgroundColor = UIColor(rgba: "#23c6a2")
         button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.titleLabel?.font = UIFont(name: "Helvetica", size: 11)
         button.titleLabel?.numberOfLines = 3

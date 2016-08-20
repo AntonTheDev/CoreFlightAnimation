@@ -83,6 +83,12 @@ public class FAAnimationGroup : FASynchronizedGroup {
         get { return _primaryTimingPriority }
         set { _primaryTimingPriority = newValue }
     }
+    
+    // Final animation value to interpolate to
+    public var autoreverse: Bool {
+        get { return _autoreverse }
+        set { _autoreverse = newValue }
+    }
 
     /**
      Adjusts animation based on the progress form 0 - 1
@@ -120,7 +126,6 @@ public class FAAnimationGroup : FASynchronizedGroup {
                                  onView view : UIView,
                                         atTimeProgress timeProgress: CGFloat? = nil,
                                                        atValueProgress valueProgress: CGFloat? = nil) {
-        
         configureAnimationTrigger(animation,
                                   onView : view,
                                   atTimeProgress : timeProgress,
@@ -179,6 +184,8 @@ public class FASynchronizedGroup : CAAnimationGroup {
     internal var animationKey : String?
     internal var _primaryTimingPriority : FAPrimaryTimingPriority = .MaxTime
     
+    internal var _autoreverse : Bool = false
+    
     internal weak var weakLayer : CALayer? {
         didSet {
             if let currentAnimations = animations {
@@ -233,6 +240,7 @@ public class FASynchronizedGroup : CAAnimationGroup {
         animationGroup.primaryAnimation         = primaryAnimation
         animationGroup._segmentArray            = _segmentArray
         animationGroup._primaryTimingPriority   = _primaryTimingPriority
+        animationGroup._autoreverse             = _autoreverse
         return animationGroup
     }
     
@@ -310,8 +318,42 @@ internal extension FASynchronizedGroup {
         
         animations = newAnimations.map {$1}
         updateGroupDurationBasedOnTimePriority(durationArray)
+        
+        if _autoreverse {
+            autoreverseGroup()
+        }
     }
     
+    func autoreverseGroup() {
+        var reverseAnimationArray = [FABasicAnimation]()
+        
+        if let animations = self.animations {
+            for animation in animations {
+                if let customAnimation = animation as? FABasicAnimation {
+            
+                    let newAnimation = FABasicAnimation(keyPath: customAnimation.keyPath)
+                    newAnimation.easingFunction = customAnimation.easingFunction.reverseEasingCurve()
+                    newAnimation.isPrimary = customAnimation.isPrimary
+                    newAnimation.values = customAnimation.values!.reverse()
+                    newAnimation.toValue = customAnimation.fromValue
+                    newAnimation.fromValue = customAnimation.toValue
+                    reverseAnimationArray.append(newAnimation)
+                }
+            }
+        }
+        
+        let animationGroup = FAAnimationGroup()
+        animationGroup.animationKey = animationKey! + "reverse"
+        
+        animationGroup.primaryTimingPriority = _primaryTimingPriority
+        animationGroup.weakLayer = weakLayer
+        animationGroup.animations = reverseAnimationArray
+        animationGroup.duration = duration
+      
+        if let view =  weakLayer?.owningView() {
+            configureAnimationTrigger(animationGroup, onView: view, atTimeProgress : 1.0)
+        }
+    }
     
     /**
      Updates and syncronizes animations based on timing priority 

@@ -1,4 +1,4 @@
-# CoreFlightAnimation
+#CoreFlightAnimation
 
 [![Cocoapods Compatible](https://img.shields.io/badge/pod-v0.9.1-blue.svg)]()
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)]()
@@ -37,47 +37,47 @@ Since the framework was built mimicking CoreAnimation APIs it is very simple int
 ##### CoreAnimation vs. CoreFlightAnimation
 
 ```
-	let positionAnimation 					= CABasicAnimation(keyPath: "position")
-    positionAnimation.duration 				= 0.5
-    positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
-    positionAnimation.fromValue 			= NSValue(CGPoint : view.layer.position)
-    positionAnimation.fillMode              = kCAFillModeForwards
-    positionAnimation.timingFunction        = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
+let positionAnimation 					= CABasicAnimation(keyPath: "position")
+positionAnimation.duration 				= 0.5
+positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
+positionAnimation.fromValue 			= NSValue(CGPoint : view.layer.position)
+positionAnimation.fillMode              = kCAFillModeForwards
+positionAnimation.timingFunction        = CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
 
-    let boundsAnimation 					= CABasicAnimation(keyPath: "bounds")
-    boundsAnimation.duration 				= 0.5
-    boundsAnimation.toValue 				= NSValue(CGRect : toBounds)
-    boundsAnimation.fromValue 				= NSValue(CGRect : view.layer.bounds)
-    boundsAnimation.fillMode              	= kCAFillModeForwards
-    boundsAnimation.timingFunction        	= CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
+let boundsAnimation 					= CABasicAnimation(keyPath: "bounds")
+boundsAnimation.duration 				= 0.5
+boundsAnimation.toValue 				= NSValue(CGRect : toBounds)
+boundsAnimation.fromValue 				= NSValue(CGRect : view.layer.bounds)
+boundsAnimation.fillMode              	= kCAFillModeForwards
+boundsAnimation.timingFunction        	= CAMediaTimingFunction(name:kCAMediaTimingFunctionEaseOut)
 
-	let animationGroup 						= CAAnimationGroup()
-	animationGroup.duration 				= 0.5
-	animationGroup.removedOnCompletion   	= false
-	animationGroup.animations 				= [positionAnimation, boundsAnimation]
+let animationGroup 						= CAAnimationGroup()
+animationGroup.duration 				= 0.5
+animationGroup.removedOnCompletion   	= false
+animationGroup.animations 				= [positionAnimation, boundsAnimation]
 
-    view.layer.addAnimation(animationGroup, forKey: "PositionAnimationKey")
-    view.frame = toFrame
-
+view.layer.addAnimation(animationGroup, forKey: "PositionAnimationKey")
+view.frame = toFrame
 ```
 Below is the equivalent in `CoreFlightAnimation`.
 
 ```
-    let positionAnimation 					= FABasicAnimation(keyPath: "position")
-    positionAnimation.duration 				= 0.5
-    positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
-    positionAnimation.easingFuntion         = .OutCubic
 
-    let boundsAnimation 					= FABasicAnimation(keyPath: "bounds")
-    boundsAnimation.duration 				= 0.5
-    boundsAnimation.toValue 				= NSValue(CGRect : toBounds)
-    boundsAnimation.easingFuntion          = .OutCubic
+let positionAnimation 					= FABasicAnimation(keyPath: "position")
+positionAnimation.duration 				= 0.5
+positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
+positionAnimation.easingFuntion         = .OutCubic
+
+let boundsAnimation 					= FABasicAnimation(keyPath: "bounds")
+boundsAnimation.duration 				= 0.5
+boundsAnimation.toValue 				= NSValue(CGRect : toBounds)
+boundsAnimation.easingFuntion          = .OutCubic
     
-	let animationGroup = FABasicAnimationGroup()
-	animationGroup.animations = [positionAnimation, boundsAnimation]
+let animationGroup = FABasicAnimationGroup()
+animationGroup.animations = [positionAnimation, boundsAnimation]
 
-    view.layer.addAnimation(animationGroup, forKey: "PositionAnimationKey")
-    view.frame = toFrame
+view.layer.addAnimation(animationGroup, forKey: "PositionAnimationKey")
+view.frame = toFrame
 ```
 
 Follow the following 4 steps to integrate `CoreFlightAnimation` into existing projects:
@@ -101,25 +101,25 @@ The cool thing about this framework is that you can register animations for a sp
 FABasicAnimation allows for caching animations, and reusing them at a later point. for the purpose of this example lets first create an animation key to register a position animation against
 
 ```
-	struct AnimationKeys {
-    	static let PositionAnimation  = "PositionAnimation"
-	}
+struct AnimationKeys {
+    static let PositionAnimation  = "PositionAnimation"
+}
 ```
 
 Now that the key is defined, create lets create an animation.
 
 ```
-    let positionAnimation 					= FABasicAnimation(keyPath: "position")
-    positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
-    positionAnimation.duration 				= 0.5
-	positionAnimation.easingFuntion         = .EaseOutCubic
+let positionAnimation 					= FABasicAnimation(keyPath: "position")
+positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
+positionAnimation.duration 				= 0.5
+positionAnimation.easingFuntion         = .EaseOutCubic
 ``` 
 
 Once the animation is created, we then need to register it with to the view with out defined animation key.
 
 ```
-	// Register Animation Groups
-	view.registerAnimation(positionAnimation, forKey: AnimationKeys.PositionAnimation)
+// Register Animation Groups
+view.registerAnimation(positionAnimation, forKey: AnimationKeys.PositionAnimation)
 ```
 
 **Note**: Registering an FABasicAnimationGroup works the exact same way as the registering an FABasicAnimation documented above. Technically, when registering a simple FABasicAnimation, the framework wraps the animation in an FABasicAnimationGroup anyways for syncronization purposes.
@@ -129,13 +129,13 @@ Once the animation is created, we then need to register it with to the view with
 To apply the animation state, all we have to do is call the following. This will synchronize the current presentations values with a prior animation, apply the relative remaining time of travel, and will apply the animation to the final destination.
 
 ```
-	 view.applyAnimation(forKey: AnimationKeys.PositionAnimation)
+view.applyAnimation(forKey: AnimationKeys.PositionAnimation)
 ```
 
 If you want to just apply the final values of a registered animation without actually performing the animation, just call the following
 
 ```
-	 view.applyAnimation(forKey: AnimationKeys.PositionAnimation, animated : false)
+view.applyAnimation(forKey: AnimationKeys.PositionAnimation, animated : false)
 ```
 
 ## License

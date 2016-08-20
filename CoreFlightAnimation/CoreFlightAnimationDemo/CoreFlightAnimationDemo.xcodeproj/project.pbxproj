@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		134057F51D6781DE006D584E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 134057F41D6781DE006D584E /* Assets.xcassets */; };
 		3A7F4C2E1D65597A003D3B6F /* CALayer+FAAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7F4C221D65597A003D3B6F /* CALayer+FAAnimation.swift */; };
 		3A7F4C2F1D65597A003D3B6F /* FAAnimation+Callbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7F4C231D65597A003D3B6F /* FAAnimation+Callbacks.swift */; };
 		3A7F4C301D65597A003D3B6F /* NSValue+FAAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7F4C241D65597A003D3B6F /* NSValue+FAAnimation.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		134057F41D6781DE006D584E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3A7F4C221D65597A003D3B6F /* CALayer+FAAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+FAAnimation.swift"; sourceTree = "<group>"; };
 		3A7F4C231D65597A003D3B6F /* FAAnimation+Callbacks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FAAnimation+Callbacks.swift"; sourceTree = "<group>"; };
 		3A7F4C241D65597A003D3B6F /* NSValue+FAAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSValue+FAAnimation.swift"; sourceTree = "<group>"; };
@@ -104,11 +106,17 @@
 			path = FAInterpolation;
 			sourceTree = "<group>";
 		};
-		3A7F4C381D655A30003D3B6F /* New Group */ = {
+		3A7F4C381D655A30003D3B6F /* Project Source */ = {
 			isa = PBXGroup;
 			children = (
+				3ADCBB9C1D654EDC00BBD71C /* AppDelegate.swift */,
+				3ADCBB9D1D654EDC00BBD71C /* ConfigurationView.swift */,
+				3ADCBB9E1D654EDC00BBD71C /* CurveSelectionCollectionViewCell.swift */,
+				3ADCBBA01D654EDC00BBD71C /* HGAlignment.swift */,
+				3ADCBBA11D654EDC00BBD71C /* UIColor+RGBA.swift */,
+				3ADCBBA21D654EDC00BBD71C /* ViewController.swift */,
 			);
-			name = "New Group";
+			name = "Project Source";
 			sourceTree = "<group>";
 		};
 		3ADCBB7D1D654D4700BBD71C = {
@@ -131,15 +139,9 @@
 		3ADCBB881D654D4700BBD71C /* CoreFlightAnimationDemo */ = {
 			isa = PBXGroup;
 			children = (
-				3A7F4C381D655A30003D3B6F /* New Group */,
-				3ADCBB9C1D654EDC00BBD71C /* AppDelegate.swift */,
-				3ADCBB9D1D654EDC00BBD71C /* ConfigurationView.swift */,
-				3ADCBB9E1D654EDC00BBD71C /* CurveSelectionCollectionViewCell.swift */,
-				3ADCBB9F1D654EDC00BBD71C /* FlightAnimatorRetro-Demo-Bridging-Header.h */,
-				3ADCBBA01D654EDC00BBD71C /* HGAlignment.swift */,
-				3ADCBBA11D654EDC00BBD71C /* UIColor+RGBA.swift */,
-				3ADCBBA21D654EDC00BBD71C /* ViewController.swift */,
+				134057F41D6781DE006D584E /* Assets.xcassets */,
 				3ADCBBA31D654EDC00BBD71C /* ViewController+Animation.swift */,
+				3A7F4C381D655A30003D3B6F /* Project Source */,
 				3ADCBB9B1D654E7900BBD71C /* SupportingFiles */,
 			);
 			path = CoreFlightAnimationDemo;
@@ -148,6 +150,7 @@
 		3ADCBB9B1D654E7900BBD71C /* SupportingFiles */ = {
 			isa = PBXGroup;
 			children = (
+				3ADCBB9F1D654EDC00BBD71C /* FlightAnimatorRetro-Demo-Bridging-Header.h */,
 				3ADCBB921D654D4700BBD71C /* LaunchScreen.storyboard */,
 				3ADCBB951D654D4700BBD71C /* Info.plist */,
 			);
@@ -212,6 +215,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				134057F51D6781DE006D584E /* Assets.xcassets in Resources */,
 				3ADCBB941D654D4700BBD71C /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

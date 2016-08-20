@@ -27,6 +27,12 @@ public class FABasicAnimation : FASynchronizedAnimation {
         set { _toValue = newValue }
     }
     
+    // Final animation value to interpolate to
+    public var fromValue: AnyObject? {
+        get { return _fromValue }
+        set { _fromValue = newValue }
+    }
+
     // The easing funtion applied to the duration of the animation
     public var easingFunction : FAEasing  {
         get { return _easingFunction }
@@ -52,7 +58,7 @@ public class FABasicAnimation : FASynchronizedAnimation {
 public class FASynchronizedAnimation : CAKeyframeAnimation {
 
     // fromValue auto synchronizes with current presentation layer values
-    internal var fromValue: AnyObject?
+    internal var _fromValue: AnyObject?
     internal var _toValue: AnyObject?
     internal var _easingFunction : FAEasing = FAEasing.Linear
     internal var _isPrimary : Bool = false
@@ -82,13 +88,13 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
     
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         let animation = super.copyWithZone(zone) as! FABasicAnimation
-        animation._isPrimary        = _isPrimary
-        animation.weakLayer         = weakLayer
-        animation.fromValue         = fromValue
-        animation.startTime         = startTime
-        animation.interpolator      = interpolator
-        animation._easingFunction   = _easingFunction
-        animation._toValue          = _toValue
+        animation.weakLayer             = weakLayer
+        animation.startTime             = startTime
+        animation.interpolator          = interpolator
+        animation._easingFunction       = _easingFunction
+        animation._toValue              = _toValue
+        animation._fromValue            = _fromValue
+        animation._isPrimary            = _isPrimary
         return animation
     }
     
@@ -134,36 +140,47 @@ internal extension FASynchronizedAnimation {
     }
     
     func configureValues(runningAnimation : FABasicAnimation? = nil) {
+        
+        configureFromValueIfNeeded()
+        
+        synchronizeAnimationVelocity(_fromValue, runningAnimation: runningAnimation)
+        
+        if let _toValue = _toValue,
+            let _fromValue = _fromValue {
+            
+            interpolator  = Interpolator(toValue: _toValue,
+                                         fromValue: _fromValue,
+                                         previousValue : runningAnimation?.fromValue)
+            
+            let config = interpolator?.interpolatedConfiguration(CGFloat(duration), easingFunction: _easingFunction)
+            
+            duration = config!.duration
+            values = config!.values
+        }
+    }
+    
+    
+    func configureFromValueIfNeeded() {
+        
+        if _fromValue != nil {
+            return
+        }
+        
         if let presentationLayer = (weakLayer?.presentationLayer() as? CALayer),
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             
             if let currentValue = presentationValue as? CGPoint {
-                fromValue = NSValue(CGPoint : currentValue)
+                _fromValue = NSValue(CGPoint : currentValue)
             } else  if let currentValue = presentationValue as? CGSize {
-                fromValue = NSValue(CGSize : currentValue)
+                _fromValue = NSValue(CGSize : currentValue)
             } else  if let currentValue = presentationValue as? CGRect {
-                fromValue = NSValue(CGRect : currentValue)
+                _fromValue = NSValue(CGRect : currentValue)
             } else  if let currentValue = presentationValue as? CGFloat {
-                fromValue = NSNumber(float : Float(currentValue))
+                _fromValue = NSNumber(float : Float(currentValue))
             } else  if let currentValue = presentationValue as? CATransform3D {
-                fromValue = NSValue(CATransform3D : currentValue)
+                _fromValue = NSValue(CATransform3D : currentValue)
             } else if let currentValue = typeCastCGColor(presentationValue) {
-                fromValue = currentValue
-            }
-            
-            synchronizeAnimationVelocity(fromValue, runningAnimation: runningAnimation)
-            
-            if let _toValue = _toValue,
-                let fromValue = fromValue {
-                
-                interpolator  = Interpolator(toValue: _toValue,
-                                             fromValue: fromValue,
-                                             previousValue : runningAnimation?.fromValue)
-                
-                let config = interpolator?.interpolatedConfiguration(CGFloat(duration), easingFunction: _easingFunction)
-                
-                duration = config!.duration
-                values = config!.values
+                _fromValue = currentValue
             }
         }
     }

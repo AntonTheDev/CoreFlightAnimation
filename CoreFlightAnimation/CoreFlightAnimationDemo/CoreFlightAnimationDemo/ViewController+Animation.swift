@@ -232,9 +232,9 @@ extension ViewController {
                      duration : Double = 0.5,
                      animationKey : String = AnimationKeys.TapStageOneAnimationKey) {
         
-        guard lastToFrame != toFrame else {
-            return
-        }
+      //  guard lastToFrame != toFrame else {
+      //      return
+      //  }
         
         let toBounds = CGRectMake(0, 0, toFrame.size.width , toFrame.size.height)
         let toPosition = CGCSRectGetCenter(toFrame)
@@ -253,7 +253,7 @@ extension ViewController {
         
         dragView.layer.addAnimation(dragViewViewAnimationGroup, forKey: animationKey)
         dragView.setFinalAnimationValues()
-        lastToFrame = toFrame
+       // lastToFrame = toFrame
         
     }
     
@@ -299,7 +299,7 @@ extension ViewController {
         let animationGroup = FAAnimationGroup()
         animationGroup.animations = [boundsAnimation, positionAnimation, alphaAnimation, transformAnimation]
         animationGroup.primaryTimingPriority = animConfig.primaryTimingPriority
-        
+        animationGroup.autoreverse = true
         return animationGroup
     }
     
@@ -359,7 +359,6 @@ extension ViewController {
             break
         }
     }
-    
     
     // For the purpose of the Pan Gesture, adjust the velocity on
     // the timing curve for .Spring or .SpringCustom

@@ -280,6 +280,109 @@ public enum FAEasing : Equatable {
             return false
         }
     }
+    
+    
+    func reverseEasingCurve() -> FAEasing {
+        switch self {
+        case .Linear:
+            return .Linear
+        case .SmoothStep:
+            return .SmoothStep
+        case .SmootherStep:
+            return .SmootherStep
+        case .InAtan:
+            return .OutAtan
+        case .OutAtan:
+            return .InAtan
+        case .InOutAtan:
+            return .InOutAtan
+        case .InSine:
+            return .OutSine
+        case .OutSine:
+            return .InSine
+        case .InOutSine:
+            return .OutInSine
+        case .OutInSine:
+            return .InOutSine
+        case .InQuadratic:
+            return .OutQuadratic
+        case .OutQuadratic:
+            return .InQuadratic
+        case .InOutQuadratic:
+            return .OutInQuadratic
+        case .OutInQuadratic:
+            return .InOutQuadratic
+        case .InCubic:
+            return .OutCubic
+        case .OutCubic:
+            return .InCubic
+        case .InOutCubic:
+            return .OutInCubic
+        case .OutInCubic:
+            return .InOutCubic
+        case .InQuartic:
+            return .OutQuartic
+        case .OutQuartic:
+            return .InQuartic
+        case .InOutQuartic:
+            return .OutInQuartic
+        case .OutInQuartic:
+            return .InOutQuartic
+        case .InQuintic:
+            return .OutQuintic
+        case .OutQuintic:
+            return .InQuintic
+        case .InOutQuintic:
+            return .OutInQuintic
+        case .OutInQuintic:
+            return .InOutQuintic
+        case .InExponential:
+            return .OutExponential
+        case .OutExponential:
+            return .InExponential
+        case .InOutExponential:
+            return .OutInExponential
+        case .OutInExponential:
+            return .InOutExponential
+        case .InCircular:
+            return .OutCircular
+        case .OutCircular:
+            return .InCircular
+        case .InOutCircular:
+            return .OutInCircular
+        case .OutInCircular:
+            return .InOutCircular
+        case .InBack:
+            return .OutBack
+        case .OutBack:
+            return .InBack
+        case .InOutBack:
+            return .OutInBack
+        case .OutInBack:
+            return .InOutBack
+        case .InElastic:
+            return .OutElastic
+        case .OutElastic:
+            return .InElastic
+        case .InOutElastic:
+            return .OutInElastic
+        case .OutInElastic:
+            return .InOutElastic
+        case .InBounce:
+            return .OutBounce
+        case .OutBounce:
+            return .InBounce
+        case .InOutBounce:
+           return .OutInBounce
+        case .OutInBounce:
+            return .InOutBounce
+        case SpringCustom(_, _ , _):
+            return self
+        case .SpringDecay(_):
+            return self
+        }
+    }
+
 }
 
 public func ==(lhs : FAEasing, rhs : FAEasing) -> Bool {
