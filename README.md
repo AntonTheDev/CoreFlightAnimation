@@ -40,7 +40,7 @@ Since the framework was built mimicking CoreAnimation APIs it is very simple int
 
 ##### CoreAnimation vs. CoreFlightAnimation
 
-```
+```swift
 let positionAnimation 					= CABasicAnimation(keyPath: "position")
 positionAnimation.duration 				= 0.5
 positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
@@ -65,8 +65,7 @@ view.frame = toFrame
 ```
 Below is the equivalent in `CoreFlightAnimation`.
 
-```
-
+```swift
 let positionAnimation 					= FABasicAnimation(keyPath: "position")
 positionAnimation.duration 				= 0.5
 positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
@@ -89,8 +88,8 @@ Follow the following 4 steps to integrate `CoreFlightAnimation` into existing pr
 1. Change `CABasicAnimation` to `FABasicAnimation`, technically the letter **C** to **F**
 2. Change `CAAnimationGroup` to `FABasicAnimationGroup`, same as previous :)
 3. Use defaults values the following properties, which are now configured by CoreFlightAnimation:
-	- *removedOnCompletion*, 
-	- *fillMode*, 
+	- *removedOnCompletion*
+	- *fillMode*
 	- *fromValue* 
 4. Change `timingFunction` property to `easingFuntion`, and use one of 46+ enumerated options :)
 
@@ -104,7 +103,7 @@ The cool thing about this framework is that you can register animations for a sp
 
 FABasicAnimation allows for caching animations, and reusing them at a later point. for the purpose of this example lets first create an animation key to register a position animation against
 
-```
+```swift
 struct AnimationKeys {
     static let PositionAnimation  = "PositionAnimation"
 }
@@ -112,7 +111,7 @@ struct AnimationKeys {
 
 Now that the key is defined, create lets create an animation.
 
-```
+```swift
 let positionAnimation 					= FABasicAnimation(keyPath: "position")
 positionAnimation.toValue 				= NSValue(CGPoint : toCenterPoint)
 positionAnimation.duration 				= 0.5
@@ -121,7 +120,7 @@ positionAnimation.easingFuntion         = .EaseOutCubic
 
 Once the animation is created, we then need to register it with to the view with out defined animation key.
 
-```
+```swift
 // Register Animation Groups
 view.registerAnimation(positionAnimation, forKey: AnimationKeys.PositionAnimation)
 ```
@@ -132,13 +131,13 @@ view.registerAnimation(positionAnimation, forKey: AnimationKeys.PositionAnimatio
 
 To apply the animation state, all we have to do is call the following. This will synchronize the current presentations values with a prior animation, apply the relative remaining time of travel, and will apply the animation to the final destination.
 
-```
+```swift
 view.applyAnimation(forKey: AnimationKeys.PositionAnimation)
 ```
 
 If you want to just apply the final values of a registered animation without actually performing the animation, just call the following
 
-```
+```swift
 view.applyAnimation(forKey: AnimationKeys.PositionAnimation, animated : false)
 ```
 
