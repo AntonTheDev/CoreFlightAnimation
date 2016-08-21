@@ -22,6 +22,10 @@ Under the hood, CoreFlightAnimation uses `CAKeyframeAnimation` to dynamically in
 	* Synchronously 
 	* Relative to Time Progress
 	* Relative to Value Progress
+- [x] Reverse Animations / AnimationGroups
+	* Once, Mutiple Times, or Indefinitely 
+	* Delay Revese
+	* Invert Easing Curves
 - [x] Apply Unique Easing per Property Animation
 - [x] Advanced Multi-Curve Group Synchronization
 - [x] Define, Cache, and Reuse Animations
