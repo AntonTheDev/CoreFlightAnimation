@@ -386,7 +386,6 @@ internal extension FASynchronizedGroup {
         if let animations = self.animations {
             for animation in animations {
                 if let customAnimation = animation as? FABasicAnimation {
-                    
                     let newAnimation = FABasicAnimation(keyPath: customAnimation.keyPath)
                     newAnimation.easingFunction = _reverseEasingCurve ? customAnimation.easingFunction.reverseEasingCurve() : customAnimation.easingFunction
                     newAnimation.isPrimary = customAnimation.isPrimary

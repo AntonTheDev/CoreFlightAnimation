@@ -174,7 +174,21 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
     }
     
     final public func groupRepresentation() -> FAAnimationGroup {
-        return FAAnimationGroup()
+        let newAnimationGroup = FAAnimationGroup()
+        
+        newAnimationGroup.weakLayer             = weakLayer
+        newAnimationGroup.startTime             = startTime
+      
+        newAnimationGroup._autoreverse             = _autoreverse
+        newAnimationGroup._autoreverseCount        = _autoreverseCount
+        newAnimationGroup._autoreverseActiveCount  = _autoreverseActiveCount
+        newAnimationGroup._autoreverseConfigured   = _autoreverseConfigured
+        newAnimationGroup._autoreverseDelay        = _autoreverseDelay
+        newAnimationGroup._reverseEasingCurve      = _reverseEasingCurve
+        
+        newAnimationGroup.animations = [self]
+        
+        return newAnimationGroup
     }
     
     final public func configureAnimation(withLayer layer: CALayer?) {

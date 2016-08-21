@@ -42,6 +42,15 @@ extension CALayer {
     
     internal func FA_addAnimation(anim: CAAnimation, forKey key: String?) {
         
+        if let animation = anim as? FABasicAnimation {
+            let groupRepresentation = animation.groupRepresentation()
+            groupRepresentation.synchronizeAnimationGroup(withLayer: self, animationKey : key)
+            
+            removeAllAnimations()
+            FA_addAnimation(groupRepresentation, forKey: key)
+            return
+        }
+        
         guard let animation = anim as? FAAnimationGroup else {
             FA_addAnimation(anim, forKey: key)
             return
@@ -51,7 +60,6 @@ extension CALayer {
         
         removeAllAnimations()
         FA_addAnimation(animation, forKey: key)
-      
     }
     
     final public func anyValueForKeyPath(keyPath: String) -> Any? {
@@ -71,8 +79,7 @@ extension CALayer {
                 return currentFromValue.CGRectValue!
             } else if type.hasPrefix("{CATransform3D") {
                 return currentFromValue.CATransform3DValue!
-            }
-            else {
+            } else {
                 return currentFromValue
             }
         }

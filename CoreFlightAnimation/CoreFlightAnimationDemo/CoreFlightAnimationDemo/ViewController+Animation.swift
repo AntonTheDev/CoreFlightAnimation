@@ -241,7 +241,7 @@ extension ViewController {
         
         var dragViewViewAnimationGroup = createNewAnimationGroup(toBounds,
                                                            toPosition: toPosition,
-                                                           toAlpha: 1.0,
+                                                           toAlpha: toAlpha,
                                                            toTransform: transform,
                                                            duration: 0.5,
                                                            velocity : velocity,

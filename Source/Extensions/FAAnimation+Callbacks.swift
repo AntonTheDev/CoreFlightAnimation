@@ -15,7 +15,6 @@ public typealias FAAnimationDidStop  = ((anim: CAAnimation, complete: Bool) -> V
 
 public class FAAnimationDelegate : NSObject {
 
-
     var animationDidStart : FAAnimationDidStart?
     var animationDidStop : FAAnimationDidStop?
     
