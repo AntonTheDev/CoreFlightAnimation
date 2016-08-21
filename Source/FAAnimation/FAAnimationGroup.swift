@@ -84,20 +84,57 @@ public class FAAnimationGroup : FASynchronizedGroup {
         set { _primaryTimingPriority = newValue }
     }
     
-    // Final animation value to interpolate to
+    
+    /**
+     Enable Autoreverse of the animation.
+     
+     By default it will only auto revese once. 
+     Adjust the autoreverseCount to change that
+
+     */
     public var autoreverse: Bool {
         get { return _autoreverse }
         set { _autoreverse = newValue }
     }
-
+    
+    
     /**
-     Adjusts animation based on the progress form 0 - 1
-     
-     - parameter progress: scrub "to progress" value
+     Count of times to repeat the reverse animation
+
+     Default is 1, set to 0 repeats the animation
+     indefinitely until is removed manually from the layer.
      */
-    public func scrubToProgress(progress : CGFloat) {
-        weakLayer?.speed = 0.0
-        weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
+    public var autoreverseCount: Int {
+        get { return _autoreverseCount }
+        set { _autoreverseCount = newValue }
+    }
+    
+    
+    /**
+      Delay in seconds to perfrom reverse animation.
+     
+      Once the animation completes this delay adjusts the
+      pause prior to triggering the reverse animation
+     
+      Default is 0.0
+     */
+    public var autoreverseDelay: NSTimeInterval {
+        get { return _autoreverseDelay }
+        set { _autoreverseDelay = newValue }
+    }
+    
+    
+    /**
+     Delay in seconds to perfrom reverse animation.
+     
+     Once the animation completes this delay adjusts the
+     pause prior to triggering the reverse animation
+     
+     Default is 0.0
+     */
+    public var reverseEasingCurve: Bool {
+        get { return _reverseEasingCurve }
+        set { _reverseEasingCurve = newValue }
     }
     
     /**
@@ -131,6 +168,7 @@ public class FAAnimationGroup : FASynchronizedGroup {
                                   atTimeProgress : timeProgress,
                                   atValueProgress : valueProgress)
     }
+    
     
     /**
      Apply the animation's final state, animated by default but can ve disabled if needed
@@ -174,6 +212,19 @@ public class FAAnimationGroup : FASynchronizedGroup {
             }
         }
     }
+    
+    
+    /**
+     Not Ready for Prime Time, being declared as private
+     
+     Adjusts animation based on the progress form 0 - 1
+     
+     - parameter progress: scrub "to progress" value
+     */
+    private func scrubToProgress(progress : CGFloat) {
+        weakLayer?.speed = 0.0
+        weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
+    }
 }
 
 
@@ -185,6 +236,11 @@ public class FASynchronizedGroup : CAAnimationGroup {
     internal var _primaryTimingPriority : FAPrimaryTimingPriority = .MaxTime
     
     internal var _autoreverse : Bool = false
+    internal var _autoreverseCount: Int = 1
+    internal var _autoreverseActiveCount: Int = 1
+    internal var _autoreverseDelay: NSTimeInterval = 1.0
+    internal var _autoreverseConfigured: Bool = false
+    internal var _reverseEasingCurve: Bool = false
     
     internal weak var weakLayer : CALayer? {
         didSet {
@@ -241,6 +297,11 @@ public class FASynchronizedGroup : CAAnimationGroup {
         animationGroup._segmentArray            = _segmentArray
         animationGroup._primaryTimingPriority   = _primaryTimingPriority
         animationGroup._autoreverse             = _autoreverse
+        animationGroup._autoreverseCount        = _autoreverseCount
+        animationGroup._autoreverseActiveCount  = _autoreverseActiveCount
+        animationGroup._autoreverseConfigured   = _autoreverseConfigured
+        animationGroup._autoreverseDelay        = _autoreverseDelay
+        animationGroup._reverseEasingCurve      = _reverseEasingCurve
         return animationGroup
     }
     
@@ -257,6 +318,7 @@ public class FASynchronizedGroup : CAAnimationGroup {
             for key in Array(Set(keys)) {
                 if let oldAnimation = weakLayer?.animationForKey(key) as? FAAnimationGroup {
                     oldAnimation.stopTriggerTimer()
+                    _autoreverseActiveCount = oldAnimation._autoreverseActiveCount
                     synchronizeAnimations(oldAnimation)
                 }
             }
@@ -266,10 +328,84 @@ public class FASynchronizedGroup : CAAnimationGroup {
     }
 }
 
+//MARK: - Auto Reverse Logic
+
+internal extension FASynchronizedGroup {
+ 
+    func configureAutoreverseIfNeeded() {
+        
+        if _autoreverse {
+            
+            if _autoreverseConfigured == false {
+                configuredAutoreverseGroup()
+            }
+            
+            if _autoreverseCount == 0 {
+                return
+            }
+            
+            if _autoreverseActiveCount >= (_autoreverseCount * 2) {
+                clearAutoreverseGroup()
+            }
+            
+            _autoreverseActiveCount = _autoreverseActiveCount + 1
+        }
+    }
+    
+    func clearAutoreverseGroup() {
+        _segmentArray = [AnimationTrigger]()
+        removedOnCompletion = true
+    }
+    
+    func configuredAutoreverseGroup() {
+
+        let animationGroup = FAAnimationGroup()
+        animationGroup.animationKey             = animationKey! + "REVERSE"
+        animationGroup.weakLayer                = weakLayer
+        animationGroup.animations               = reverseAnimationArray()
+        animationGroup.duration                 = duration
+        animationGroup.primaryTimingPriority    = _primaryTimingPriority
+        animationGroup._autoreverse             = _autoreverse
+        animationGroup._autoreverseCount        = _autoreverseCount
+        animationGroup._autoreverseActiveCount  = _autoreverseActiveCount
+        animationGroup._reverseEasingCurve      = _reverseEasingCurve
+       
+        if let view =  weakLayer?.owningView() {
+            let progressDelay = max(0.0 , _autoreverseDelay/duration)
+            configureAnimationTrigger(animationGroup, onView: view, atTimeProgress : 1.0 + CGFloat(progressDelay))
+        }
+        
+        removedOnCompletion = false
+    }
+    
+    
+    func reverseAnimationArray() ->[FABasicAnimation] {
+        
+        var reverseAnimationArray = [FABasicAnimation]()
+        
+        if let animations = self.animations {
+            for animation in animations {
+                if let customAnimation = animation as? FABasicAnimation {
+                    
+                    let newAnimation = FABasicAnimation(keyPath: customAnimation.keyPath)
+                    newAnimation.easingFunction = _reverseEasingCurve ? customAnimation.easingFunction.reverseEasingCurve() : customAnimation.easingFunction
+                    newAnimation.isPrimary = customAnimation.isPrimary
+                    newAnimation.values = customAnimation.values!.reverse()
+                    newAnimation.toValue = customAnimation.fromValue
+                    newAnimation.fromValue = customAnimation.toValue
+                    reverseAnimationArray.append(newAnimation)
+                }
+            }
+        }
+        
+        return reverseAnimationArray
+    }
+}
+
+
 //MARK: - Synchronization Logic
 
 internal extension FASynchronizedGroup {
-    
     
     /**
      Synchronizes the calling animation group with the passed animation group
@@ -319,40 +455,7 @@ internal extension FASynchronizedGroup {
         animations = newAnimations.map {$1}
         updateGroupDurationBasedOnTimePriority(durationArray)
         
-        if _autoreverse {
-            autoreverseGroup()
-        }
-    }
-    
-    func autoreverseGroup() {
-        var reverseAnimationArray = [FABasicAnimation]()
-        
-        if let animations = self.animations {
-            for animation in animations {
-                if let customAnimation = animation as? FABasicAnimation {
-            
-                    let newAnimation = FABasicAnimation(keyPath: customAnimation.keyPath)
-                    newAnimation.easingFunction = customAnimation.easingFunction.reverseEasingCurve()
-                    newAnimation.isPrimary = customAnimation.isPrimary
-                    newAnimation.values = customAnimation.values!.reverse()
-                    newAnimation.toValue = customAnimation.fromValue
-                    newAnimation.fromValue = customAnimation.toValue
-                    reverseAnimationArray.append(newAnimation)
-                }
-            }
-        }
-        
-        let animationGroup = FAAnimationGroup()
-        animationGroup.animationKey = animationKey! + "reverse"
-        
-        animationGroup.primaryTimingPriority = _primaryTimingPriority
-        animationGroup.weakLayer = weakLayer
-        animationGroup.animations = reverseAnimationArray
-        animationGroup.duration = duration
-      
-        if let view =  weakLayer?.owningView() {
-            configureAnimationTrigger(animationGroup, onView: view, atTimeProgress : 1.0)
-        }
+        configureAutoreverseIfNeeded()
     }
     
     /**

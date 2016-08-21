@@ -5,6 +5,11 @@
 //  Created by Anton Doudarev on 4/23/16.
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
+//
+//  Inspired and rewritten in swift by original source 
+//  found here : http://www.ryanjuckett.com/programming/damped-springs/
+//
+//
 
 import Foundation
 import UIKit

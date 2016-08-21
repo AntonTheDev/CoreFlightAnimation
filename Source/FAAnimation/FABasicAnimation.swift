@@ -46,7 +46,67 @@ public class FABasicAnimation : FASynchronizedAnimation {
         set { _isPrimary = newValue }
     }
     
-    public func scrubToProgress(progress : CGFloat) {
+    /**
+     Enable Autoreverse of the animation.
+     
+     By default it will only auto revese once.
+     Adjust the autoreverseCount to change that
+     
+     */
+    public var autoreverse: Bool {
+        get { return _autoreverse }
+        set { _autoreverse = newValue }
+    }
+    
+    
+    /**
+     Count of times to repeat the reverse animation
+     
+     Default is 1, set to 0 repeats the animation
+     indefinitely until is removed manually from the layer.
+     */
+    public var autoreverseCount: Int {
+        get { return _autoreverseCount }
+        set { _autoreverseCount = newValue }
+    }
+    
+    
+    /**
+     Delay in seconds to perfrom reverse animation.
+     
+     Once the animation completes this delay adjusts the
+     pause prior to triggering the reverse animation
+     
+     Default is 0.0
+     */
+    public var autoreverseDelay: NSTimeInterval {
+        get { return _autoreverseDelay }
+        set { _autoreverseDelay = newValue }
+    }
+    
+    
+    /**
+     Delay in seconds to perfrom reverse animation.
+     
+     Once the animation completes this delay adjusts the
+     pause prior to triggering the reverse animation
+     
+     Default is 0.0
+     */
+    public var reverseEasingCurve: Bool {
+        get { return _reverseEasingCurve }
+        set { _reverseEasingCurve = newValue }
+    }
+    
+    
+    /**
+     Not Ready for Prime Time, being declared as private
+     
+     Adjusts animation based on the progress form 0 - 1
+     
+     - parameter progress: scrub "to progress" value
+     */
+    private func scrubToProgress(progress : CGFloat) {
         weakLayer?.speed = 0.0
         weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
     }
@@ -57,7 +117,7 @@ public class FABasicAnimation : FASynchronizedAnimation {
 
 public class FASynchronizedAnimation : CAKeyframeAnimation {
 
-    // fromValue auto synchronizes with current presentation layer values
+    //Auto synchronizes with current presentation layer values if left blank
     internal var _fromValue: AnyObject?
     internal var _toValue: AnyObject?
     internal var _easingFunction : FAEasing = FAEasing.Linear
@@ -66,6 +126,13 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
     internal weak var weakLayer : CALayer?
     internal var interpolator : Interpolator?
     internal var startTime : CFTimeInterval?
+    
+    internal var _autoreverse : Bool = false
+    internal var _autoreverseCount: Int = 1
+    internal var _autoreverseActiveCount: Int = 1
+    internal var _autoreverseDelay: NSTimeInterval = 1.0
+    internal var _autoreverseConfigured: Bool = false
+    internal var _reverseEasingCurve: Bool = false
     
     override public var timingFunction: CAMediaTimingFunction? {
         didSet {
@@ -95,7 +162,19 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
         animation._toValue              = _toValue
         animation._fromValue            = _fromValue
         animation._isPrimary            = _isPrimary
+        
+        animation._autoreverse             = _autoreverse
+        animation._autoreverseCount        = _autoreverseCount
+        animation._autoreverseActiveCount  = _autoreverseActiveCount
+        animation._autoreverseConfigured   = _autoreverseConfigured
+        animation._autoreverseDelay        = _autoreverseDelay
+        animation._reverseEasingCurve      = _reverseEasingCurve
+        
         return animation
+    }
+    
+    final public func groupRepresentation() -> FAAnimationGroup {
+        return FAAnimationGroup()
     }
     
     final public func configureAnimation(withLayer layer: CALayer?) {
@@ -158,7 +237,6 @@ internal extension FASynchronizedAnimation {
             values = config!.values
         }
     }
-    
     
     func configureFromValueIfNeeded() {
         

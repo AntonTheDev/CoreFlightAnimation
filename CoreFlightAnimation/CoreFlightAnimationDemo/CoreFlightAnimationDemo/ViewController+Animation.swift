@@ -300,6 +300,7 @@ extension ViewController {
         animationGroup.animations = [boundsAnimation, positionAnimation, alphaAnimation, transformAnimation]
         animationGroup.primaryTimingPriority = animConfig.primaryTimingPriority
         animationGroup.autoreverse = true
+        animationGroup.autoreverseCount = 2
         return animationGroup
     }
     
