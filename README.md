@@ -16,18 +16,18 @@ Under the hood, CoreFlightAnimation uses `CAKeyframeAnimation` to dynamically in
 
 ##Features
 
-- [x] Seamless integration with existing CoreAnimation APIs
+- [x] Seamless integration in existing Core Animation APIs
 - [x] [46+ Parametric Curves, Decay, and Springs](/Documentation/parametric_easings.md) 
 - [x] Chain Animations:
 	* Synchronously 
 	* Relative to Time Progress
 	* Relative to Value Progress
-- [x] Reverse Animations / AnimationGroups
-	* Once, Mutiple Times, or Indefinitely 
-	* Delay Revese
+- [x] Reverse Animations / Animation Groups
+	* Once, Multiples Times, or Indefinitely 
+	* Delay Reverse Animation
 	* Invert Easing Curves
 - [x] Apply Unique Easing per Property Animation
-- [x] Advanced Multi-Curve Group Synchronization
+- [x] Advanced Multi-Curve Synchronization
 - [x] Define, Cache, and Reuse Animations
     
 ##Installation
