@@ -6,8 +6,14 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+#else
+    import AppKit
+#endif
+
 import Foundation
-import UIKit
+
 
 public func typeCastCGColor(value : Any) -> CGColor? {
     if let currentValue = value as? AnyObject {

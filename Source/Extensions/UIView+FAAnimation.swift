@@ -6,8 +6,14 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+#else
+    import AppKit
+#endif
+
 import Foundation
-import UIKit
+
 
 private struct FAAssociatedKey {
     static var layoutConfigurations = "layoutConfigurations"
@@ -16,8 +22,8 @@ private struct FAAssociatedKey {
 public extension UIView {
     
     func registerAnimation(animation animation: Any,
-                                     forKey key: String,
-                                            timingPriority : FAPrimaryTimingPriority = .MaxTime) {
+                          forKey key: String,
+                          timingPriority : FAPrimaryTimingPriority = .MaxTime) {
         
         if self.cachedAnimations == nil {
             self.cachedAnimations = [NSString : FAAnimationGroup]()

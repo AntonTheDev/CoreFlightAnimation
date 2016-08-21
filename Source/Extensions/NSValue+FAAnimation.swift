@@ -6,10 +6,16 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
-import Foundation
-import UIKit
+#if os(iOS) || os(tvOS)
+    import UIKit
+#else
+    import AppKit
+#endif
 
-extension NSValue {    
+import Foundation
+
+
+extension NSValue {
    final public func typeValue() -> Any? {
         let type = String.fromCString(self.objCType) ?? ""
     

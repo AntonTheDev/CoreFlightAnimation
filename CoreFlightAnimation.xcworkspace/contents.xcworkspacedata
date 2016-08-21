@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
-   <FileRef
-      location = "group:CoreFlightAnimation/CoreFlightAnimationDemo/CoreFlightAnimationDemo.xcodeproj">
-   </FileRef>
    <Group
       location = "group:Source"
       name = "Source">
@@ -50,4 +47,10 @@
          </FileRef>
       </Group>
    </Group>
+   <FileRef
+      location = "group:CoreFlightAnimation/CoreFlightAnimation/CoreFlightAnimation.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:CoreFlightAnimation/CoreFlightAnimationDemo/CoreFlightAnimationDemo.xcodeproj">
+   </FileRef>
 </Workspace>

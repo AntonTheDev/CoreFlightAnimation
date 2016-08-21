@@ -6,9 +6,14 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+#else
+    import AppKit
+#endif
 
 import Foundation
-import UIKit
+
 
 extension CALayer {
     
@@ -20,6 +25,7 @@ extension CALayer {
         if self !== CALayer.self {
             return
         }
+        
         
         dispatch_once(&Static.token) {
             let originalSelector = #selector(CALayer.addAnimation(_:forKey:))
@@ -87,8 +93,8 @@ extension CALayer {
         return super.valueForKeyPath(keyPath)
     }
     
-    final public func owningView() -> UIView? {
-        if let owningView = self.delegate as? UIView {
+    final public func owningView() -> View? {
+        if let owningView = self.delegate as? View {
             return owningView
         }
         

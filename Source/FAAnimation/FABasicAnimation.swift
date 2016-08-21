@@ -6,8 +6,14 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+#else
+    import AppKit
+#endif
+
 import Foundation
-import UIKit
+
 
 //MARK: - FASynchronizedAnimation
 
@@ -142,11 +148,22 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
     
     override public init() {
         super.init()
+        initializeInitialValues()
+    }
+
+    public convenience init(keyPath path: String?) {
+        self.init()
+        keyPath = path
+        initializeInitialValues()
+    }
+    
+    internal func initializeInitialValues() {
         CALayer.swizzleAddAnimation()
         
         calculationMode = kCAAnimationLinear
         fillMode = kCAFillModeForwards
         removedOnCompletion = true
+        values = [AnyObject]()
     }
     
     required public init?(coder aDecoder: NSCoder) {

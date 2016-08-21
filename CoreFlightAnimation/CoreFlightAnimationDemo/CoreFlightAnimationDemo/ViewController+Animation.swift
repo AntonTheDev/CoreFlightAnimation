@@ -301,6 +301,7 @@ extension ViewController {
         animationGroup.primaryTimingPriority = animConfig.primaryTimingPriority
         animationGroup.autoreverse = true
         animationGroup.autoreverseCount = 2
+
         return animationGroup
     }
     

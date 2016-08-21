@@ -6,8 +6,14 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+#else
+    import AppKit
+#endif
+
 import Foundation
-import UIKit
+
 
 let overshoot : CGFloat = 1.70158
 let CGM_PI_2 = CGFloat(M_PI_2)

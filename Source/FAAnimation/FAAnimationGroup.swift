@@ -6,8 +6,15 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+    public typealias View = UIView
+#else
+    import AppKit
+    public typealias View = NSView
+#endif
+
 import Foundation
-import UIKit
 
 
 /**
@@ -160,9 +167,10 @@ public class FAAnimationGroup : FASynchronizedGroup {
      - parameter valueProgress: the relative value progress to trigger animation on the view
      */
     public func triggerAnimation(animation : AnyObject,
-                                 onView view : UIView,
-                                        atTimeProgress timeProgress: CGFloat? = nil,
-                                                       atValueProgress valueProgress: CGFloat? = nil) {
+                                 onView view : View,
+                                 atTimeProgress timeProgress: CGFloat? = nil,
+                                 atValueProgress valueProgress: CGFloat? = nil) {
+        
         configureAnimationTrigger(animation,
                                   onView : view,
                                   atTimeProgress : timeProgress,
@@ -346,15 +354,11 @@ internal extension FASynchronizedGroup {
             
             if _autoreverseActiveCount >= (_autoreverseCount * 2) {
                 clearAutoreverseGroup()
+                return
             }
             
             _autoreverseActiveCount = _autoreverseActiveCount + 1
         }
-    }
-    
-    func clearAutoreverseGroup() {
-        _segmentArray = [AnimationTrigger]()
-        removedOnCompletion = true
     }
     
     func configuredAutoreverseGroup() {
@@ -378,6 +382,12 @@ internal extension FASynchronizedGroup {
         removedOnCompletion = false
     }
     
+    func clearAutoreverseGroup() {
+        _segmentArray = [AnimationTrigger]()
+        removedOnCompletion = true
+        stopTriggerTimer()
+    }
+    
     
     func reverseAnimationArray() ->[FABasicAnimation] {
         
@@ -386,12 +396,15 @@ internal extension FASynchronizedGroup {
         if let animations = self.animations {
             for animation in animations {
                 if let customAnimation = animation as? FABasicAnimation {
+                    
                     let newAnimation = FABasicAnimation(keyPath: customAnimation.keyPath)
                     newAnimation.easingFunction = _reverseEasingCurve ? customAnimation.easingFunction.reverseEasingCurve() : customAnimation.easingFunction
+                    
                     newAnimation.isPrimary = customAnimation.isPrimary
                     newAnimation.values = customAnimation.values!.reverse()
                     newAnimation.toValue = customAnimation.fromValue
                     newAnimation.fromValue = customAnimation.toValue
+                    
                     reverseAnimationArray.append(newAnimation)
                 }
             }
@@ -537,7 +550,7 @@ public class AnimationTrigger : Equatable {
     public  var isTimedBased = true
     public var triggerProgessValue : CGFloat?
     public var animationKey : NSString?
-    public weak var animatedView : UIView?
+    public weak var animatedView : View?
     public weak var animation : FAAnimationGroup?
     
     required public init() {
@@ -559,10 +572,9 @@ public extension FASynchronizedGroup {
      - parameter valueProgress: the relative value progress to trigger animation on the view
      */
     internal func configureAnimationTrigger(animation : AnyObject,
-                                            onView view : UIView,
+                                            onView view : View,
                                             atTimeProgress timeProgress: CGFloat? = 0.0,
                                             atValueProgress valueProgress: CGFloat? = nil) {
-        
         var progress : CGFloat = timeProgress ?? 0.0
         var timeBased : Bool = true
         
@@ -650,7 +662,7 @@ public extension FASynchronizedGroup {
                 //print("TRIGGER  ++++++++ CALINK \(weakLayer?.description)  - \(displayLink)\n")
             }
             
-            if segmentArray.count <= 0 {
+            if segmentArray.count <= 0 && _autoreverse == false {
                 stopTriggerTimer()
                 return
             }
