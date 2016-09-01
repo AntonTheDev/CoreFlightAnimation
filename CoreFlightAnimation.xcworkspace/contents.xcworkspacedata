@@ -11,7 +11,7 @@
             location = "group:FASequence.swift">
          </FileRef>
          <FileRef
-            location = "group:FASequenceTrigger.swift">
+            location = "group:/Users/Anton/Developer/CoreFlightAnimation/Source/FASequence/FASequenceFrame.swift">
          </FileRef>
       </Group>
       <Group

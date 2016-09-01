@@ -31,8 +31,8 @@
 		3AE43A391D77DCED00AD522C /* FAVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A221D77DCED00AD522C /* FAVector.swift */; };
 		3AE43A3A1D77DCED00AD522C /* FASequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A241D77DCED00AD522C /* FASequence.swift */; };
 		3AE43A3B1D77DCED00AD522C /* FASequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A241D77DCED00AD522C /* FASequence.swift */; };
-		3AE43A3C1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */; };
-		3AE43A3D1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */; };
+		3AE43A3C1D77DCED00AD522C /* FASequenceFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A251D77DCED00AD522C /* FASequenceFrame.swift */; };
+		3AE43A3D1D77DCED00AD522C /* FASequenceFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A251D77DCED00AD522C /* FASequenceFrame.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,7 +52,7 @@
 		3AE43A211D77DCED00AD522C /* FASpring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASpring.swift; sourceTree = "<group>"; };
 		3AE43A221D77DCED00AD522C /* FAVector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAVector.swift; sourceTree = "<group>"; };
 		3AE43A241D77DCED00AD522C /* FASequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequence.swift; sourceTree = "<group>"; };
-		3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequenceTrigger.swift; sourceTree = "<group>"; };
+		3AE43A251D77DCED00AD522C /* FASequenceFrame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequenceFrame.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,7 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				3AE43A241D77DCED00AD522C /* FASequence.swift */,
-				3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */,
+				3AE43A251D77DCED00AD522C /* FASequenceFrame.swift */,
 			);
 			path = FASequence;
 			sourceTree = "<group>";
@@ -277,7 +277,7 @@
 			files = (
 				3AE43A301D77DCED00AD522C /* FABasicAnimation.swift in Sources */,
 				3AE43A3A1D77DCED00AD522C /* FASequence.swift in Sources */,
-				3AE43A3C1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */,
+				3AE43A3C1D77DCED00AD522C /* FASequenceFrame.swift in Sources */,
 				3AE43A341D77DCED00AD522C /* FAInterpolator.swift in Sources */,
 				3AE43A2C1D77DCED00AD522C /* UIView+FAAnimator.swift in Sources */,
 				3AE43A2E1D77DCED00AD522C /* FAAnimationGroup.swift in Sources */,
@@ -296,7 +296,7 @@
 			files = (
 				3AE43A311D77DCED00AD522C /* FABasicAnimation.swift in Sources */,
 				3AE43A3B1D77DCED00AD522C /* FASequence.swift in Sources */,
-				3AE43A3D1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */,
+				3AE43A3D1D77DCED00AD522C /* FASequenceFrame.swift in Sources */,
 				3AE43A351D77DCED00AD522C /* FAInterpolator.swift in Sources */,
 				3AE43A2D1D77DCED00AD522C /* UIView+FAAnimator.swift in Sources */,
 				3AE43A2F1D77DCED00AD522C /* FAAnimationGroup.swift in Sources */,

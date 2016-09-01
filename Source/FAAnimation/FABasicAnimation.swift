@@ -111,8 +111,7 @@ public class FABasicAnimation : FASynchronizedAnimation {
         weakLayer?.speed = 0.0
         weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
     }
-    
-    
+
     final public func groupRepresentation() -> FAAnimationGroup {
         let newAnimationGroup = FAAnimationGroup()
         
@@ -130,7 +129,6 @@ public class FABasicAnimation : FASynchronizedAnimation {
         
         return newAnimationGroup
     }
-    
 }
 
 

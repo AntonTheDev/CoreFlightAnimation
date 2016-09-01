@@ -188,11 +188,11 @@ public class FAAnimationGroup : FASynchronizedGroup {
      
      - parameter animated: disables animation, defauls to true
      */
-    public func applyFinalState(animated : Bool = false, onView view : UIView? = nil) {
+    public func applyFinalState(animated : Bool = false) {
         
-        if let view = view {
-            self.weakLayer = view.layer
-        }
+      //  if let view = view {
+      //      self.weakLayer = view.layer
+      //  }
         
         if let animationLayer = weakLayer {
             if animated {
@@ -376,12 +376,12 @@ internal extension FASynchronizedGroup {
         animationGroup._autoreverseCount        = _autoreverseCount
         animationGroup._autoreverseActiveCount  = _autoreverseActiveCount
         animationGroup._reverseEasingCurve      = _reverseEasingCurve
-       
+   /*
         if let view =  weakLayer?.owningView() {
             let progressDelay = max(0.0 , _autoreverseDelay/duration)
             //configureAnimationTrigger(animationGroup, onView: view, atTimeProgress : 1.0 + CGFloat(progressDelay))
         }
-        
+    */
         removedOnCompletion = false
     }
     
@@ -543,9 +543,13 @@ internal extension FASynchronizedGroup {
 internal extension FAAnimationGroup {
     
     func valueProgress() -> CGFloat {
+    
+        if let animation = self.weakLayer?.animationForKey(self.animationKey!) as? FAAnimationGroup{
+            return animation.primaryAnimation!.valueProgress()
+        }
         
         guard let primaryAnimation = primaryAnimation else {
-             print("Primary Animation Nil")
+            print("Primary Animation Nil")
             return 0.0
         }
         
@@ -553,6 +557,11 @@ internal extension FAAnimationGroup {
     }
     
     func timeProgress() -> CGFloat {
+        
+        
+        if let animation = self.weakLayer?.animationForKey(self.animationKey!) as? FAAnimationGroup{
+            return animation.primaryAnimation!.timeProgress()
+        }
         
         guard let primaryAnimation = primaryAnimation else {
             print("Primary Animation Nil")
@@ -562,35 +571,3 @@ internal extension FAAnimationGroup {
         return primaryAnimation.timeProgress()
     }
 }
-
-public extension UIView {
-/*
-    func cacheAnimation(animation animation: Any, forKey key: String) {
-        
-        if self.cachedAnimations == nil {
-            self.cachedAnimations = [NSString : FAAnimationGroup]()
-        }
-        
-        if self.cachedAnimations!.keys.contains(NSString(string: key)) {
-           // self.cachedAnimations![NSString(string: key)]?.stopTriggerTimer()
-            self.cachedAnimations![NSString(string: key)] = nil
-        }
-        
-        if let group = animation as? FAAnimationGroup {
-            group.animationKey = key
-            group.weakLayer = layer
-          
-            cachedAnimations![NSString(string: key)] = group
-        } else if let animation = animation as? FABasicAnimation {
-            
-            let newGroup = FAAnimationGroup()
-            newGroup.animationKey = key
-            newGroup.weakLayer = layer
-            newGroup.animations = [animation]
-            
-            cachedAnimations![NSString(string: key)] = newGroup
-        }
-    }
-    */
-}
-

@@ -60,6 +60,9 @@ protocol ConfigurationViewDelegate {
 
 class ConfigurationView : UIView {
     
+    
+    var selectedDelaySegment : Int = 0
+    
     var interactionDelegate: ConfigurationViewDelegate?
     weak var cellDelegate : CurveCollectionViewCellDelegate?
    
@@ -329,9 +332,9 @@ class ConfigurationView : UIView {
     }
     
     func changedTrigger(segmentControl : UISegmentedControl) {
-
-            interactionDelegate?.didUpdateTriggerType(segmentControl.selectedSegmentIndex)
-            updateAnimation()
+        
+        interactionDelegate?.didUpdateTriggerType(segmentControl.selectedSegmentIndex)
+        updateAnimation()
     }    
     
     func secondary_view_value_changed(sender : UISwitch) {

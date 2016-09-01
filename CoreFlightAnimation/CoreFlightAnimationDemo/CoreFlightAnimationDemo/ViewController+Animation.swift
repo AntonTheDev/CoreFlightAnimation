@@ -34,7 +34,7 @@ struct AnimationConfiguration {
     
     var triggerProgress  : CGFloat = 0
     
-    var enableSecondaryView  : Bool = true
+    var enableSecondaryView  : Bool = false
     
     static func titleForFunction(function : FAEasing) -> String {
         return functionTypes[functions.indexOf(function)!]
@@ -117,48 +117,23 @@ extension ViewController {
         backgroundColorAnimation.toValue = UIColor.blueColor().CGColor
         backgroundColorAnimation.duration = 0.6
         
-        
         // ConfigView AnimationGroup
         
         let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
-        configViewAnimationGroup.animationKey = AnimationKeys.ShowConfigAnimation
         
         // BackgroundView AnimationGroup
         
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
-       // backgroundViewAnimationGroup.animationKey = String(NSUUID().UUIDString)
-        
-        // Add Trigger the ConfigView AnimationGroup to apply the
-        // backgroundView AnimationGroup on start of the animation
-        /*
-        let sequence = FASequence()
-        
-        let startingTrigger = FASequenceTrigger(triggerAnimation: configViewAnimationGroup, onView: configView)
-        
-        let backgroundTrigger = startingTrigger.newSequenceTrigger(withAnimation: backgroundViewAnimationGroup,
-                                                                   onView: dimmerView,
-                                                                   atProgress: 0.5)
- 
-        
-        sequence._sequenceTriggers[AnimationKeys.ShowConfigAnimation] = startingTrigger
-        sequence._sequenceTriggers[backgroundViewAnimationGroup.animationKey!] = backgroundTrigger
-        */
-        
-        let sequence = FASequence()
-        
-        let startingTrigger = FASequenceTrigger(triggerAnimation: configViewAnimationGroup, onView: configView)
-        sequence.appendTrigger(startingTrigger)
         
         
-        let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: backgroundViewAnimationGroup,
-                                                                  onView: dimmerView,
-                                                                  atProgress: 0.5)
+        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup)
         
-        
-        sequence.appendTrigger(secondaryTrigger)
-        
+        sequence.addSequenceFrameFrame(withAnimation: backgroundViewAnimationGroup,
+                                       onView: dimmerView,
+                                       atProgress: 0.5)
+
         configView.cache(sequence, forKey: AnimationKeys.ShowConfigAnimation)
     }
     
@@ -202,27 +177,18 @@ extension ViewController {
         
         let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
-        configViewAnimationGroup.animationKey = AnimationKeys.HideConfigAnimation
         
         // BackgroundView AnimationGroup
         
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
+        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup)
         
-        let sequence = FASequence()
+        sequence.addSequenceFrameFrame(withAnimation: backgroundViewAnimationGroup,
+                                       onView: dimmerView,
+                                       atProgress: 0.5)
         
-        let startingTrigger = FASequenceTrigger(triggerAnimation: configViewAnimationGroup, onView: configView)
-        sequence.appendTrigger(startingTrigger)
-        
-        
-        let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: backgroundViewAnimationGroup,
-                                                                  onView: dimmerView,
-                                                                  atProgress: 0.5)
-        
-        
-        sequence.appendTrigger(secondaryTrigger)
-    
         configView.cache(sequence, forKey: AnimationKeys.HideConfigAnimation)
     }
     
@@ -247,9 +213,9 @@ extension ViewController {
                      duration : Double = 0.5,
                      animationKey : String = AnimationKeys.TapStageOneAnimationKey) {
         
-      //  guard lastToFrame != toFrame else {
-      //      return
-      //  }
+        guard lastToFrame != toFrame else {
+            return
+        }
         
         let toBounds = CGRectMake(0, 0, toFrame.size.width , toFrame.size.height)
         let toPosition = CGCSRectGetCenter(toFrame)
@@ -342,34 +308,22 @@ extension ViewController {
             secondaryAnimationGroup.weakLayer = view.layer
         }
         
-        let sequence = FASequence()
-        
-        let startingTrigger = FASequenceTrigger(triggerAnimation: animationgGroup, onView: dragView)
-        sequence.appendTrigger(startingTrigger)
+        let sequence = FASequence(onView: dragView, withAnimation: animationgGroup)
 
         switch animConfig.triggerType {
         case 1:
-            let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: secondaryAnimationGroup,
+            sequence.addSequenceFrameFrame(withAnimation: secondaryAnimationGroup,
                                                                       onView: dragView2,
                                                                       atProgress: 0.5)
-            
-            sequence.appendTrigger(secondaryTrigger)
         case 2:
-            
-            let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: secondaryAnimationGroup,
+            sequence.addSequenceFrameFrame(withAnimation: secondaryAnimationGroup,
                                                                       onView: dragView2,
                                                                       relativeToTime : false,
                                                                       atProgress: 0.5)
-            
-            
-            sequence.appendTrigger(secondaryTrigger)
-            
         default:
-            let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: secondaryAnimationGroup,
+            sequence.addSequenceFrameFrame(withAnimation: secondaryAnimationGroup,
                                                                       onView: dragView2,
                                                                       atProgress: 0.0)
-            
-            sequence.appendTrigger(secondaryTrigger)
         }
         
         return sequence
