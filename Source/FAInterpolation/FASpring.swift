@@ -5,20 +5,9 @@
 //  Created by Anton Doudarev on 4/23/16.
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
-//
-//  Inspired and rewritten in swift by original source 
-//  found here : http://www.ryanjuckett.com/programming/damped-springs/
-//
-//
-
-#if os(iOS) || os(tvOS)
-    import UIKit
-#else
-    import AppKit
-#endif
 
 import Foundation
-
+import UIKit
 
 let CGFLT_EPSILON = CGFloat(FLT_EPSILON)
 

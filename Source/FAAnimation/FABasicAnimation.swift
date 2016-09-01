@@ -6,13 +6,8 @@
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
-    import UIKit
-#else
-    import AppKit
-#endif
-
 import Foundation
+import UIKit
 
 
 //MARK: - FASynchronizedAnimation
@@ -116,6 +111,26 @@ public class FABasicAnimation : FASynchronizedAnimation {
         weakLayer?.speed = 0.0
         weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
     }
+    
+    
+    final public func groupRepresentation() -> FAAnimationGroup {
+        let newAnimationGroup = FAAnimationGroup()
+        
+        newAnimationGroup.weakLayer             = weakLayer
+        newAnimationGroup.startTime             = startTime
+        
+        newAnimationGroup._autoreverse             = _autoreverse
+        newAnimationGroup._autoreverseCount        = _autoreverseCount
+        newAnimationGroup._autoreverseActiveCount  = _autoreverseActiveCount
+        newAnimationGroup._autoreverseConfigured   = _autoreverseConfigured
+        newAnimationGroup._autoreverseDelay        = _autoreverseDelay
+        newAnimationGroup._reverseEasingCurve      = _reverseEasingCurve
+        
+        newAnimationGroup.animations = [self]
+        
+        return newAnimationGroup
+    }
+    
 }
 
 
@@ -130,7 +145,7 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
     internal var _isPrimary : Bool = false
     
     internal weak var weakLayer : CALayer?
-    internal var interpolator : Interpolator?
+    internal var interpolator : FAInterpolator?
     internal var startTime : CFTimeInterval?
     
     internal var _autoreverse : Bool = false
@@ -190,24 +205,6 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
         return animation
     }
     
-    final public func groupRepresentation() -> FAAnimationGroup {
-        let newAnimationGroup = FAAnimationGroup()
-        
-        newAnimationGroup.weakLayer             = weakLayer
-        newAnimationGroup.startTime             = startTime
-      
-        newAnimationGroup._autoreverse             = _autoreverse
-        newAnimationGroup._autoreverseCount        = _autoreverseCount
-        newAnimationGroup._autoreverseActiveCount  = _autoreverseActiveCount
-        newAnimationGroup._autoreverseConfigured   = _autoreverseConfigured
-        newAnimationGroup._autoreverseDelay        = _autoreverseDelay
-        newAnimationGroup._reverseEasingCurve      = _reverseEasingCurve
-        
-        newAnimationGroup.animations = [self]
-        
-        return newAnimationGroup
-    }
-    
     final public func configureAnimation(withLayer layer: CALayer?) {
         weakLayer = layer
     }
@@ -258,7 +255,7 @@ internal extension FASynchronizedAnimation {
         if let _toValue = _toValue,
             let _fromValue = _fromValue {
             
-            interpolator  = Interpolator(toValue: _toValue,
+            interpolator  = FAInterpolator(toValue: _toValue,
                                          fromValue: _fromValue,
                                          previousValue : runningAnimation?.fromValue)
             
@@ -269,12 +266,7 @@ internal extension FASynchronizedAnimation {
         }
     }
     
-    func configureFromValueIfNeeded() {
-        
-        if _fromValue != nil {
-            return
-        }
-        
+    func configureFromValueIfNeeded() {        
         if let presentationLayer = (weakLayer?.presentationLayer() as? CALayer),
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             

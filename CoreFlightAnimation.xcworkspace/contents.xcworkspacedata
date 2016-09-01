@@ -5,6 +5,16 @@
       location = "group:Source"
       name = "Source">
       <Group
+         location = "group:FASequence"
+         name = "FASequence">
+         <FileRef
+            location = "group:FASequence.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FASequenceTrigger.swift">
+         </FileRef>
+      </Group>
+      <Group
          location = "group:FAAnimation"
          name = "FAAnimation">
          <FileRef
@@ -34,16 +44,16 @@
          location = "group:Extensions"
          name = "Extensions">
          <FileRef
-            location = "group:CALayer+FAAnimation.swift">
+            location = "group:CAAnimation+FAAnimator.swift">
          </FileRef>
          <FileRef
-            location = "group:FAAnimation+Callbacks.swift">
+            location = "group:CALayer+FAAnimator.swift">
          </FileRef>
          <FileRef
-            location = "group:NSValue+FAAnimation.swift">
+            location = "group:NSValue+FAAnimator.swift">
          </FileRef>
          <FileRef
-            location = "group:UIView+FAAnimation.swift">
+            location = "group:UIView+FAAnimator.swift">
          </FileRef>
       </Group>
    </Group>

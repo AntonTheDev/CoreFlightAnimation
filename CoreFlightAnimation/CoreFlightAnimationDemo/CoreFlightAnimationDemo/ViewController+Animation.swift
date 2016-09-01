@@ -34,7 +34,7 @@ struct AnimationConfiguration {
     
     var triggerProgress  : CGFloat = 0
     
-    var enableSecondaryView  : Bool = false
+    var enableSecondaryView  : Bool = true
     
     static func titleForFunction(function : FAEasing) -> String {
         return functionTypes[functions.indexOf(function)!]
@@ -86,7 +86,6 @@ extension ViewController {
      */
     
     func registerShowAnimation() {
-        
         // Final ConfigView Position and Bounds
         
         let toBounds = CGRectMake(0,0, openConfigFrame.width, openConfigFrame.height)
@@ -123,26 +122,44 @@ extension ViewController {
         
         let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
-        
+        configViewAnimationGroup.animationKey = AnimationKeys.ShowConfigAnimation
         
         // BackgroundView AnimationGroup
         
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
-        
+       // backgroundViewAnimationGroup.animationKey = String(NSUUID().UUIDString)
         
         // Add Trigger the ConfigView AnimationGroup to apply the
         // backgroundView AnimationGroup on start of the animation
+        /*
+        let sequence = FASequence()
         
-        configViewAnimationGroup.triggerAnimation(backgroundViewAnimationGroup, onView: dimmerView)
+        let startingTrigger = FASequenceTrigger(triggerAnimation: configViewAnimationGroup, onView: configView)
+        
+        let backgroundTrigger = startingTrigger.newSequenceTrigger(withAnimation: backgroundViewAnimationGroup,
+                                                                   onView: dimmerView,
+                                                                   atProgress: 0.5)
+ 
+        
+        sequence._sequenceTriggers[AnimationKeys.ShowConfigAnimation] = startingTrigger
+        sequence._sequenceTriggers[backgroundViewAnimationGroup.animationKey!] = backgroundTrigger
+        */
+        
+        let sequence = FASequence()
+        
+        let startingTrigger = FASequenceTrigger(triggerAnimation: configViewAnimationGroup, onView: configView)
+        sequence.appendTrigger(startingTrigger)
         
         
-        // Register the ConfigView AnimationGroup with the configview to
-        // trigger on tap using the defined unique animation key
+        let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: backgroundViewAnimationGroup,
+                                                                  onView: dimmerView,
+                                                                  atProgress: 0.5)
         
-        configView.registerAnimation(animation: configViewAnimationGroup,
-                                     forKey: AnimationKeys.ShowConfigAnimation,
-                                     timingPriority: animConfig.primaryTimingPriority)
+        
+        sequence.appendTrigger(secondaryTrigger)
+        
+        configView.cache(sequence, forKey: AnimationKeys.ShowConfigAnimation)
     }
     
     
@@ -151,12 +168,9 @@ extension ViewController {
      */
     
     func registerHideAnimation() {
-        
-        // Final ConfigView Position and Bounds
-        
+
         let toBounds = CGRectMake(0,0, closedConfigFrame.width, closedConfigFrame.height)
         let toPosition = CGPointMake(closedConfigFrame.midX, closedConfigFrame.midY)
-        
         
         // ConfigView Animation Definitions
         
@@ -170,7 +184,6 @@ extension ViewController {
         positionAnimation.toValue = NSValue(CGPoint: toPosition)
         positionAnimation.duration = 0.8
         positionAnimation.isPrimary = true
-        
         
         // BackgroundView Animation Definitions
         
@@ -189,7 +202,7 @@ extension ViewController {
         
         let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
-        
+        configViewAnimationGroup.animationKey = AnimationKeys.HideConfigAnimation
         
         // BackgroundView AnimationGroup
         
@@ -197,26 +210,28 @@ extension ViewController {
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
         
-        // Add Trigger the ConfigView AnimationGroup to apply the
-        // backgroundView AnimationGroup on start of the animation
+        let sequence = FASequence()
         
-        configViewAnimationGroup.triggerAnimation(backgroundViewAnimationGroup, onView: dimmerView)
+        let startingTrigger = FASequenceTrigger(triggerAnimation: configViewAnimationGroup, onView: configView)
+        sequence.appendTrigger(startingTrigger)
         
         
-        // Register the ConfigView AnimationGroup with the configview to
-        // trigger on tap using the defined unique animation key
+        let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: backgroundViewAnimationGroup,
+                                                                  onView: dimmerView,
+                                                                  atProgress: 0.5)
         
-        configView.registerAnimation(animation: configViewAnimationGroup,
-                                     forKey: AnimationKeys.HideConfigAnimation,
-                                     timingPriority: animConfig.primaryTimingPriority)
+        
+        sequence.appendTrigger(secondaryTrigger)
+    
+        configView.cache(sequence, forKey: AnimationKeys.HideConfigAnimation)
     }
     
     func tappedShowConfig() {
-        configView.applyAnimation(forKey: AnimationKeys.ShowConfigAnimation)
+        configView.applyCachedAnimation(forKey: AnimationKeys.ShowConfigAnimation)
     }
     
     func tappedCloseConfig() {
-        configView.applyAnimation(forKey: AnimationKeys.HideConfigAnimation)
+        configView.applyCachedAnimation(forKey: AnimationKeys.HideConfigAnimation)
     }
 }
 
@@ -239,29 +254,30 @@ extension ViewController {
         let toBounds = CGRectMake(0, 0, toFrame.size.width , toFrame.size.height)
         let toPosition = CGCSRectGetCenter(toFrame)
         
-        var dragViewViewAnimationGroup = createNewAnimationGroup(toBounds,
-                                                           toPosition: toPosition,
-                                                           toAlpha: toAlpha,
-                                                           toTransform: transform,
-                                                           duration: 0.5,
-                                                           velocity : velocity,
-                                                           animationKey : animationKey)
+        let dragViewViewAnimationGroup = createNewAnimationGroup(toBounds,
+                                                                 toPosition: toPosition,
+                                                                 toAlpha: toAlpha,
+                                                                 toTransform: transform,
+                                                                 duration: 0.5,
+                                                                 velocity : velocity,
+                                                                 animationKey : animationKey)
         
         if animConfig.enableSecondaryView {
-            appendTriggerToAnimation(&dragViewViewAnimationGroup)
+            let sequence = self.appendTriggerToAnimation(dragViewViewAnimationGroup)
+            sequence.startSequence()
+        } else {
+            dragView.layer.addAnimation(dragViewViewAnimationGroup, forKey: animationKey)
+            dragViewViewAnimationGroup.applyFinalState()
         }
         
-        dragView.layer.addAnimation(dragViewViewAnimationGroup, forKey: animationKey)
-        dragView.setFinalAnimationValues()
-       // lastToFrame = toFrame
-        
+        lastToFrame = toFrame
     }
     
     func createNewAnimationGroup(toBounds : CGRect,
                            toPosition : CGPoint,
                            toAlpha : CGFloat,
                            toTransform : CATransform3D,
-                           duration : Double = 0.5,
+                           duration : Double = 0.7,
                            velocity : Any? = nil,
                            animationKey : String = AnimationKeys.TapStageOneAnimationKey) -> FAAnimationGroup {
         
@@ -281,7 +297,6 @@ extension ViewController {
         positionAnimation.easingFunction = positionAnimationEasing
         positionAnimation.toValue = NSValue(CGPoint: toPosition)
         positionAnimation.duration = duration
-        positionAnimation.isPrimary = true
         positionAnimation.isPrimary = animConfig.positionPrimary
         
         let alphaAnimation = FABasicAnimation(keyPath: "opacity")
@@ -297,15 +312,15 @@ extension ViewController {
         transformAnimation.isPrimary = animConfig.transformPrimary
         
         let animationGroup = FAAnimationGroup()
+        animationGroup.timingPriority = animConfig.primaryTimingPriority
         animationGroup.animations = [boundsAnimation, positionAnimation, alphaAnimation, transformAnimation]
-        animationGroup.primaryTimingPriority = animConfig.primaryTimingPriority
-        animationGroup.autoreverse = true
-        animationGroup.autoreverseCount = 2
+       // animationGroup.autoreverse = true
+       // animationGroup.autoreverseCount = 2
 
         return animationGroup
     }
     
-    func appendTriggerToAnimation(inout animationgGroup : FAAnimationGroup) {
+    func appendTriggerToAnimation(animationgGroup : FAAnimationGroup) -> FASequence {
         
         let currentBounds = CGRectMake(0, 0, lastToFrame.size.width , lastToFrame.size.height)
         let currentPosition = CGCSRectGetCenter(lastToFrame)
@@ -313,24 +328,51 @@ extension ViewController {
         let currentTransform = self.dragView.layer.transform
         
         let secondaryAnimationGroup = createNewAnimationGroup(currentBounds,
-                                                        toPosition: currentPosition,
-                                                        toAlpha: currentAlpha,
-                                                        toTransform: currentTransform,
-                                                        duration: animationgGroup.duration)
+                                                              toPosition: currentPosition,
+                                                              toAlpha: currentAlpha,
+                                                              toTransform: currentTransform,
+                                                              duration: animationgGroup.duration)
         
+        
+        if secondaryAnimationGroup.animationKey == nil {
+            secondaryAnimationGroup.animationKey = String(NSUUID().UUIDString)
+        }
+        
+        if secondaryAnimationGroup.weakLayer == nil {
+            secondaryAnimationGroup.weakLayer = view.layer
+        }
+        
+        let sequence = FASequence()
+        
+        let startingTrigger = FASequenceTrigger(triggerAnimation: animationgGroup, onView: dragView)
+        sequence.appendTrigger(startingTrigger)
+
         switch animConfig.triggerType {
         case 1:
-            animationgGroup.triggerAnimation(secondaryAnimationGroup,
-                                             onView: dragView2,
-                                             atTimeProgress: animConfig.triggerProgress)
+            let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: secondaryAnimationGroup,
+                                                                      onView: dragView2,
+                                                                      atProgress: 0.5)
+            
+            sequence.appendTrigger(secondaryTrigger)
         case 2:
-            animationgGroup.triggerAnimation(secondaryAnimationGroup,
-                                             onView: dragView2,
-                                             atValueProgress: animConfig.triggerProgress)
+            
+            let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: secondaryAnimationGroup,
+                                                                      onView: dragView2,
+                                                                      relativeToTime : false,
+                                                                      atProgress: 0.5)
+            
+            
+            sequence.appendTrigger(secondaryTrigger)
+            
         default:
-            animationgGroup.triggerAnimation(secondaryAnimationGroup,
-                                             onView: dragView2)
+            let secondaryTrigger = startingTrigger.newSequenceTrigger(withAnimation: secondaryAnimationGroup,
+                                                                      onView: dragView2,
+                                                                      atProgress: 0.0)
+            
+            sequence.appendTrigger(secondaryTrigger)
         }
+        
+        return sequence
     }
 }
 

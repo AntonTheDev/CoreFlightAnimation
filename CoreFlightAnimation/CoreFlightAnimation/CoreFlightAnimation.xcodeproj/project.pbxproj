@@ -9,21 +9,50 @@
 /* Begin PBXBuildFile section */
 		3A7F4C6D1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; };
 		3A7F4C6E1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; };
-		3A7F4C6F1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; };
-		3A7F4C711D6A36FE003D3B6F /* Source in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F4C701D6A36FE003D3B6F /* Source */; };
-		3A7F4C721D6A36FE003D3B6F /* Source in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F4C701D6A36FE003D3B6F /* Source */; };
-		3A7F4C731D6A36FE003D3B6F /* Source in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F4C701D6A36FE003D3B6F /* Source */; };
+		3AE43A261D77DCED00AD522C /* CAAnimation+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A161D77DCED00AD522C /* CAAnimation+FAAnimator.swift */; };
+		3AE43A271D77DCED00AD522C /* CAAnimation+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A161D77DCED00AD522C /* CAAnimation+FAAnimator.swift */; };
+		3AE43A281D77DCED00AD522C /* CALayer+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A171D77DCED00AD522C /* CALayer+FAAnimator.swift */; };
+		3AE43A291D77DCED00AD522C /* CALayer+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A171D77DCED00AD522C /* CALayer+FAAnimator.swift */; };
+		3AE43A2A1D77DCED00AD522C /* NSValue+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A181D77DCED00AD522C /* NSValue+FAAnimator.swift */; };
+		3AE43A2B1D77DCED00AD522C /* NSValue+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A181D77DCED00AD522C /* NSValue+FAAnimator.swift */; };
+		3AE43A2C1D77DCED00AD522C /* UIView+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A191D77DCED00AD522C /* UIView+FAAnimator.swift */; };
+		3AE43A2D1D77DCED00AD522C /* UIView+FAAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A191D77DCED00AD522C /* UIView+FAAnimator.swift */; };
+		3AE43A2E1D77DCED00AD522C /* FAAnimationGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A1B1D77DCED00AD522C /* FAAnimationGroup.swift */; };
+		3AE43A2F1D77DCED00AD522C /* FAAnimationGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A1B1D77DCED00AD522C /* FAAnimationGroup.swift */; };
+		3AE43A301D77DCED00AD522C /* FABasicAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A1C1D77DCED00AD522C /* FABasicAnimation.swift */; };
+		3AE43A311D77DCED00AD522C /* FABasicAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A1C1D77DCED00AD522C /* FABasicAnimation.swift */; };
+		3AE43A321D77DCED00AD522C /* FAEasing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A1F1D77DCED00AD522C /* FAEasing.swift */; };
+		3AE43A331D77DCED00AD522C /* FAEasing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A1F1D77DCED00AD522C /* FAEasing.swift */; };
+		3AE43A341D77DCED00AD522C /* FAInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A201D77DCED00AD522C /* FAInterpolator.swift */; };
+		3AE43A351D77DCED00AD522C /* FAInterpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A201D77DCED00AD522C /* FAInterpolator.swift */; };
+		3AE43A361D77DCED00AD522C /* FASpring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A211D77DCED00AD522C /* FASpring.swift */; };
+		3AE43A371D77DCED00AD522C /* FASpring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A211D77DCED00AD522C /* FASpring.swift */; };
+		3AE43A381D77DCED00AD522C /* FAVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A221D77DCED00AD522C /* FAVector.swift */; };
+		3AE43A391D77DCED00AD522C /* FAVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A221D77DCED00AD522C /* FAVector.swift */; };
+		3AE43A3A1D77DCED00AD522C /* FASequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A241D77DCED00AD522C /* FASequence.swift */; };
+		3AE43A3B1D77DCED00AD522C /* FASequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A241D77DCED00AD522C /* FASequence.swift */; };
+		3AE43A3C1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */; };
+		3AE43A3D1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation-iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "CoreFlightAnimation-iOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A7F4C531D6A30E1003D3B6F /* CoreFlightAnimation-tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "CoreFlightAnimation-tvOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3A7F4C601D6A310C003D3B6F /* CoreFlightAnimation-OSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "CoreFlightAnimation-OSX.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A7F4C691D6A3191003D3B6F /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
-		3A7F4C6A1D6A3191003D3B6F /* Info-OSX.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-OSX.plist"; sourceTree = "<group>"; };
 		3A7F4C6B1D6A3191003D3B6F /* Info-tvOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-tvOS.plist"; sourceTree = "<group>"; };
 		3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreFlightAnimation.h; sourceTree = "<group>"; };
-		3A7F4C701D6A36FE003D3B6F /* Source */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Source; path = ../../Source; sourceTree = "<group>"; };
+		3AE43A161D77DCED00AD522C /* CAAnimation+FAAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CAAnimation+FAAnimator.swift"; sourceTree = "<group>"; };
+		3AE43A171D77DCED00AD522C /* CALayer+FAAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+FAAnimator.swift"; sourceTree = "<group>"; };
+		3AE43A181D77DCED00AD522C /* NSValue+FAAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSValue+FAAnimator.swift"; sourceTree = "<group>"; };
+		3AE43A191D77DCED00AD522C /* UIView+FAAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+FAAnimator.swift"; sourceTree = "<group>"; };
+		3AE43A1B1D77DCED00AD522C /* FAAnimationGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAAnimationGroup.swift; sourceTree = "<group>"; };
+		3AE43A1C1D77DCED00AD522C /* FABasicAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FABasicAnimation.swift; sourceTree = "<group>"; };
+		3AE43A1F1D77DCED00AD522C /* FAEasing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAEasing.swift; sourceTree = "<group>"; };
+		3AE43A201D77DCED00AD522C /* FAInterpolator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAInterpolator.swift; sourceTree = "<group>"; };
+		3AE43A211D77DCED00AD522C /* FASpring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASpring.swift; sourceTree = "<group>"; };
+		3AE43A221D77DCED00AD522C /* FAVector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAVector.swift; sourceTree = "<group>"; };
+		3AE43A241D77DCED00AD522C /* FASequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequence.swift; sourceTree = "<group>"; };
+		3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequenceTrigger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,20 +70,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3A7F4C5C1D6A310C003D3B6F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		3A7F4C391D6A308E003D3B6F = {
 			isa = PBXGroup;
 			children = (
-				3A7F4C701D6A36FE003D3B6F /* Source */,
+				3AE43A141D77DCED00AD522C /* Source */,
 				3A7F4C681D6A3191003D3B6F /* Shared */,
 				3A7F4C461D6A30C3003D3B6F /* Products */,
 			);
@@ -65,7 +87,6 @@
 			children = (
 				3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation-iOS.framework */,
 				3A7F4C531D6A30E1003D3B6F /* CoreFlightAnimation-tvOS.framework */,
-				3A7F4C601D6A310C003D3B6F /* CoreFlightAnimation-OSX.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -75,10 +96,69 @@
 			children = (
 				3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */,
 				3A7F4C691D6A3191003D3B6F /* Info-iOS.plist */,
-				3A7F4C6A1D6A3191003D3B6F /* Info-OSX.plist */,
 				3A7F4C6B1D6A3191003D3B6F /* Info-tvOS.plist */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		3AE43A141D77DCED00AD522C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				3AE43A151D77DCED00AD522C /* Extensions */,
+				3AE43A1A1D77DCED00AD522C /* FAAnimation */,
+				3AE43A1D1D77DCED00AD522C /* FAAnimator */,
+				3AE43A1E1D77DCED00AD522C /* FAInterpolation */,
+				3AE43A231D77DCED00AD522C /* FASequence */,
+			);
+			name = Source;
+			path = ../../Source;
+			sourceTree = "<group>";
+		};
+		3AE43A151D77DCED00AD522C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				3AE43A161D77DCED00AD522C /* CAAnimation+FAAnimator.swift */,
+				3AE43A171D77DCED00AD522C /* CALayer+FAAnimator.swift */,
+				3AE43A181D77DCED00AD522C /* NSValue+FAAnimator.swift */,
+				3AE43A191D77DCED00AD522C /* UIView+FAAnimator.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		3AE43A1A1D77DCED00AD522C /* FAAnimation */ = {
+			isa = PBXGroup;
+			children = (
+				3AE43A1B1D77DCED00AD522C /* FAAnimationGroup.swift */,
+				3AE43A1C1D77DCED00AD522C /* FABasicAnimation.swift */,
+			);
+			path = FAAnimation;
+			sourceTree = "<group>";
+		};
+		3AE43A1D1D77DCED00AD522C /* FAAnimator */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = FAAnimator;
+			sourceTree = "<group>";
+		};
+		3AE43A1E1D77DCED00AD522C /* FAInterpolation */ = {
+			isa = PBXGroup;
+			children = (
+				3AE43A1F1D77DCED00AD522C /* FAEasing.swift */,
+				3AE43A201D77DCED00AD522C /* FAInterpolator.swift */,
+				3AE43A211D77DCED00AD522C /* FASpring.swift */,
+				3AE43A221D77DCED00AD522C /* FAVector.swift */,
+			);
+			path = FAInterpolation;
+			sourceTree = "<group>";
+		};
+		3AE43A231D77DCED00AD522C /* FASequence */ = {
+			isa = PBXGroup;
+			children = (
+				3AE43A241D77DCED00AD522C /* FASequence.swift */,
+				3AE43A251D77DCED00AD522C /* FASequenceTrigger.swift */,
+			);
+			path = FASequence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -97,14 +177,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A7F4C6E1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3A7F4C5D1D6A310C003D3B6F /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3A7F4C6F1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,24 +219,6 @@
 			productReference = 3A7F4C531D6A30E1003D3B6F /* CoreFlightAnimation-tvOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		3A7F4C5F1D6A310C003D3B6F /* CoreFlightAnimation-OSX */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3A7F4C651D6A310C003D3B6F /* Build configuration list for PBXNativeTarget "CoreFlightAnimation-OSX" */;
-			buildPhases = (
-				3A7F4C5B1D6A310C003D3B6F /* Sources */,
-				3A7F4C5C1D6A310C003D3B6F /* Frameworks */,
-				3A7F4C5D1D6A310C003D3B6F /* Headers */,
-				3A7F4C5E1D6A310C003D3B6F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "CoreFlightAnimation-OSX";
-			productName = "CoreFlightAnimation-OSX";
-			productReference = 3A7F4C601D6A310C003D3B6F /* CoreFlightAnimation-OSX.framework */;
-			productType = "com.apple.product-type.framework";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -177,9 +231,6 @@
 						CreatedOnToolsVersion = 7.3.1;
 					};
 					3A7F4C521D6A30E1003D3B6F = {
-						CreatedOnToolsVersion = 7.3.1;
-					};
-					3A7F4C5F1D6A310C003D3B6F = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
 				};
@@ -198,7 +249,6 @@
 			targets = (
 				3A7F4C441D6A30C3003D3B6F /* CoreFlightAnimation-iOS */,
 				3A7F4C521D6A30E1003D3B6F /* CoreFlightAnimation-tvOS */,
-				3A7F4C5F1D6A310C003D3B6F /* CoreFlightAnimation-OSX */,
 			);
 		};
 /* End PBXProject section */
@@ -208,7 +258,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A7F4C711D6A36FE003D3B6F /* Source in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,15 +265,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A7F4C721D6A36FE003D3B6F /* Source in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3A7F4C5E1D6A310C003D3B6F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3A7F4C731D6A36FE003D3B6F /* Source in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,6 +275,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AE43A301D77DCED00AD522C /* FABasicAnimation.swift in Sources */,
+				3AE43A3A1D77DCED00AD522C /* FASequence.swift in Sources */,
+				3AE43A3C1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */,
+				3AE43A341D77DCED00AD522C /* FAInterpolator.swift in Sources */,
+				3AE43A2C1D77DCED00AD522C /* UIView+FAAnimator.swift in Sources */,
+				3AE43A2E1D77DCED00AD522C /* FAAnimationGroup.swift in Sources */,
+				3AE43A321D77DCED00AD522C /* FAEasing.swift in Sources */,
+				3AE43A261D77DCED00AD522C /* CAAnimation+FAAnimator.swift in Sources */,
+				3AE43A361D77DCED00AD522C /* FASpring.swift in Sources */,
+				3AE43A281D77DCED00AD522C /* CALayer+FAAnimator.swift in Sources */,
+				3AE43A2A1D77DCED00AD522C /* NSValue+FAAnimator.swift in Sources */,
+				3AE43A381D77DCED00AD522C /* FAVector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,13 +294,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3A7F4C5B1D6A310C003D3B6F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				3AE43A311D77DCED00AD522C /* FABasicAnimation.swift in Sources */,
+				3AE43A3B1D77DCED00AD522C /* FASequence.swift in Sources */,
+				3AE43A3D1D77DCED00AD522C /* FASequenceTrigger.swift in Sources */,
+				3AE43A351D77DCED00AD522C /* FAInterpolator.swift in Sources */,
+				3AE43A2D1D77DCED00AD522C /* UIView+FAAnimator.swift in Sources */,
+				3AE43A2F1D77DCED00AD522C /* FAAnimationGroup.swift in Sources */,
+				3AE43A331D77DCED00AD522C /* FAEasing.swift in Sources */,
+				3AE43A271D77DCED00AD522C /* CAAnimation+FAAnimator.swift in Sources */,
+				3AE43A371D77DCED00AD522C /* FASpring.swift in Sources */,
+				3AE43A291D77DCED00AD522C /* CALayer+FAAnimator.swift in Sources */,
+				3AE43A2B1D77DCED00AD522C /* NSValue+FAAnimator.swift in Sources */,
+				3AE43A391D77DCED00AD522C /* FAVector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,14 +315,14 @@
 		3A7F4C3E1D6A308E003D3B6F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				VALID_ARCHS = "i386 x86_64 arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
 		};
 		3A7F4C3F1D6A308E003D3B6F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				VALID_ARCHS = "i386 x86_64 arm64 armv7 armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};
@@ -493,120 +550,6 @@
 			};
 			name = Release;
 		};
-		3A7F4C661D6A310C003D3B6F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Shared/Info-OSX.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.iagd.coreflightanimation-OSX.CoreFlightAnimation-OSX";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				VALID_ARCHS = "i386 x86_64";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		3A7F4C671D6A310C003D3B6F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Shared/Info-OSX.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.iagd.coreflightanimation-OSX.CoreFlightAnimation-OSX";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				VALID_ARCHS = "i386 x86_64";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -633,15 +576,6 @@
 			buildConfigurations = (
 				3A7F4C591D6A30E1003D3B6F /* Debug */,
 				3A7F4C5A1D6A30E1003D3B6F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3A7F4C651D6A310C003D3B6F /* Build configuration list for PBXNativeTarget "CoreFlightAnimation-OSX" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3A7F4C661D6A310C003D3B6F /* Debug */,
-				3A7F4C671D6A310C003D3B6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

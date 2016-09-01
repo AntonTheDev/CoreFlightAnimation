@@ -1,25 +1,19 @@
 //
-//  CAAnimation+Callbacks.swift
+//  CAAnimation+FAAnimation.swift
 //  FlightAnimator
 //
-//  Created by Anton Doudarev on 4/22/16.
+//  Created by Anton Doudarev on 2/24/16.
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
-    import UIKit
-#else
-    import AppKit
-#endif
-
 import Foundation
-
+import UIKit
 
 public typealias FAAnimationDidStart = ((anim: CAAnimation) -> Void)
 public typealias FAAnimationDidStop  = ((anim: CAAnimation, complete: Bool) -> Void)
 
 public class FAAnimationDelegate : NSObject {
-
+    
     var animationDidStart : FAAnimationDidStart?
     var animationDidStop : FAAnimationDidStop?
     
@@ -32,7 +26,6 @@ public class FAAnimationDelegate : NSObject {
     override public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if let stopCallback = animationDidStop {
             stopCallback(anim : anim, complete: flag)
-          
         }
     }
     
@@ -48,7 +41,7 @@ public class FAAnimationDelegate : NSObject {
 public extension CAAnimation {
     
     public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
-       
+        
         if callbacksSupported() == false {
             print("DidStopCallbacks are not supported for \(self)")
         }
@@ -60,7 +53,7 @@ public extension CAAnimation {
         } else {
             activeDelegate = FAAnimationDelegate()
         }
- 
+        
         activeDelegate!.setDidStopCallback { [weak self] (anim, complete) in
             if let _ = self?.delegate as? FAAnimationDelegate {
                 stopCallback(anim : anim, complete: complete)

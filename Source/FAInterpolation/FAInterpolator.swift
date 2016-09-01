@@ -1,19 +1,13 @@
 //
-//  FAAnimatable+Interpolation.swift
+//  FAInterpolator.swift
 //  FlightAnimator-Demo
 //
 //  Created by Anton on 6/30/16.
 //  Copyright © 2016 Anton Doudarev. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
-    import UIKit
-#else
-    import AppKit
-#endif
-
 import Foundation
-
+import UIKit
 
 public func typeCastCGColor(value : Any) -> CGColor? {
     if let currentValue = value as? AnyObject {
@@ -39,7 +33,7 @@ struct FAAnimationConfig {
     static let AnimationTimeAdjustment   : CGFloat = 2.0 * (1.0 / FAAnimationConfig.InterpolationFrameCount)
 }
 
-public struct Interpolator {
+public struct FAInterpolator {
     
     var toValue : Any
     var fromValue : Any
@@ -132,7 +126,7 @@ public struct Interpolator {
     }
 }
 
-extension Interpolator {
+extension FAInterpolator {
     
     public func valueProgress(value : Any) -> CGFloat {
         let currentVector = FAVector(value: value)
@@ -163,7 +157,6 @@ extension Interpolator {
         
         return progress
     }
-    
     
     func zeroVelocityValue() -> Any? {
         
@@ -201,7 +194,7 @@ extension Interpolator {
 
 }
 
-extension Interpolator {
+extension FAInterpolator {
     
     private mutating func decayComponentSprings(initialVelocity: Any?) {
         customComponentSprings(initialVelocity,
@@ -233,7 +226,7 @@ extension Interpolator {
     }
 }
 
-extension Interpolator {
+extension FAInterpolator {
     
     private func interpolatedParametricValues(duration : CGFloat, easingFunction : FAEasing) -> [AnyObject] {
         var newArray = [AnyObject]()
