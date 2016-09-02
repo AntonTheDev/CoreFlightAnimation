@@ -491,7 +491,7 @@ internal extension FASynchronizedGroup {
             duration = durationArray.reduce(0, combine: +) / Double(durationArray.count)
         }
         
-        let filteredAnimation = animations!.filter({ $0.duration == duration })
+        let filteredAnimation = animations!.filter({ $0.duration == duration || _timingPriority == .Average || _timingPriority == .Median })
         
         if let primaryDrivingAnimation = filteredAnimation.first as? FABasicAnimation {
             primaryAnimation = primaryDrivingAnimation
