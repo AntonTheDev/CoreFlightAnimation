@@ -48,7 +48,7 @@
 		13092E4A1D7951D3004CA4C8 /* FAInterpolator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAInterpolator.swift; sourceTree = "<group>"; };
 		13092E4B1D7951D3004CA4C8 /* FASpring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASpring.swift; sourceTree = "<group>"; };
 		13092E4C1D7951D3004CA4C8 /* FAVector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAVector.swift; sourceTree = "<group>"; };
-		3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation-iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "CoreFlightAnimation-iOS.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreFlightAnimation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A7F4C531D6A30E1003D3B6F /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreFlightAnimation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A7F4C691D6A3191003D3B6F /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
 		3A7F4C6B1D6A3191003D3B6F /* Info-tvOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-tvOS.plist"; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 		3A7F4C461D6A30C3003D3B6F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation-iOS.framework */,
+				3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation.framework */,
 				3A7F4C531D6A30E1003D3B6F /* CoreFlightAnimation.framework */,
 			);
 			name = Products;
@@ -182,7 +182,7 @@
 			);
 			name = "CoreFlightAnimation-iOS";
 			productName = "CoreFlightAnimation-iOS";
-			productReference = 3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation-iOS.framework */;
+			productReference = 3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3A7F4C521D6A30E1003D3B6F /* CoreFlightAnimation-tvOS */ = {
@@ -359,7 +359,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iagd.coreflightanimation-ios.CoreFlightAnimation-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = CoreFlightAnimation;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -412,7 +412,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iagd.coreflightanimation-ios.CoreFlightAnimation-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = CoreFlightAnimation;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
