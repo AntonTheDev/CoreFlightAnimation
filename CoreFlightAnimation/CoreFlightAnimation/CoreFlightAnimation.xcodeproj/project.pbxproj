@@ -31,8 +31,8 @@
 		13092E621D7951D3004CA4C8 /* FASpring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13092E4B1D7951D3004CA4C8 /* FASpring.swift */; };
 		13092E631D7951D3004CA4C8 /* FAVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13092E4C1D7951D3004CA4C8 /* FAVector.swift */; };
 		13092E641D7951D3004CA4C8 /* FAVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13092E4C1D7951D3004CA4C8 /* FAVector.swift */; };
-		3A7F4C6D1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; };
-		3A7F4C6E1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; };
+		3A7F4C6D1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3A7F4C6E1D6A328B003D3B6F /* CoreFlightAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7F4C6C1D6A328B003D3B6F /* CoreFlightAnimation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
