@@ -109,9 +109,9 @@ extension FAAnimationSequence {
     }
 }
 
-extension FAAnimationSequence {
+public extension FAAnimationSequence {
     
-    func startSequence() {
+    public func startSequence() {
         
         guard displayLink == nil else {
             return
@@ -127,7 +127,7 @@ extension FAAnimationSequence {
         displayLink?.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
     }
     
-    func stopSequence() {
+    public func stopSequence() {
         sequenceTriggers = [String : FASequenceTrigger]()
         displayLink?.invalidate()
         displayLink = nil
