@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3A7F4C441D6A30C3003D3B6F"
-               BuildableName = "CoreFlightAnimation-iOS.framework"
+               BuildableName = "CoreFlightAnimation.framework"
                BlueprintName = "CoreFlightAnimation-iOS"
                ReferencedContainer = "container:CoreFlightAnimation.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A7F4C441D6A30C3003D3B6F"
-            BuildableName = "CoreFlightAnimation-iOS.framework"
+            BuildableName = "CoreFlightAnimation.framework"
             BlueprintName = "CoreFlightAnimation-iOS"
             ReferencedContainer = "container:CoreFlightAnimation.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A7F4C441D6A30C3003D3B6F"
-            BuildableName = "CoreFlightAnimation-iOS.framework"
+            BuildableName = "CoreFlightAnimation.framework"
             BlueprintName = "CoreFlightAnimation-iOS"
             ReferencedContainer = "container:CoreFlightAnimation.xcodeproj">
          </BuildableReference>

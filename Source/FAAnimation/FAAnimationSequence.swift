@@ -9,8 +9,8 @@
 import Foundation
 import UIKit
 
-extension UIView {
-    func cacheAnimation(animation : FAAnimationSequenceType, forKey key: String) {
+public extension UIView {
+    public func cacheAnimation(animation : FAAnimationSequenceType, forKey key: String) {
         cachedSequences[key] = animation.sequenceRepresentation()
     }
 }
@@ -20,7 +20,7 @@ public class FASequenceTrigger {
     internal weak var parentSequence : FAAnimationSequence?
     
     internal var parentAnimation : FAAnimationGroup?
-    internal var triggeredAnimation : FAAnimationGroup!
+    public var triggeredAnimation : FAAnimationGroup!
     
     internal var isTimeRelative = true
     internal var progessValue : CGFloat = 0.0

@@ -5,13 +5,19 @@
       location = "group:Source"
       name = "Source">
       <Group
-         location = "group:FASequence"
-         name = "FASequence">
+         location = "group:Extensions"
+         name = "Extensions">
          <FileRef
-            location = "group:FASequence.swift">
+            location = "group:CAAnimation+CoreFlight.swift">
          </FileRef>
          <FileRef
-            location = "group:/Users/Anton/Developer/CoreFlightAnimation/Source/FASequence/FASequenceFrame.swift">
+            location = "group:CALayer+CoreFlight.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NSValue+CoreFlight.swift">
+         </FileRef>
+         <FileRef
+            location = "group:UIView+CoreFlight.swift">
          </FileRef>
       </Group>
       <Group
@@ -19,6 +25,12 @@
          name = "FAAnimation">
          <FileRef
             location = "group:FAAnimationGroup.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FAAnimationSequence.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FAAnimationSequenceType.swift">
          </FileRef>
          <FileRef
             location = "group:FABasicAnimation.swift">
@@ -40,27 +52,14 @@
             location = "group:FAVector.swift">
          </FileRef>
       </Group>
-      <Group
-         location = "group:Extensions"
-         name = "Extensions">
-         <FileRef
-            location = "group:CAAnimation+FAAnimator.swift">
-         </FileRef>
-         <FileRef
-            location = "group:CALayer+FAAnimator.swift">
-         </FileRef>
-         <FileRef
-            location = "group:NSValue+FAAnimator.swift">
-         </FileRef>
-         <FileRef
-            location = "group:UIView+FAAnimator.swift">
-         </FileRef>
-      </Group>
    </Group>
    <FileRef
       location = "group:CoreFlightAnimation/CoreFlightAnimation/CoreFlightAnimation.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:CoreFlightAnimation/CoreFlightAnimationDemo/CoreFlightAnimationDemo.xcodeproj">
+      location = "group:CoreFlightAnimation/CoreFlightAnimation/CoreFlightAnimation.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:CoreFlightAnimation/CoreFlightAnimationDemo/CoreFlightAnimation-Demo.xcodeproj">
    </FileRef>
 </Workspace>

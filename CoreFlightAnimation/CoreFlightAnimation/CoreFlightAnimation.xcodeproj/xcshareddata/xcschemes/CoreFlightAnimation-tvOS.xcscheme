@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3A7F4C521D6A30E1003D3B6F"
-               BuildableName = "CoreFlightAnimation-tvOS.framework"
+               BuildableName = "CoreFlightAnimation.framework"
                BlueprintName = "CoreFlightAnimation-tvOS"
                ReferencedContainer = "container:CoreFlightAnimation.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A7F4C521D6A30E1003D3B6F"
-            BuildableName = "CoreFlightAnimation-tvOS.framework"
+            BuildableName = "CoreFlightAnimation.framework"
             BlueprintName = "CoreFlightAnimation-tvOS"
             ReferencedContainer = "container:CoreFlightAnimation.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A7F4C521D6A30E1003D3B6F"
-            BuildableName = "CoreFlightAnimation-tvOS.framework"
+            BuildableName = "CoreFlightAnimation.framework"
             BlueprintName = "CoreFlightAnimation-tvOS"
             ReferencedContainer = "container:CoreFlightAnimation.xcodeproj">
          </BuildableReference>

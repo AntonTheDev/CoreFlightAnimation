@@ -17,9 +17,9 @@ private struct FAAssociatedKey {
 
 public var cachedSequences = [String : FAAnimationSequence]()
 
-internal extension UIView {
+public extension UIView {
     
-    func applyCachedAnimation(forKey key: String) {
+    public func applyCachedAnimation(forKey key: String) {
         if let sequence = cachedSequences[key]  {
             sequence.startSequence()
         }
