@@ -272,7 +272,6 @@ extension FAInterpolator {
         case .SpringDecay(_):
             repeat {
                 let newValue = interpolatedSpringValue(animationTime)
-                print(newValue.magnitudeToVector(toVector))
                 animationComplete = newValue.magnitudeToVector(toVector) < FAAnimationConfig.SpringDecayMagnitudeThreshold
                 valueArray.append(newValue.valueRepresentation(toValue)!)
                 animationTime += frameRateTimeUnit

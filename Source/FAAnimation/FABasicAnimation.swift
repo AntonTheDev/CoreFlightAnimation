@@ -291,8 +291,9 @@ internal extension FASynchronizedAnimation {
 internal extension FASynchronizedAnimation {
     
     func valueProgress() -> CGFloat {
-        if let presentationValue = (weakLayer?.presentationLayer() as? CALayer)?.anyValueForKeyPath(keyPath!) {
-            return interpolator!.valueProgress(presentationValue)
+        if let presentationValue = (weakLayer?.presentationLayer() as? CALayer)?.anyValueForKeyPath(keyPath!),
+           let interpolator = interpolator {
+                return interpolator.valueProgress(presentationValue)
         }
         
         return 0.0

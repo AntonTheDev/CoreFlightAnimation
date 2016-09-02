@@ -68,6 +68,8 @@ class ConfigurationView : UIView {
    
     var selectedIndex: NSIndexPath = NSIndexPath(forRow: 0, inSection: 0)
     var initialCenter = CGPointZero
+    var adjustedPosition = CGPointZero
+
     var propertyConfigType : PropertyConfigType = PropertyConfigType.Bounds {
         didSet {
             self.contentCollectionView.reloadData()
@@ -187,10 +189,15 @@ class ConfigurationView : UIView {
                                              vertical: HGVerticalAlign.Below,
                                              verticalOffset : 40)
         
-        var adjustedPosition = enableSecondaryViewLabel.center
-        adjustedPosition.y =  adjustedPosition.y + 14
         
+        initialCenter = enableSecondaryViewLabel.center
+        
+        adjustedPosition = enableSecondaryViewLabel.center
+        adjustedPosition.y =  adjustedPosition.y + 16
+    
         enableSecondaryViewLabel.center = adjustedPosition
+    
+        
     }
     
     func registerCells() {
@@ -338,13 +345,11 @@ class ConfigurationView : UIView {
     }    
     
     func secondary_view_value_changed(sender : UISwitch) {
-       /*
-        delaySegnmentedControl.animate { (animator) in
-            animator.alpha(sender.on ? 1.0 : 0.5).duration(0.6).easing(.OutSine)
-        }
-        */
+      
         delaySegnmentedControl.userInteractionEnabled = sender.on
         interactionDelegate?.toggleSecondaryView(sender.on)
+        
+        updateProgressEnabledAnimation()
     }
 }
 

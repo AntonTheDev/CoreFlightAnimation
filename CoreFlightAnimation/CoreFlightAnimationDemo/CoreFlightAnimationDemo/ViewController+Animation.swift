@@ -114,7 +114,7 @@ extension ViewController {
         
         let backgroundColorAnimation = FABasicAnimation(keyPath: "backgroundColor")
         backgroundColorAnimation.easingFunction = .Linear
-        backgroundColorAnimation.toValue = UIColor.blueColor().CGColor
+        backgroundColorAnimation.toValue = UIColor.blackColor().CGColor
         backgroundColorAnimation.duration = 0.6
         
         // ConfigView AnimationGroup
@@ -130,7 +130,7 @@ extension ViewController {
         
         let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup)
         
-        sequence.addSequenceFrameFrame(withAnimation: backgroundViewAnimationGroup,
+        sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
                                        onView: dimmerView,
                                        atProgress: 0.5)
 
@@ -185,7 +185,7 @@ extension ViewController {
         
         let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup)
         
-        sequence.addSequenceFrameFrame(withAnimation: backgroundViewAnimationGroup,
+        sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
                                        onView: dimmerView,
                                        atProgress: 0.5)
         
@@ -312,16 +312,16 @@ extension ViewController {
 
         switch animConfig.triggerType {
         case 1:
-            sequence.addSequenceFrameFrame(withAnimation: secondaryAnimationGroup,
+            sequence.addSequenceFrame(withAnimation: secondaryAnimationGroup,
                                                                       onView: dragView2,
                                                                       atProgress: 0.5)
         case 2:
-            sequence.addSequenceFrameFrame(withAnimation: secondaryAnimationGroup,
+            sequence.addSequenceFrame(withAnimation: secondaryAnimationGroup,
                                                                       onView: dragView2,
                                                                       relativeToTime : false,
                                                                       atProgress: 0.5)
         default:
-            sequence.addSequenceFrameFrame(withAnimation: secondaryAnimationGroup,
+            sequence.addSequenceFrame(withAnimation: secondaryAnimationGroup,
                                                                       onView: dragView2,
                                                                       atProgress: 0.0)
         }

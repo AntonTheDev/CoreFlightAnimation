@@ -12,7 +12,7 @@ import UIKit
 public class FASequenceFrame {
     
     internal weak var animatingView : UIView?
-    internal weak var delegate : FASequence?
+    internal weak var parentSequence : FASequence?
 
     internal var parentAnimation : FAAnimationGroup?
     internal var triggeredAnimation : FAAnimationGroup!
@@ -37,34 +37,22 @@ public class FASequenceFrame {
     public func addSequenceFrame(withAnimation animation : Any,
                                  onView view: UIView,
                                  relativeToTime timeRelative: Bool = true,
-                                atProgress progress : CGFloat = 0.0,
+                                 atProgress progress : CGFloat = 0.0,
                                  triggerOnRemoval : Bool = false) -> FASequenceFrame {
-  
-        let trigger = FASequenceFrame(triggerAnimation : animation, onView: view)
-        trigger.delegate = delegate
-        
-        if let animation = animation as? FABasicAnimation {
-            trigger.triggeredAnimation = animation.groupRepresentation()
-            trigger.triggeredAnimation.weakLayer = view.layer
-        } else if let group = animation as? FAAnimationGroup {
-            trigger.triggeredAnimation = group
-            trigger.triggeredAnimation.weakLayer = view.layer
-        }
-        
-        trigger.delegate = delegate
-        trigger.animatingView = view
-        trigger.progessValue = progress
-        trigger.parentAnimation = triggeredAnimation
-        trigger.isTimeRelative = timeRelative
-        trigger.triggerOnRemoval = triggerOnRemoval
 
-        trigger.triggeredAnimation.animationKey = String(NSUUID().UUIDString)
-        delegate?._sequenceTriggers[trigger.triggeredAnimation.animationKey!] = trigger
-        
-        return trigger
+        return parentSequence!.addSequenceFrame(withAnimation : animation,
+                                            onView : view,
+                                            relativeToTime : timeRelative,
+                                            atProgress  : progress,
+                                            triggerOnRemoval : triggerOnRemoval)
     }
     
     func triggerIfActive(forceAnimation : Bool = false) -> Bool {
+        
+        if self.parentAnimation == nil {
+            triggeredAnimation.applyFinalState(true)
+            return true
+        }
         
         if shouldFireSegment() || (forceAnimation && triggerOnRemoval) || forceAnimation {
             triggeredAnimation.applyFinalState(true)

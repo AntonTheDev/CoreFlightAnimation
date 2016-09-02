@@ -11,6 +11,9 @@ class ViewController: UIViewController {
     var panRecognizer : UIPanGestureRecognizer?
     var initialCenter : CGPoint = CGPointZero
     var lastToFrame  = CGRectZero
+    
+    var adjustedPosition = CGPointZero
+   
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -166,8 +169,6 @@ class ViewController: UIViewController {
                                  horizontal: HGHorizontalAlign.Center,
                                  vertical: HGVerticalAlign.Center,
                                  verticalOffset : 120)
-        
-        
         
     }
     

@@ -11,37 +11,44 @@ import UIKit
 
 extension ConfigurationView {
     
+    func updateProgressEnabledAnimation() {
+ 
+        let alphaAnimataion = FABasicAnimation(keyPath: "opacity")
+        alphaAnimataion.easingFunction = .InOutSine
+        alphaAnimataion.toValue = secondaryViewSwitch.enabled ? 1.0 : 0.5
+        alphaAnimataion.duration = 0.6
+        
+        let sequence = FASequence(onView: delaySegnmentedControl, withAnimation: alphaAnimataion)
+        sequence.startSequence()
+        
+    }
 
     func updateAnimation() {
         
-        
         if delaySegnmentedControl.selectedSegmentIndex == 0 {
             selectedDelaySegment = delaySegnmentedControl.selectedSegmentIndex
-           
-            var adjustedPosition = enableSecondaryViewLabel.center
-            adjustedPosition.y =  adjustedPosition.y + 16
-            
-            let hiddenAlphaAnimation = FABasicAnimation(keyPath: "opacity")
-            hiddenAlphaAnimation.easingFunction = .OutSine
-            hiddenAlphaAnimation.toValue = 0.0
-            hiddenAlphaAnimation.duration = 0.5
-           
-            let secondaryViewLabelPositionaAnimation = FABasicAnimation(keyPath: "position")
-            secondaryViewLabelPositionaAnimation.easingFunction = .OutSine
-            secondaryViewLabelPositionaAnimation.toValue = NSValue(CGPoint: adjustedPosition)
-            secondaryViewLabelPositionaAnimation.duration = 0.5
-
-            let sequence = FASequence(onView: atProgressLabel, withAnimation: hiddenAlphaAnimation)
-            
-            sequence.addSequenceFrameFrame(withAnimation: hiddenAlphaAnimation,
-                                          onView: progressLabel,
-                                           atProgress: 0.0)
-            
-            sequence.addSequenceFrameFrame(withAnimation: secondaryViewLabelPositionaAnimation,
-                                           onView: enableSecondaryViewLabel,
-                                           atProgress: 0.0)
         
-            sequence.addSequenceFrameFrame(withAnimation: hiddenAlphaAnimation,
+            let alphaAnimataion = FABasicAnimation(keyPath: "opacity")
+            alphaAnimataion.easingFunction = .InOutSine
+            alphaAnimataion.toValue = 0.0
+            alphaAnimataion.duration = 0.5
+           
+            let positionAnimation = FABasicAnimation(keyPath: "position")
+            positionAnimation.easingFunction = .InOutSine
+            positionAnimation.toValue = NSValue(CGPoint: adjustedPosition)
+            positionAnimation.duration = 0.5
+
+            let sequence = FASequence(onView: atProgressLabel, withAnimation: alphaAnimataion)
+            
+            sequence.addSequenceFrame(withAnimation: alphaAnimataion,
+                                           onView: progressLabel,
+                                           atProgress: 0.0)
+            
+            sequence.addSequenceFrame(withAnimation: positionAnimation,
+                                           onView: enableSecondaryViewLabel,
+                                           atProgress: 0.5)
+        
+            sequence.addSequenceFrame(withAnimation: alphaAnimataion,
                                            onView: progressTriggerSlider,
                                            atProgress: 0.0)
             
@@ -51,30 +58,29 @@ extension ConfigurationView {
            
             selectedDelaySegment = delaySegnmentedControl.selectedSegmentIndex
             
-            let showAlphaAnimation = FABasicAnimation(keyPath: "opacity")
-            showAlphaAnimation.easingFunction = .OutSine
-            showAlphaAnimation.toValue = 1.0
-            showAlphaAnimation.duration = 0.5
+            let alphaAnimataion = FABasicAnimation(keyPath: "opacity")
+            alphaAnimataion.easingFunction = .InOutSine
+            alphaAnimataion.toValue = 1.0
+            alphaAnimataion.duration = 0.5
       
-            let secondaryViewLabelPositionaAnimation = FABasicAnimation(keyPath: "position")
-            secondaryViewLabelPositionaAnimation.easingFunction = .OutSine
-            secondaryViewLabelPositionaAnimation.toValue = NSValue(CGPoint: initialCenter)
-            secondaryViewLabelPositionaAnimation.duration = 0.5
+            let positionAnimation = FABasicAnimation(keyPath: "position")
+            positionAnimation.easingFunction = .InOutSine
+            positionAnimation.toValue = NSValue(CGPoint: initialCenter)
+            positionAnimation.duration = 0.5
             
+            let sequence = FASequence(onView: enableSecondaryViewLabel, withAnimation: positionAnimation)
             
-            let sequence = FASequence(onView: atProgressLabel, withAnimation: showAlphaAnimation)
-            
-            sequence.addSequenceFrameFrame(withAnimation: showAlphaAnimation,
+            sequence.addSequenceFrame(withAnimation: alphaAnimataion,
                                            onView: progressLabel,
-                                           atProgress: 0.1)
-            
-            sequence.addSequenceFrameFrame(withAnimation: secondaryViewLabelPositionaAnimation,
-                                           onView: enableSecondaryViewLabel,
                                            atProgress: 0.5)
             
-            sequence.addSequenceFrameFrame(withAnimation: showAlphaAnimation,
+            sequence.addSequenceFrame(withAnimation: alphaAnimataion,
+                                           onView: atProgressLabel,
+                                           atProgress: 0.5)
+            
+            sequence.addSequenceFrame(withAnimation: alphaAnimataion,
                                            onView: progressTriggerSlider,
-                                           atProgress: 0.1)
+                                           atProgress: 0.5)
             
             sequence.startSequence()
  

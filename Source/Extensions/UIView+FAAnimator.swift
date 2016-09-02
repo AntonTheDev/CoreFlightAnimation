@@ -14,38 +14,13 @@ private struct FAAssociatedKey {
     static var layoutConfigurations = "layoutConfigurations"
 }
 
-internal extension UIView {
+public var cachedSequences = [String : FASequence]()
 
-    var cachedSequences: [NSString : FASequence]? {
-        get {
-            return fa_getAssociatedObject(self, associativeKey: &FAAssociatedKey.layoutConfigurations)
-        }
-        set {
-            if let value = newValue {
-                fa_setAssociatedObject(self, value: value, associativeKey: &FAAssociatedKey.layoutConfigurations, policy: objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            }
-        }
-    }
+internal extension UIView {
     
-    func fa_setAssociatedObject<T>(object: AnyObject,
-                                value: T,
-                                associativeKey: UnsafePointer<Void>,
-                                policy: objc_AssociationPolicy) {
-        
-        if let v: AnyObject = value as? AnyObject {
-            objc_setAssociatedObject(object, associativeKey, v,  policy)
-        } else {
-            objc_setAssociatedObject(object, associativeKey, ValueWrapper(value),  policy)
-        }
-    }
-    
-    func fa_getAssociatedObject<T>(object: AnyObject, associativeKey: UnsafePointer<Void>) -> T? {
-        if let v = objc_getAssociatedObject(object, associativeKey) as? T {
-            return v
-        } else if let v = objc_getAssociatedObject(object, associativeKey) as? ValueWrapper<T> {
-            return v.value
-        } else {
-            return nil
+    func applyCachedAnimation(forKey key: String) {
+        if let sequence = cachedSequences[key]  {
+            sequence.startSequence()
         }
     }
 }

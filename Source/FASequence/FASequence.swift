@@ -11,7 +11,7 @@ import UIKit
 
 public class FASequence {
     
-    internal var startingTrigger : FASequenceFrame
+    internal var startingTrigger : FASequenceFrame?
     
     internal var displayLink : CADisplayLink?
     internal var sequenceKey : String?
@@ -19,19 +19,22 @@ public class FASequence {
     internal var sequenceTriggers = [String : FASequenceFrame]()
     internal var _sequenceTriggers = [String : FASequenceFrame]()
     
-    required public init(onView view: UIView, withAnimation animation : Any) {
+    convenience public init(onView view: UIView, withAnimation animation : Any) {
+       self.init()
        startingTrigger = FASequenceFrame(triggerAnimation: animation, onView: view)
-       startingTrigger.delegate = self
+       startingTrigger!.parentSequence = self
+       _sequenceTriggers[startingTrigger!.triggeredAnimation.animationKey!] = startingTrigger
     }
 
-    final public func addSequenceFrameFrame(withAnimation animation : Any,
+    final public func addSequenceFrame(withAnimation animation : Any,
                                             onView view: UIView,
                                             relativeToTime timeRelative: Bool = true,
                                             atProgress progress : CGFloat = 0.0,
-                                            triggerOnRemoval : Bool = false) -> FASequenceFrame {
+                                            triggerOnRemoval : Bool = false,
+                                            relativeTrigger : FASequenceFrame? = nil ) -> FASequenceFrame {
         
         let trigger = FASequenceFrame(triggerAnimation : animation, onView: view)
-        trigger.delegate = self
+        trigger.parentSequence = self
         
         if let animation = animation as? FABasicAnimation {
             trigger.triggeredAnimation = animation.groupRepresentation()
@@ -41,10 +44,10 @@ public class FASequence {
             trigger.triggeredAnimation.weakLayer = view.layer
         }
         
-        trigger.delegate = self
+        trigger.parentSequence = self
         trigger.animatingView = view
         trigger.progessValue = progress
-        trigger.parentAnimation = startingTrigger.triggeredAnimation
+        trigger.parentAnimation = relativeTrigger?.triggeredAnimation ?? startingTrigger?.triggeredAnimation
         trigger.isTimeRelative = timeRelative
         trigger.triggerOnRemoval = triggerOnRemoval
         
@@ -74,22 +77,7 @@ extension UIView {
             cacheableSequence = sequence
         }
         
-        if cachedSequences == nil {
-            cachedSequences = [NSString : FASequence]()
-        }
-        
-        cachedSequences![key] = cacheableSequence
-    }
-    
-    func applyCachedAnimation(forKey key: String) {
-        
-        guard let cachedSequences = cachedSequences else {
-            return
-        }
-        
-        if let sequence = cachedSequences[key]  {
-            sequence.startSequence()
-        }
+        cachedSequences[key] = cacheableSequence
     }
 }
 
@@ -150,13 +138,17 @@ extension FASequence {
         }
         
         sequenceTriggers = _sequenceTriggers
+      //  sequenceTriggers[startingTrigger!.triggeredAnimation.animationKey!] = nil
+        
         displayLink = CADisplayLink(target: self, selector: #selector(FASequence.sequenceCurrentFrame))
         displayLink?.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-       
-        startingTrigger.triggeredAnimation.applyFinalState(true)
+    
+    //    startingTrigger?.triggeredAnimation.applyFinalState(true)
     }
     
     func stopSequence() {
+        
+        //cachedSequences[self.startingTrigger!.triggeredAnimation!.animationKey!] = nil
         sequenceTriggers = [String : FASequenceFrame]()
         displayLink?.invalidate()
         displayLink = nil
