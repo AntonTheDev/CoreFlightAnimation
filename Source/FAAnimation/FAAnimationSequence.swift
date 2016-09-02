@@ -51,7 +51,7 @@ public class FAAnimationSequence  {
     internal var displayLink : CADisplayLink?
 
     internal var sequenceTriggers = [String : FASequenceTrigger]()
-    internal var _sequenceTriggers = [String : FASequenceTrigger]()
+    public var _sequenceTriggers = [String : FASequenceTrigger]()
     
     internal var _autoreverse : Bool = false
     internal var _autoreverseCount: Int = 1
