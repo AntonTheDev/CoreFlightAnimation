@@ -83,7 +83,7 @@ public extension CAAnimation {
             }
         }
         
-        self.delegate = activeDelegate
+        delegate = activeDelegate
     }
     
     private func callbacksSupported() -> Bool {

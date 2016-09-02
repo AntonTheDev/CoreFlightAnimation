@@ -14,7 +14,8 @@ private struct FAAssociatedKey {
     static var layoutConfigurations = "layoutConfigurations"
 }
 
-public var cachedSequences = [String : FASequence]()
+
+public var cachedSequences = [String : FAAnimationSequence]()
 
 internal extension UIView {
     

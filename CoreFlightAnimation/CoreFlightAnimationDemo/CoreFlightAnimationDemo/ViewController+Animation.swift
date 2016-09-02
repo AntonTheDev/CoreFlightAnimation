@@ -94,16 +94,15 @@ extension ViewController {
         // ConfigView Animation Definitions
         
         let boundsAnimation = FABasicAnimation(keyPath: "bounds")
-        boundsAnimation.easingFunction = .OutExponential
+        boundsAnimation.easingFunction = .OutQuintic
         boundsAnimation.toValue = NSValue(CGRect: toBounds)
         boundsAnimation.duration = 0.8
         
         let positionAnimation = FABasicAnimation(keyPath: "position")
-        positionAnimation.easingFunction = .OutExponential
+        positionAnimation.easingFunction = .OutQuintic
         positionAnimation.toValue = NSValue(CGPoint: toPosition)
         positionAnimation.duration = 0.8
         positionAnimation.isPrimary = true
-        
         
         // BackgroundView Animation Definitions
         
@@ -128,13 +127,13 @@ extension ViewController {
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
         
-        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup)
+        let sequence = FAAnimationSequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.ShowConfigAnimation)
         
         sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
                                        onView: dimmerView,
                                        atProgress: 0.5)
 
-        configView.cache(sequence, forKey: AnimationKeys.ShowConfigAnimation)
+        configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
     }
     
     
@@ -183,13 +182,13 @@ extension ViewController {
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
-        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup)
+        let sequence = FAAnimationSequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.HideConfigAnimation)
         
         sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
                                        onView: dimmerView,
                                        atProgress: 0.5)
         
-        configView.cache(sequence, forKey: AnimationKeys.HideConfigAnimation)
+        configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
     }
     
     func tappedShowConfig() {
@@ -286,7 +285,7 @@ extension ViewController {
         return animationGroup
     }
     
-    func appendTriggerToAnimation(animationgGroup : FAAnimationGroup) -> FASequence {
+    func appendTriggerToAnimation(animationgGroup : FAAnimationGroup) -> FAAnimationSequence {
         
         let currentBounds = CGRectMake(0, 0, lastToFrame.size.width , lastToFrame.size.height)
         let currentPosition = CGCSRectGetCenter(lastToFrame)
@@ -308,7 +307,7 @@ extension ViewController {
             secondaryAnimationGroup.weakLayer = view.layer
         }
         
-        let sequence = FASequence(onView: dragView, withAnimation: animationgGroup)
+        let sequence = FAAnimationSequence(onView: dragView, withAnimation: animationgGroup)
 
         switch animConfig.triggerType {
         case 1:

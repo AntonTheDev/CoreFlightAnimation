@@ -46,60 +46,7 @@ public class FABasicAnimation : FASynchronizedAnimation {
         get { return (easingFunction.isSpring() || _isPrimary) }
         set { _isPrimary = newValue }
     }
-    
-    /**
-     Enable Autoreverse of the animation.
-     
-     By default it will only auto revese once.
-     Adjust the autoreverseCount to change that
-     
-     */
-    public var autoreverse: Bool {
-        get { return _autoreverse }
-        set { _autoreverse = newValue }
-    }
-    
-    
-    /**
-     Count of times to repeat the reverse animation
-     
-     Default is 1, set to 0 repeats the animation
-     indefinitely until is removed manually from the layer.
-     */
-    public var autoreverseCount: Int {
-        get { return _autoreverseCount }
-        set { _autoreverseCount = newValue }
-    }
-    
-    
-    /**
-     Delay in seconds to perfrom reverse animation.
-     
-     Once the animation completes this delay adjusts the
-     pause prior to triggering the reverse animation
-     
-     Default is 0.0
-     */
-    public var autoreverseDelay: NSTimeInterval {
-        get { return _autoreverseDelay }
-        set { _autoreverseDelay = newValue }
-    }
-    
-    
-    /**
-     Delay in seconds to perfrom reverse animation.
-     
-     Once the animation completes this delay adjusts the
-     pause prior to triggering the reverse animation
-     
-     Default is 0.0
-     */
-    public var reverseEasingCurve: Bool {
-        get { return _reverseEasingCurve }
-        set { _reverseEasingCurve = newValue }
-    }
-    
-    
+        
     /**
      Not Ready for Prime Time, being declared as private
      
@@ -111,24 +58,6 @@ public class FABasicAnimation : FASynchronizedAnimation {
         weakLayer?.speed = 0.0
         weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
     }
-
-    final public func groupRepresentation() -> FAAnimationGroup {
-        let newAnimationGroup = FAAnimationGroup()
-        
-        newAnimationGroup.weakLayer             = weakLayer
-        newAnimationGroup.startTime             = startTime
-        
-        newAnimationGroup._autoreverse             = _autoreverse
-        newAnimationGroup._autoreverseCount        = _autoreverseCount
-        newAnimationGroup._autoreverseActiveCount  = _autoreverseActiveCount
-        newAnimationGroup._autoreverseConfigured   = _autoreverseConfigured
-        newAnimationGroup._autoreverseDelay        = _autoreverseDelay
-        newAnimationGroup._reverseEasingCurve      = _reverseEasingCurve
-        
-        newAnimationGroup.animations = [self]
-        
-        return newAnimationGroup
-    }
 }
 
 
@@ -136,13 +65,16 @@ public class FABasicAnimation : FASynchronizedAnimation {
 
 public class FASynchronizedAnimation : CAKeyframeAnimation {
 
+    
+    public var animationKey : String?
+    
     //Auto synchronizes with current presentation layer values if left blank
     internal var _fromValue: AnyObject?
     internal var _toValue: AnyObject?
     internal var _easingFunction : FAEasing = FAEasing.Linear
     internal var _isPrimary : Bool = false
     
-    internal weak var weakLayer : CALayer?
+    public weak var weakLayer : CALayer?
     internal var interpolator : FAInterpolator?
     internal var startTime : CFTimeInterval?
     

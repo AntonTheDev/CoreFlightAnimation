@@ -91,59 +91,6 @@ public class FAAnimationGroup : FASynchronizedGroup {
         set { _timingPriority = newValue }
     }
     
-    
-    /**
-     Enable Autoreverse of the animation.
-     
-     By default it will only auto revese once. 
-     Adjust the autoreverseCount to change that
-
-     */
-    public var autoreverse: Bool {
-        get { return _autoreverse }
-        set { _autoreverse = newValue }
-    }
-    
-    
-    /**
-     Count of times to repeat the reverse animation
-
-     Default is 1, set to 0 repeats the animation
-     indefinitely until is removed manually from the layer.
-     */
-    public var autoreverseCount: Int {
-        get { return _autoreverseCount }
-        set { _autoreverseCount = newValue }
-    }
-    
-    
-    /**
-      Delay in seconds to perfrom reverse animation.
-     
-      Once the animation completes this delay adjusts the
-      pause prior to triggering the reverse animation
-     
-      Default is 0.0
-     */
-    public var autoreverseDelay: NSTimeInterval {
-        get { return _autoreverseDelay }
-        set { _autoreverseDelay = newValue }
-    }
-    
-    
-    /**
-     Delay in seconds to perfrom reverse animation.
-     
-     Once the animation completes this delay adjusts the
-     pause prior to triggering the reverse animation
-     
-     Default is 0.0
-     */
-    public var reverseEasingCurve: Bool {
-        get { return _reverseEasingCurve }
-        set { _reverseEasingCurve = newValue }
-    }
-    
     /**
      Attaches the specified animation, on the specified view, and relative
      the progress value type defined in the method call
@@ -190,18 +137,10 @@ public class FAAnimationGroup : FASynchronizedGroup {
      */
     public func applyFinalState(animated : Bool = false) {
         
-      //  if let view = view {
-      //      self.weakLayer = view.layer
-      //  }
-        
         if let animationLayer = weakLayer {
             if animated {
                 animationLayer.speed = 1.0
                 animationLayer.timeOffset = 0.0
-                
-                //if animationKey == nil {
-                //    animationKey =  String(NSUUID().UUIDString)
-                //}
                 
                 if let animationKey = animationKey {
                     startTime = animationLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
@@ -248,7 +187,7 @@ public class FAAnimationGroup : FASynchronizedGroup {
 
 public class FASynchronizedGroup : CAAnimationGroup {
     
-    internal var animationKey : String?
+    public var animationKey : String?
     internal var _timingPriority : FAPrimaryTimingPriority = .MaxTime
     
     internal var _autoreverse : Bool = false
@@ -258,7 +197,7 @@ public class FASynchronizedGroup : CAAnimationGroup {
     internal var _autoreverseConfigured: Bool = false
     internal var _reverseEasingCurve: Bool = false
     
-    internal weak var weakLayer : CALayer? {
+    public weak var weakLayer : CALayer? {
         didSet {
             if let currentAnimations = animations {
                 for animation in currentAnimations {
@@ -395,7 +334,7 @@ internal extension FASynchronizedGroup {
         
         var reverseAnimationArray = [FABasicAnimation]()
         
-        if let animations = self.animations {
+        if let animations = animations {
             for animation in animations {
                 if let customAnimation = animation as? FABasicAnimation {
                     
@@ -544,7 +483,7 @@ internal extension FAAnimationGroup {
     
     func valueProgress() -> CGFloat {
     
-        if let animation = self.weakLayer?.animationForKey(self.animationKey!) as? FAAnimationGroup{
+        if let animation = weakLayer?.animationForKey(animationKey!) as? FAAnimationGroup{
             return animation.primaryAnimation!.valueProgress()
         }
         
@@ -559,7 +498,7 @@ internal extension FAAnimationGroup {
     func timeProgress() -> CGFloat {
         
         
-        if let animation = self.weakLayer?.animationForKey(self.animationKey!) as? FAAnimationGroup{
+        if let animation = weakLayer?.animationForKey(animationKey!) as? FAAnimationGroup{
             return animation.primaryAnimation!.timeProgress()
         }
         

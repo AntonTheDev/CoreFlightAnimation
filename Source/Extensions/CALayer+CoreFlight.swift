@@ -138,7 +138,7 @@ extension UIColor {
             static var token: dispatch_once_t = 0
         }
         
-        if self !== CALayer.self {
+        if self !== UIColor.self {
             return
         }
         
