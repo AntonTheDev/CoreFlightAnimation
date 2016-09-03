@@ -9,93 +9,40 @@
 import Foundation
 import UIKit
 
+//MARK: - FABasicAnimation
 
-//MARK: - FASynchronizedAnimation
-
-public class FABasicAnimation : FASynchronizedAnimation {
-
-    override public init() {
-        super.init()
-    }
+public class FABasicAnimation : CAKeyframeAnimation {
     
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    public var parentAnimatable : FASequenceAnimatable?
+    public var toValue: AnyObject?
+    public var fromValue: AnyObject?
+    public var easingFunction : FAEasing = .Linear
+    public var isPrimary : Bool = false
     
-    // Final animation value to interpolate to
-    public var toValue: AnyObject? {
-        get { return _toValue }
-        set { _toValue = newValue }
-    }
-    
-    // Final animation value to interpolate to
-    public var fromValue: AnyObject? {
-        get { return _fromValue }
-        set { _fromValue = newValue }
-    }
-
-    // The easing funtion applied to the duration of the animation
-    public var easingFunction : FAEasing  {
-        get { return _easingFunction }
-        set { _easingFunction = newValue }
-    }
-    
-    // Flag used to track the animation as a primary influencer 
-    // for the overall timing within an animation group.
-    public var isPrimary : Bool {
-        get { return (easingFunction.isSpring() || _isPrimary) }
-        set { _isPrimary = newValue }
-    }
-        
-    /**
-     Not Ready for Prime Time, being declared as private
-     
-     Adjusts animation based on the progress form 0 - 1
-     
-     - parameter progress: scrub "to progress" value
-     */
-    private func scrubToProgress(progress : CGFloat) {
-        weakLayer?.speed = 0.0
-        weakLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
-    }
-}
-
-
-//MARK: - FASynchronizedAnimation
-
-public class FASynchronizedAnimation : CAKeyframeAnimation {
-
-    
-    public var animationKey : String?
-    
-    //Auto synchronizes with current presentation layer values if left blank
-    internal var _fromValue: AnyObject?
-    internal var _toValue: AnyObject?
-    internal var _easingFunction : FAEasing = FAEasing.Linear
-    internal var _isPrimary : Bool = false
-    
-    public weak var weakLayer : CALayer?
     internal var interpolator : FAInterpolator?
-    internal var startTime : CFTimeInterval?
     
-    internal var _autoreverse : Bool = false
-    internal var _autoreverseCount: Int = 1
+    public weak var animatingLayer : CALayer?
+    public var animationKey : String?
+    public var startTime : CFTimeInterval?
+    
+    public var autoreverse : Bool = false
+    public var autoreverseCount: Int = 1
+    public var autoreverseDelay: NSTimeInterval = 1.0
+    public var autoreverseEasing: Bool = false
+    
     internal var _autoreverseActiveCount: Int = 1
-    internal var _autoreverseDelay: NSTimeInterval = 1.0
     internal var _autoreverseConfigured: Bool = false
-    internal var _reverseEasingCurve: Bool = false
-    
-    override public var timingFunction: CAMediaTimingFunction? {
-        didSet {
-            print("WARMING: FlightAnimator\n Setting timingFunction on an FABasicAnimation has no effect, use the 'easingFunction' property instead\n")
-        }
+
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        initializeInitialValues()
     }
     
     override public init() {
         super.init()
         initializeInitialValues()
     }
-
+    
     public convenience init(keyPath path: String?) {
         self.init()
         keyPath = path
@@ -110,109 +57,117 @@ public class FASynchronizedAnimation : CAKeyframeAnimation {
         removedOnCompletion = true
         values = [AnyObject]()
     }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         let animation = super.copyWithZone(zone) as! FABasicAnimation
-        animation.weakLayer             = weakLayer
-        animation.startTime             = startTime
-        animation.interpolator          = interpolator
-        animation._easingFunction       = _easingFunction
-        animation._toValue              = _toValue
-        animation._fromValue            = _fromValue
-        animation._isPrimary            = _isPrimary
+       
+        animation.animationKey           = animationKey
+        animation.animatingLayer         = animatingLayer
+        animation.startTime              = startTime
+        animation.interpolator           = interpolator
+
+        animation.easingFunction         = easingFunction
+        animation.toValue                = toValue
+        animation.fromValue              = fromValue
+        animation.isPrimary              = isPrimary
         
-        animation._autoreverse             = _autoreverse
-        animation._autoreverseCount        = _autoreverseCount
-        animation._autoreverseActiveCount  = _autoreverseActiveCount
-        animation._autoreverseConfigured   = _autoreverseConfigured
-        animation._autoreverseDelay        = _autoreverseDelay
-        animation._reverseEasingCurve      = _reverseEasingCurve
+        animation.autoreverse            = autoreverse
+        animation.autoreverseCount       = autoreverseCount
+        animation.autoreverseDelay       = autoreverseDelay
+        animation.autoreverseEasing    = autoreverseEasing
+        
+        animation._autoreverseConfigured = _autoreverseConfigured
+        animation._autoreverseActiveCount = _autoreverseActiveCount
         
         return animation
     }
     
     final public func configureAnimation(withLayer layer: CALayer?) {
-        weakLayer = layer
+        animatingLayer = layer
     }
+    
+    
+    /// Not Ready for Prime Time, being declared as private
+    /// Adjusts animation based on the progress form 0 - 1
+    
+    /*
+     private func scrubToProgress(progress : CGFloat) {
+     animatingLayer?.speed = 0.0
+     animatingLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
+     }
+     */
 }
 
 //MARK: - Synchronization Logic
 
-internal extension FASynchronizedAnimation {
+internal extension FABasicAnimation {
     
-    func synchronize(runningAnimation animation : FABasicAnimation? = nil) {
-        configureValues(animation)
-    }
-    
-    func synchronizeAnimationVelocity(fromValue : Any, runningAnimation : FABasicAnimation?) {
+    func synchronize(relativeTo animation : FABasicAnimation? = nil) {
+
+        synchronizeFromValue()
         
-        if  let presentationLayer = runningAnimation?.weakLayer?.presentationLayer(),
-            let animationStartTime = runningAnimation?.startTime,
-            let oldInterpolator = runningAnimation?.interpolator {
-            
-            let currentTime = presentationLayer.convertTime(CACurrentMediaTime(), toLayer: runningAnimation!.weakLayer)
-            let deltaTime = CGFloat(currentTime - animationStartTime) - FAAnimationConfig.AnimationTimeAdjustment
-            
-            if _easingFunction.isSpring() {
-                _easingFunction = oldInterpolator.adjustedEasingVelocity(deltaTime, easingFunction: _easingFunction)
-            }
-            
-        } else {
-            switch _easingFunction {
-            case .SpringDecay(_):
-                _easingFunction =  FAEasing.SpringDecay(velocity: interpolator?.zeroVelocityValue())
-                
-            case let .SpringCustom(_,frequency,damping):
-                _easingFunction = FAEasing.SpringCustom(velocity: interpolator?.zeroVelocityValue() ,
-                                                        frequency: frequency,
-                                                        ratio: damping)
-            default:
-                break
-            }
+        guard let toValue = toValue, fromValue = fromValue else {
+            return
         }
+    
+        interpolator = FAInterpolator(toValue, fromValue, relativeTo : animation?.fromValue)
+        
+        // adjustSpringVelocityIfNeeded(relativeTo : animation)
+        
+        let config = interpolator?.interpolatedConfigurationFor(self, relativeTo: animation)
+        easingFunction = config!.easing
+        duration = config!.duration
+        values = config!.values
     }
     
-    func configureValues(runningAnimation : FABasicAnimation? = nil) {
-        
-        configureFromValueIfNeeded()
-        
-        synchronizeAnimationVelocity(_fromValue, runningAnimation: runningAnimation)
-        
-        if let _toValue = _toValue,
-            let _fromValue = _fromValue {
-            
-            interpolator  = FAInterpolator(toValue: _toValue,
-                                         fromValue: _fromValue,
-                                         previousValue : runningAnimation?.fromValue)
-            
-            let config = interpolator?.interpolatedConfiguration(CGFloat(duration), easingFunction: _easingFunction)
-            
-            duration = config!.duration
-            values = config!.values
-        }
-    }
     
-    func configureFromValueIfNeeded() {        
-        if let presentationLayer = (weakLayer?.presentationLayer() as? CALayer),
+    func synchronizeFromValue() {
+        
+        if let presentationLayer = (animatingLayer?.presentationLayer() as? CALayer),
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             
             if let currentValue = presentationValue as? CGPoint {
-                _fromValue = NSValue(CGPoint : currentValue)
+                fromValue = NSValue(CGPoint : currentValue)
             } else  if let currentValue = presentationValue as? CGSize {
-                _fromValue = NSValue(CGSize : currentValue)
+                fromValue = NSValue(CGSize : currentValue)
             } else  if let currentValue = presentationValue as? CGRect {
-                _fromValue = NSValue(CGRect : currentValue)
+                fromValue = NSValue(CGRect : currentValue)
             } else  if let currentValue = presentationValue as? CGFloat {
-                _fromValue = NSNumber(float : Float(currentValue))
+                fromValue = NSNumber(float : Float(currentValue))
             } else  if let currentValue = presentationValue as? CATransform3D {
-                _fromValue = NSValue(CATransform3D : currentValue)
+                fromValue = NSValue(CATransform3D : currentValue)
             } else if let currentValue = typeCastCGColor(presentationValue) {
-                _fromValue = currentValue
+                fromValue = currentValue
             }
+        }
+    }
+
+    func adjustSpringVelocityIfNeeded(relativeTo animation : FABasicAnimation?) {
+        
+        guard easingFunction.isSpring() == true else {
+            return
+        }
+        
+        if easingFunction.isSpring() {
+            if let adjustedEasing = interpolator?.adjustedVelocitySpring(easingFunction, relativeTo : animation) {
+                easingFunction = adjustedEasing
+            }
+        }
+    }
+    
+    internal func convertTimingFunction() {
+        
+        print("timingFunction has no effect, converting to 'easingFunction' property\n")
+        
+        switch timingFunction?.valueForKey("name") as! String {
+        case kCAMediaTimingFunctionEaseIn:
+            easingFunction = .InCubic
+        case kCAMediaTimingFunctionEaseOut:
+            easingFunction = .OutCubic
+        case kCAMediaTimingFunctionEaseInEaseOut:
+            easingFunction = .InOutCubic
+        default:
+            easingFunction = .SmoothStep
         }
     }
 }
@@ -220,10 +175,10 @@ internal extension FASynchronizedAnimation {
 
 //MARK: - Animation Progress Values
 
-internal extension FASynchronizedAnimation {
+internal extension FABasicAnimation {
     
     func valueProgress() -> CGFloat {
-        if let presentationValue = (weakLayer?.presentationLayer() as? CALayer)?.anyValueForKeyPath(keyPath!),
+        if let presentationValue = (animatingLayer?.presentationLayer() as? CALayer)?.anyValueForKeyPath(keyPath!),
            let interpolator = interpolator {
                 return interpolator.valueProgress(presentationValue)
         }
@@ -232,7 +187,7 @@ internal extension FASynchronizedAnimation {
     }
     
     func timeProgress() -> CGFloat {
-        let currentTime = weakLayer?.presentationLayer()!.convertTime(CACurrentMediaTime(), toLayer: nil)
+        let currentTime = animatingLayer?.presentationLayer()!.convertTime(CACurrentMediaTime(), toLayer: nil)
         let difference = currentTime! - startTime!
         
         return CGFloat(round(100 * (difference / duration))/100)

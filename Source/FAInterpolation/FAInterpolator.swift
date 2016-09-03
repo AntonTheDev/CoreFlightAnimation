@@ -45,7 +45,7 @@ public struct FAInterpolator {
     
     var springs : [FASpring]?
     
-    init(toValue : Any, fromValue : Any, previousValue : Any?) {
+    init(_ toValue : Any, _ fromValue : Any, relativeTo previousValue : Any?) {
         
         if let typedToValue = (toValue as? NSValue)?.typeValue(),
             let typedFromValue = (fromValue as? NSValue)?.typeValue() {
@@ -70,59 +70,80 @@ public struct FAInterpolator {
         }
     }
     
-    mutating func interpolatedConfiguration(duration : CGFloat, easingFunction : FAEasing) ->  (duration : Double,  values : [AnyObject])? {
-        switch easingFunction {
+    mutating func interpolatedConfigurationFor(animation : FABasicAnimation, relativeTo oldAnimation : FABasicAnimation?) ->  (duration : Double, easing : FAEasing,  values : [AnyObject])? {
+       
+        var easing = animation.easingFunction
+    
+        switch easing {
         case let .SpringDecay(velocity):
+            
             if springs == nil {
                 decayComponentSprings(velocity)
             }
             
-            return interpolatedSpringValues(easingFunction)
+            easing = adjustedVelocitySpring(easing, relativeTo : oldAnimation)
             
+            let springConfig = interpolatedSpringValues(easing)
+            
+            return (duration : springConfig.duration, easing : easing, values : springConfig.values)
+        
         case let .SpringCustom(velocity, frequency, damping):
             if springs == nil {
                 customComponentSprings(velocity, angularFrequency: frequency, dampingRatio: damping)
             }
-            return interpolatedSpringValues(easingFunction)
+            
+            easing = adjustedVelocitySpring(easing, relativeTo : oldAnimation)
+            
+            let springConfig = interpolatedSpringValues(easing)
+            
+            return (duration : springConfig.duration, easing : easing, values : springConfig.values)
         default:
             break
         }
         
-        let adjustedDuration = duration * relativeProgress()
-        return (Double(adjustedDuration), interpolatedParametricValues(adjustedDuration, easingFunction: easingFunction))
-    }
-    
-    public func adjustedEasingVelocity(deltaTime: CGFloat, easingFunction : FAEasing) ->  FAEasing {
+        let adjustedDuration = CGFloat(animation.duration) * relativeProgress()
+        let values = interpolatedParametricValues(adjustedDuration, easingFunction: easing)
         
-        var progressComponents = [CGFloat]()
+        return (duration : Double(adjustedDuration), easing :easing, values : values)
+   }
+    
+    internal func adjustedVelocitySpring(easingFunction : FAEasing, relativeTo animation : FABasicAnimation?) -> FAEasing {
+        
+        var adjustedVelocity = zeroVelocityValue()
+        
+        if let animation = animation,
+           presentationLayer  = animation.animatingLayer?.presentationLayer(),
+           animationStartTime = animation.startTime {
+            
+            let currentTime = presentationLayer.convertTime(CACurrentMediaTime(), toLayer: animation.animatingLayer)
+            let deltaTime = CGFloat(currentTime - animationStartTime) - FAAnimationConfig.AnimationTimeAdjustment
+            
+            adjustedVelocity = self.adjustedVelocity(at : deltaTime)
+        }
         
         switch easingFunction {
         case .SpringDecay(_):
-            
-            for index in 0..<toVector.components.count {
-                progressComponents.append(springs![index].velocity(deltaTime))
-            }
-            
-            let decayVelocity = FAVector(comps : progressComponents).typeRepresentation(toValue)
-        
-            return .SpringDecay(velocity:decayVelocity)
-            
+            return .SpringDecay(velocity:adjustedVelocity)
         case let .SpringCustom(_,frequency,damping):
-            
-            for index in 0..<toVector.components.count {
-                progressComponents.append(springs![index].velocity(deltaTime))
-            }
-            
-            let springVelocity = FAVector(comps : progressComponents).typeRepresentation(toValue)
-        
-            return .SpringCustom(velocity:springVelocity ,
-                                 frequency: frequency,
-                                 ratio: damping)
+            return .SpringCustom(velocity:adjustedVelocity, frequency: frequency, ratio: damping)
         default:
-            break
+            return easingFunction
+        }
+    }
+    
+    internal func adjustedVelocity(at deltaTime : CGFloat?) -> Any {
+       
+        guard let deltaTime = deltaTime else {
+            return self.zeroVelocityValue()
         }
         
-        return easingFunction
+        var progressComponents = [CGFloat]()
+        
+        for index in 0..<toVector.components.count {
+            progressComponents.append(springs![index].velocity(deltaTime))
+        }
+        
+        return FAVector(comps : progressComponents).typeRepresentation(toValue)
     }
 }
 

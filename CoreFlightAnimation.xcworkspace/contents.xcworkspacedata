@@ -27,12 +27,6 @@
             location = "group:FAAnimationGroup.swift">
          </FileRef>
          <FileRef
-            location = "group:FAAnimationSequence.swift">
-         </FileRef>
-         <FileRef
-            location = "group:FAAnimationSequenceType.swift">
-         </FileRef>
-         <FileRef
             location = "group:FABasicAnimation.swift">
          </FileRef>
       </Group>
@@ -52,10 +46,20 @@
             location = "group:FAVector.swift">
          </FileRef>
       </Group>
+      <Group
+         location = "group:FASequence"
+         name = "FASequence">
+         <FileRef
+            location = "group:FASequence.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FASequenceTrigger.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FASequenceAnimatable.swift">
+         </FileRef>
+      </Group>
    </Group>
-   <FileRef
-      location = "group:CoreFlightAnimation/CoreFlightAnimation/CoreFlightAnimation.xcodeproj">
-   </FileRef>
    <FileRef
       location = "group:CoreFlightAnimation/CoreFlightAnimation/CoreFlightAnimation.xcodeproj">
    </FileRef>

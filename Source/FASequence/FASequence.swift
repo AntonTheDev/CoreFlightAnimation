@@ -9,63 +9,33 @@
 import Foundation
 import UIKit
 
-public extension UIView {
-    public func cacheAnimation(animation : FAAnimationSequenceType, forKey key: String) {
-        cachedSequences[key] = animation.sequenceRepresentation()
-    }
-}
 
-public class FASequenceTrigger {
-    
-    internal weak var parentSequence : FAAnimationSequence?
-    
-    internal var parentAnimation : FAAnimationGroup?
-    public var triggeredAnimation : FAAnimationGroup!
-    
-    internal var isTimeRelative = true
-    internal var progessValue : CGFloat = 0.0
-    internal var triggerOnRemoval : Bool = false
-    
-    public func addSequenceFrame(withAnimation animation : FAAnimationSequenceType,
-                                               onView view: UIView,
-                                                      relativeToTime timeRelative: Bool = true,
-                                                                     atProgress progress : CGFloat = 0.0,
-                                                                                triggerOnRemoval : Bool = false) -> FASequenceTrigger {
-        
-        return parentSequence!.addSequenceFrame(withAnimation : animation,
-                                                onView : view,
-                                                relativeToTime : timeRelative,
-                                                atProgress  : progress,
-                                                triggerOnRemoval : triggerOnRemoval,
-                                                relativeAnimation : triggeredAnimation)
-    }
-}
+public class FASequence  {
 
-public class FAAnimationSequence  {
-
-    public weak var weakLayer : CALayer?
+    public weak var animatingLayer : CALayer?
+    
     public var animationKey : String?
-
+    public var startTime : CFTimeInterval?
+    
     internal var initialTriggerKey : String!
-    
     internal var displayLink : CADisplayLink?
-
+    
     internal var sequenceTriggers = [String : FASequenceTrigger]()
-    public var _sequenceTriggers = [String : FASequenceTrigger]()
+    internal var _sequenceTriggers = [String : FASequenceTrigger]()
     
-    internal var _autoreverse : Bool = false
-    internal var _autoreverseCount: Int = 1
-    internal var _autoreverseDelay: NSTimeInterval = 1.0
-    internal var _reverseEasingCurve: Bool = false
+    public var autoreverse: Bool = false
+    public var autoreverseCount: Int = 1
+    public var autoreverseDelay: NSTimeInterval = 0.0
+    public var autoreverseEasing: Bool = false
     
-    required public init(onView view: UIView, withAnimation animation : FAAnimationSequenceType?, forKey key: String? = nil) {
+    required public init(onView view: UIView, withAnimation animation : FASequenceAnimatable?, forKey key: String? = nil) {
     
-        weakLayer = view.layer
+        animatingLayer = view.layer
         animationKey = key ?? String(NSUUID().UUIDString)
         initialTriggerKey = animationKey
         
         let triggerAnimation = animation?.groupRepresentation() ?? FAAnimationGroup()
-        triggerAnimation.weakLayer = weakLayer
+        triggerAnimation.animatingLayer = animatingLayer
         triggerAnimation.animationKey = animationKey
         
         initialTriggerKey = triggerAnimation.animationKey
@@ -79,20 +49,20 @@ public class FAAnimationSequence  {
     }
 }
 
-extension FAAnimationSequence {
+extension FASequence {
     
-    final public func addSequenceFrame(withAnimation animation : FAAnimationSequenceType,
+    final public func addSequenceFrame(withAnimation animation : FASequenceAnimatable,
                                        onView view: UIView,
                                        relativeToTime timeRelative: Bool = true,
                                        atProgress progress : CGFloat = 0.0,
                                        triggerOnRemoval : Bool = false,
-                                       relativeAnimation : FAAnimationSequenceType? = nil ) -> FASequenceTrigger {
+                                       relativeAnimation : FASequenceAnimatable? = nil ) -> FASequenceTrigger {
         
         let triggerKey = animation.animationKey ?? String(NSUUID().UUIDString)
         let triggerParentAnimation = relativeAnimation ?? _sequenceTriggers[initialTriggerKey]?.triggeredAnimation
         
         let triggerAnimation = animation.groupRepresentation() ?? FAAnimationGroup()
-        triggerAnimation.weakLayer = view.layer
+        triggerAnimation.animatingLayer = view.layer
         triggerAnimation.animationKey = triggerKey
     
         let trigger = FASequenceTrigger()
@@ -109,7 +79,7 @@ extension FAAnimationSequence {
     }
 }
 
-public extension FAAnimationSequence {
+public extension FASequence {
     
     public func startSequence() {
         
@@ -117,7 +87,7 @@ public extension FAAnimationSequence {
             return
         }
        
-        displayLink = CADisplayLink(target: self, selector: #selector(FAAnimationSequence.sequenceCurrentFrame))
+        displayLink = CADisplayLink(target: self, selector: #selector(FASequence.sequenceCurrentFrame))
         
         sequenceTriggers = _sequenceTriggers
         
@@ -158,7 +128,7 @@ public extension FAAnimationSequence {
         }
         
         if let animKey = segment.parentAnimation?.animationKey,
-           let animationgLayer = segment.parentAnimation?.weakLayer,
+           let animationgLayer = segment.parentAnimation?.animatingLayer,
            let runningAnimationGroup = animationgLayer.animationForKey(animKey) as? FAAnimationGroup {
             
             let fireTimeTrigger  = segment.isTimeRelative && runningAnimationGroup.timeProgress() >= segment.progessValue

@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreFlightAnimation
 
 extension ConfigurationView {
     
@@ -18,7 +19,7 @@ extension ConfigurationView {
         alphaAnimataion.toValue = secondaryViewSwitch.enabled ? 1.0 : 0.5
         alphaAnimataion.duration = 0.6
         
-        let sequence = FAAnimationSequence(onView: delaySegnmentedControl, withAnimation: alphaAnimataion)
+        let sequence = FASequence(onView: delaySegnmentedControl, withAnimation: alphaAnimataion)
         sequence.startSequence()
         
     }
@@ -38,7 +39,7 @@ extension ConfigurationView {
             positionAnimation.toValue = NSValue(CGPoint: adjustedPosition)
             positionAnimation.duration = 0.5
 
-            let sequence = FAAnimationSequence(onView: atProgressLabel, withAnimation: alphaAnimataion)
+            let sequence = FASequence(onView: atProgressLabel, withAnimation: alphaAnimataion)
             
             sequence.addSequenceFrame(withAnimation: alphaAnimataion,
                                            onView: progressLabel,
@@ -68,7 +69,7 @@ extension ConfigurationView {
             positionAnimation.toValue = NSValue(CGPoint: initialCenter)
             positionAnimation.duration = 0.5
             
-            let sequence = FAAnimationSequence(onView: enableSecondaryViewLabel, withAnimation: positionAnimation)
+            let sequence = FASequence(onView: enableSecondaryViewLabel, withAnimation: positionAnimation)
             
             sequence.addSequenceFrame(withAnimation: alphaAnimataion,
                                            onView: progressLabel,

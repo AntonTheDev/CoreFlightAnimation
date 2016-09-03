@@ -38,6 +38,7 @@ extension CALayer {
         }
         
         dispatch_once(&Static.token) {
+            
             swizzleSelector(self,
                             originalSelector: #selector(CALayer.addAnimation(_:forKey:)),
                             swizzledSelector: #selector(CALayer.FA_addAnimation(_:forKey:)))
@@ -50,7 +51,6 @@ extension CALayer {
                             originalSelector: #selector(CALayer.removeAnimationForKey(_:)),
                             swizzledSelector: #selector(CALayer.FA_removeAnimationForKey(_:)))
             
-            
             UIColor.swizzleGetRed()
         }
     }
@@ -62,7 +62,7 @@ extension CALayer {
             return
         }
         
-        animation.synchronizeAnimationGroup(withLayer: self, animationKey : key)
+        animation.synchronizeAnimationGroup(withLayer: self, forKey : key)
         
         removeAllAnimations()
         FA_addAnimation(animation, forKey: key)

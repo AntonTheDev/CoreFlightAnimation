@@ -9,13 +9,7 @@
 import Foundation
 import UIKit
 
-
-private struct FAAssociatedKey {
-    static var layoutConfigurations = "layoutConfigurations"
-}
-
-
-public var cachedSequences = [String : FAAnimationSequence]()
+public var cachedSequences = [String : FASequence]()
 
 public extension UIView {
     
@@ -23,6 +17,10 @@ public extension UIView {
         if let sequence = cachedSequences[key]  {
             sequence.startSequence()
         }
+    }
+    
+    public func cacheAnimation(animation : FASequence, forKey key: String) {
+        cachedSequences[key] = animation
     }
 }
 

@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreFlightAnimation
 
 protocol CurveCollectionViewCellDelegate : class {
     func cell(cell : CurveSelectionCollectionViewCell , didSelectEasing easing: FAEasing)

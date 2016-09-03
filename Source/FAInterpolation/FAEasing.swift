@@ -282,7 +282,7 @@ public enum FAEasing : Equatable {
     }
     
     
-    func reverseEasingCurve() -> FAEasing {
+    func autoreverseEasing() -> FAEasing {
         switch self {
         case .Linear:
             return .Linear

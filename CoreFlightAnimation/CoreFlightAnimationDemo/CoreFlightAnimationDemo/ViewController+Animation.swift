@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreFlightAnimation
 
 /**
  *  This is used to keep track of the settings in the configuration screen
@@ -127,7 +128,7 @@ extension ViewController {
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
         
-        let sequence = FAAnimationSequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.ShowConfigAnimation)
+        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.ShowConfigAnimation)
         
         sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
                                        onView: dimmerView,
@@ -182,7 +183,7 @@ extension ViewController {
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
-        let sequence = FAAnimationSequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.HideConfigAnimation)
+        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.HideConfigAnimation)
         
         sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
                                        onView: dimmerView,
@@ -285,7 +286,7 @@ extension ViewController {
         return animationGroup
     }
     
-    func appendTriggerToAnimation(animationgGroup : FAAnimationGroup) -> FAAnimationSequence {
+    func appendTriggerToAnimation(animationgGroup : FAAnimationGroup) -> FASequence {
         
         let currentBounds = CGRectMake(0, 0, lastToFrame.size.width , lastToFrame.size.height)
         let currentPosition = CGCSRectGetCenter(lastToFrame)
@@ -303,11 +304,11 @@ extension ViewController {
             secondaryAnimationGroup.animationKey = String(NSUUID().UUIDString)
         }
         
-        if secondaryAnimationGroup.weakLayer == nil {
-            secondaryAnimationGroup.weakLayer = view.layer
+        if secondaryAnimationGroup.animatingLayer == nil {
+            secondaryAnimationGroup.animatingLayer = view.layer
         }
         
-        let sequence = FAAnimationSequence(onView: dragView, withAnimation: animationgGroup)
+        let sequence = FASequence(onView: dragView, withAnimation: animationgGroup)
 
         switch animConfig.triggerType {
         case 1:
