@@ -29,6 +29,7 @@
 		3ADCBBA91D654EDC00BBD71C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADCBBA21D654EDC00BBD71C /* ViewController.swift */; };
 		3ADCBBAA1D654EDC00BBD71C /* ViewController+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADCBBA31D654EDC00BBD71C /* ViewController+Animation.swift */; };
 		3AE43A5D1D77F99700AD522C /* ConfigurationView+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE43A5C1D77F99700AD522C /* ConfigurationView+Animation.swift */; };
+		3AE43AB21D7A4F1800AD522C /* CoreFlightAnimation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE43AB11D7A4F1800AD522C /* CoreFlightAnimation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,7 @@
 		3ADCBBA21D654EDC00BBD71C /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		3ADCBBA31D654EDC00BBD71C /* ViewController+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+Animation.swift"; sourceTree = "<group>"; };
 		3AE43A5C1D77F99700AD522C /* ConfigurationView+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConfigurationView+Animation.swift"; sourceTree = "<group>"; };
+		3AE43AB11D7A4F1800AD522C /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFlightAnimation.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/CoreFlightAnimation-chmylffdiuiukubalgcpggugpvxv/Build/Products/Debug-iphonesimulator/CoreFlightAnimation.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AE43AB21D7A4F1800AD522C /* CoreFlightAnimation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +133,7 @@
 		3ADCBB7D1D654D4700BBD71C = {
 			isa = PBXGroup;
 			children = (
+				3AE43AB11D7A4F1800AD522C /* CoreFlightAnimation.framework */,
 				13092DD51D794BF9004CA4C8 /* Source */,
 				3ADCBB881D654D4700BBD71C /* CoreFlightAnimationDemo */,
 				3ADCBB871D654D4700BBD71C /* Products */,
