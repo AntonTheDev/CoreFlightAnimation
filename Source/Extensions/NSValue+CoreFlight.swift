@@ -10,7 +10,8 @@ import Foundation
 import UIKit
 
 extension NSValue {    
-   final public func typeValue() -> Any? {
+   
+    final public func typeValue() -> Any? {
         let type = String.fromCString(objCType) ?? ""
     
         if type.hasPrefix("{CGPoint") {

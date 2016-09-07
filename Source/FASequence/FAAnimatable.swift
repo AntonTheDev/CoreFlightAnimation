@@ -1,16 +1,41 @@
 //
-//  FAAnimation.swift
-//  FlightAnimator-Demo
+//  FAAnimatable.swift
+//  CoreFlightAnimation
 //
-//  Created by Anton Doudarev on 9/1/16.
-//  Copyright © 2016 Anton Doudarev. All rights reserved.
+//  Created by Anton on 9/7/16.
+//
 //
 
 import Foundation
-import UIKit
 
-extension FAAnimationGroup {
-    /*
+public protocol FAAnimatable : class {
+    
+    var animationKey        : String?   { get set }
+    var animatingLayer      : CALayer?  { get set }
+    
+    var isTimeRelative      : Bool      { get set }
+    var progessValue        : CGFloat   { get set }
+    var triggerOnRemoval    : Bool      { get set }
+    
+    func applyFinalState(animated : Bool)
+}
+
+public protocol FASequenceAnimatable : FAAnimatable {
+    var initialTrigger : FASequenceAnimatable? { get set }
+}
+
+public func ==(lhs:FASequence, rhs:FASequence) -> Bool {
+    return lhs.hashValue == rhs.hashValue
+}
+
+extension FASequence : Hashable {
+    public var hashValue: Int {
+        return animationKey?.hashValue ?? 0
+    }
+}
+
+extension FAAnimationGroup : FAAnimatable {
+    
     public func applyFinalState(animated : Bool = false) {
         
         if let animatingLayer = animatingLayer {
@@ -42,11 +67,11 @@ extension FAAnimationGroup {
             }
         }
     }
-     */
 }
-/*
-extension FAAnimationGroup {
 
+
+extension FABasicAnimation : FAAnimatable {
+    
     public func applyFinalState(animated : Bool = false) {
         
         let newAnimationGroup = FAAnimationGroup()
@@ -64,8 +89,6 @@ extension FAAnimationGroup {
         
         newAnimationGroup.animations = [self]
         
-        self.applyFinalState(animated)
+        newAnimationGroup.applyFinalState(animated)
     }
 }
- 
- */

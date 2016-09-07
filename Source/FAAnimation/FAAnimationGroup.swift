@@ -72,14 +72,11 @@ public enum FAPrimaryTimingPriority : Int {
 //MARK: - FAAnimationGroup
 
 public class FAAnimationGroup : CAAnimationGroup {
-    
-    public var parentAnimatable : FASequenceAnimatable?
-    
+       
     public var animationKey : String?
     public weak var animatingLayer : CALayer? { didSet { synchronizeSubAnimationLayers() }}
     public var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
     
-
     public var timingPriority : FAPrimaryTimingPriority = .MaxTime
     internal weak var primaryAnimation : FABasicAnimation?
     
@@ -91,6 +88,10 @@ public class FAAnimationGroup : CAAnimationGroup {
     internal var _autoreverseActiveCount: Int = 1
     internal var _autoreverseConfigured: Bool = false
 
+    public var isTimeRelative = true
+    public var progessValue : CGFloat = 0.0
+    public var triggerOnRemoval : Bool = false
+    
     override public init() {
         super.init()
         animations = [CAAnimation]()
@@ -158,47 +159,6 @@ public class FAAnimationGroup : CAAnimationGroup {
      animatingLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
      }
      */
-    
-    /**
-     Apply the animation's final state, animated by default but can ve disabled if needed
-     
-     This method runs through the animations within the current group and applies
-     the final values to the underlying layer.
-     
-     - parameter animated: disables animation, defauls to true
-     */
-    public func applyFinalState(animated : Bool = false) {
-        
-        if let animatingLayer = animatingLayer {
-            if animated {
-                animatingLayer.speed = 1.0
-                animatingLayer.timeOffset = 0.0
-                
-                if let animationKey = animationKey {
-                    startTime = animatingLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
-                    animatingLayer.addAnimation(self, forKey: animationKey)
-                }
-            }
-            
-            if let subAnimations = animations {
-                for animation in subAnimations {
-                    if let subAnimation = animation as? FABasicAnimation,
-                        let toValue = subAnimation.toValue {
-                        
-                        //TODO: Figure out why the opacity is not reflected on the UIView
-                        //All properties work correctly, but to ensure that the opacity is reflected
-                        //I am setting the alpha on the UIView itsel ?? WTF
-                        if subAnimation.keyPath! == "opacity" {
-                            animatingLayer.owningView()!.setValue(toValue, forKeyPath: "alpha")
-                        } else {
-                            animatingLayer.setValue(toValue, forKeyPath: subAnimation.keyPath!)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 }
 
 //MARK: - Auto Reverse Logic

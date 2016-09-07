@@ -35,7 +35,7 @@ struct AnimationConfiguration {
     
     var triggerProgress  : CGFloat = 0
     
-    var enableSecondaryView  : Bool = false
+    var enableSecondaryView  : Bool = true
     
     static func titleForFunction(function : FAEasing) -> String {
         return functionTypes[functions.indexOf(function)!]
@@ -87,6 +87,7 @@ extension ViewController {
      */
     
     func registerShowAnimation() {
+        
         // Final ConfigView Position and Bounds
         
         let toBounds = CGRectMake(0,0, openConfigFrame.width, openConfigFrame.height)
@@ -127,12 +128,16 @@ extension ViewController {
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
+        let initialTrigger = FASequenceAnimation(onView: configView)
+        initialTrigger.animation = configViewAnimationGroup
+
+        let backgroundTrigger = FASequenceAnimation(onView: dimmerView)
+        backgroundTrigger.animation = backgroundViewAnimationGroup
+        backgroundTrigger.progessValue = 0.5
         
-        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.ShowConfigAnimation)
-        
-        sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
-                                       onView: dimmerView,
-                                       atProgress: 0.5)
+        let sequence = FASequenceGroup()
+        sequence.initialTrigger = initialTrigger
+        sequence.sequenceAnimations[initialTrigger] = backgroundTrigger
 
         configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
     }
@@ -183,12 +188,16 @@ extension ViewController {
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         
-        let sequence = FASequence(onView: configView, withAnimation: configViewAnimationGroup, forKey: AnimationKeys.HideConfigAnimation)
+        let initialTrigger = FASequenceAnimation(onView: configView, withAnimation: configViewAnimationGroup)
         
-        sequence.addSequenceFrame(withAnimation: backgroundViewAnimationGroup,
-                                       onView: dimmerView,
-                                       atProgress: 0.5)
+        let backgroundTrigger = FASequenceAnimation(onView: dimmerView)
+        backgroundTrigger.animation = backgroundViewAnimationGroup
+        backgroundTrigger.progessValue = 0.5
         
+        let sequence = FASequenceGroup()
+        sequence.initialTrigger = initialTrigger
+        sequence.sequenceAnimations[initialTrigger] = backgroundTrigger
+ 
         configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
     }
     
@@ -299,7 +308,6 @@ extension ViewController {
                                                               toTransform: currentTransform,
                                                               duration: animationgGroup.duration)
         
-        
         if secondaryAnimationGroup.animationKey == nil {
             secondaryAnimationGroup.animationKey = String(NSUUID().UUIDString)
         }
@@ -308,24 +316,42 @@ extension ViewController {
             secondaryAnimationGroup.animatingLayer = view.layer
         }
         
-        let sequence = FASequence(onView: dragView, withAnimation: animationgGroup)
-
+        let initialTrigger = FASequenceAnimation(onView: dragView, withAnimation: animationgGroup)
+        let sequence = FASequenceGroup()
+    
+        sequence.initialTrigger = initialTrigger
+        
+        
+        let sequenceTrigger = FASequenceAnimation(onView: dragView2)
+        sequenceTrigger.animation = secondaryAnimationGroup
+        sequenceTrigger.progessValue = animConfig.triggerProgress
+        
+        
         switch animConfig.triggerType {
         case 1:
-            sequence.addSequenceFrame(withAnimation: secondaryAnimationGroup,
+            sequenceTrigger.isTimeRelative = true
+        /*
+            sequence.addSequenceFrame(withAnimation: sequenceTrigger,
                                                                       onView: dragView2,
                                                                       atProgress: 0.5)
+ */
         case 2:
-            sequence.addSequenceFrame(withAnimation: secondaryAnimationGroup,
+            sequenceTrigger.isTimeRelative = false
+         /*
+            sequence.addSequenceFrame(withAnimation: sequenceTrigger,
                                                                       onView: dragView2,
                                                                       relativeToTime : false,
                                                                       atProgress: 0.5)
+ */
         default:
-            sequence.addSequenceFrame(withAnimation: secondaryAnimationGroup,
-                                                                      onView: dragView2,
-                                                                      atProgress: 0.0)
+            sequenceTrigger.progessValue = 0.0
+            
+       //     sequence.addSequenceFrame(withAnimation: sequenceTrigger,
+        //                                                              onView: dragView2,
+       //                                                               atProgress: 0.0)
         }
-        
+    
+        sequence.sequenceAnimations[initialTrigger] = sequenceTrigger
         return sequence
     }
 }

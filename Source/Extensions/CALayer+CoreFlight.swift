@@ -17,10 +17,17 @@ internal func swizzleSelector(cls: AnyClass!, originalSelector : Selector, swizz
     let originalMethod = class_getInstanceMethod(cls, originalSelector)
     let swizzledMethod = class_getInstanceMethod(cls, swizzledSelector)
     
-    let didAddMethod = class_addMethod(cls, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
-    
+    let didAddMethod = class_addMethod(cls,
+                                       originalSelector,
+                                       method_getImplementation(swizzledMethod),
+                                       method_getTypeEncoding(swizzledMethod))
     if didAddMethod {
-        class_replaceMethod(cls, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
+        
+        class_replaceMethod(cls,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod))
+    
     } else {
         method_exchangeImplementations(originalMethod, swizzledMethod);
     }
@@ -38,7 +45,6 @@ extension CALayer {
         }
         
         dispatch_once(&Static.token) {
-            
             swizzleSelector(self,
                             originalSelector: #selector(CALayer.addAnimation(_:forKey:)),
                             swizzledSelector: #selector(CALayer.FA_addAnimation(_:forKey:)))

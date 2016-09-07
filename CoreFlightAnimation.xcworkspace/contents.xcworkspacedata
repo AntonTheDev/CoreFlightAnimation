@@ -5,6 +5,32 @@
       location = "group:Source"
       name = "Source">
       <Group
+         location = "group:FASequence"
+         name = "FASequence">
+         <FileRef
+            location = "group:FASequence.swift">
+         </FileRef>
+         <FileRef
+            location = "group:/Users/Anton/Developer/OpenSource/CoreFlightAnimation/Source/FASequence/FASequenceGroup.swift">
+         </FileRef>
+         <FileRef
+            location = "group:/Users/Anton/Developer/OpenSource/CoreFlightAnimation/Source/FASequence/FASequenceAnimation.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FASequenceAnimatable.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:FAAnimation"
+         name = "FAAnimation">
+         <FileRef
+            location = "group:FAAnimationGroup.swift">
+         </FileRef>
+         <FileRef
+            location = "group:FABasicAnimation.swift">
+         </FileRef>
+      </Group>
+      <Group
          location = "group:Extensions"
          name = "Extensions">
          <FileRef
@@ -21,16 +47,6 @@
          </FileRef>
       </Group>
       <Group
-         location = "group:FAAnimation"
-         name = "FAAnimation">
-         <FileRef
-            location = "group:FAAnimationGroup.swift">
-         </FileRef>
-         <FileRef
-            location = "group:FABasicAnimation.swift">
-         </FileRef>
-      </Group>
-      <Group
          location = "group:FAInterpolation"
          name = "FAInterpolation">
          <FileRef
@@ -44,19 +60,6 @@
          </FileRef>
          <FileRef
             location = "group:FAVector.swift">
-         </FileRef>
-      </Group>
-      <Group
-         location = "group:FASequence"
-         name = "FASequence">
-         <FileRef
-            location = "group:FASequence.swift">
-         </FileRef>
-         <FileRef
-            location = "group:FASequenceTrigger.swift">
-         </FileRef>
-         <FileRef
-            location = "group:FASequenceAnimatable.swift">
          </FileRef>
       </Group>
    </Group>

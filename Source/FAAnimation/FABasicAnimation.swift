@@ -13,7 +13,6 @@ import UIKit
 
 public class FABasicAnimation : CAKeyframeAnimation {
     
-    public var parentAnimatable : FASequenceAnimatable?
     public var toValue: AnyObject?
     public var fromValue: AnyObject?
     public var easingFunction : FAEasing = .Linear
@@ -24,6 +23,10 @@ public class FABasicAnimation : CAKeyframeAnimation {
     public weak var animatingLayer : CALayer?
     public var animationKey : String?
     public var startTime : CFTimeInterval?
+    
+    public var isTimeRelative = true
+    public var progessValue : CGFloat = 0.0
+    public var triggerOnRemoval : Bool = false
     
     public var autoreverse : Bool = false
     public var autoreverseCount: Int = 1
@@ -187,9 +190,13 @@ internal extension FABasicAnimation {
     }
     
     func timeProgress() -> CGFloat {
-        let currentTime = animatingLayer?.presentationLayer()!.convertTime(CACurrentMediaTime(), toLayer: nil)
-        let difference = currentTime! - startTime!
+        if let presentationLayer = animatingLayer?.presentationLayer() {
+            let currentTime = presentationLayer.convertTime(CACurrentMediaTime(), toLayer: nil)
+            let difference = currentTime - startTime!
+            
+            return CGFloat(round(100 * (difference / duration))/100)
+        }
         
-        return CGFloat(round(100 * (difference / duration))/100)
+        return 0.0
     }
 }
