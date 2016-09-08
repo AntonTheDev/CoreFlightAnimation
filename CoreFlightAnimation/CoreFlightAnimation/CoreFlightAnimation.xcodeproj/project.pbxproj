@@ -48,9 +48,9 @@
 		13FD154E1D80A97C005B5840 /* FAInterpolator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAInterpolator.swift; sourceTree = "<group>"; };
 		13FD154F1D80A97C005B5840 /* FASpring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASpring.swift; sourceTree = "<group>"; };
 		13FD15501D80A97C005B5840 /* FAVector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FAVector.swift; sourceTree = "<group>"; };
-		13FD15521D80A97C005B5840 /* FASequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequence.swift; sourceTree = "<group>"; };
-		13FD15531D80A97C005B5840 /* FASequenceAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequenceAnimation.swift; sourceTree = "<group>"; };
-		13FD15541D80A97C005B5840 /* FASequenceAnimationGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequenceAnimationGroup.swift; sourceTree = "<group>"; };
+		13FD15521D80A97C005B5840 /* FASequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FASequence.swift; path = ../FASequence/FASequence.swift; sourceTree = "<group>"; };
+		13FD15531D80A97C005B5840 /* FASequenceAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FASequenceAnimation.swift; path = ../FASequence/FASequenceAnimation.swift; sourceTree = "<group>"; };
+		13FD15541D80A97C005B5840 /* FASequenceAnimationGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FASequenceAnimationGroup.swift; path = ../FASequence/FASequenceAnimationGroup.swift; sourceTree = "<group>"; };
 		3A7F4C451D6A30C3003D3B6F /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreFlightAnimation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A7F4C531D6A30E1003D3B6F /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreFlightAnimation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A7F4C691D6A3191003D3B6F /* Info-iOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-iOS.plist"; sourceTree = "<group>"; };
@@ -102,6 +102,9 @@
 		13FD15491D80A97C005B5840 /* FAAnimation */ = {
 			isa = PBXGroup;
 			children = (
+				13FD15521D80A97C005B5840 /* FASequence.swift */,
+				13FD15531D80A97C005B5840 /* FASequenceAnimation.swift */,
+				13FD15541D80A97C005B5840 /* FASequenceAnimationGroup.swift */,
 				13FD154A1D80A97C005B5840 /* FAAnimationGroup.swift */,
 				13FD154B1D80A97C005B5840 /* FABasicAnimation.swift */,
 			);
@@ -122,9 +125,6 @@
 		13FD15511D80A97C005B5840 /* FASequence */ = {
 			isa = PBXGroup;
 			children = (
-				13FD15521D80A97C005B5840 /* FASequence.swift */,
-				13FD15531D80A97C005B5840 /* FASequenceAnimation.swift */,
-				13FD15541D80A97C005B5840 /* FASequenceAnimationGroup.swift */,
 			);
 			path = FASequence;
 			sourceTree = "<group>";

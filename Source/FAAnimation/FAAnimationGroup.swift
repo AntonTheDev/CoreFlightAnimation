@@ -315,8 +315,10 @@ internal extension FAAnimationGroup {
 
         for key in nonPrimaryAnimations.keys {
             
-            if  let newNonPrimaryAnimation = nonPrimaryAnimations[key] {
-           
+            if let newNonPrimaryAnimation = nonPrimaryAnimations[key] {
+                
+                newNonPrimaryAnimation.duration = duration
+                
                 if let oldAnimation : FABasicAnimation? = oldAnimations[key] {
                     newNonPrimaryAnimation.synchronize(relativeTo: oldAnimation)
                 } else {
@@ -324,6 +326,17 @@ internal extension FAAnimationGroup {
                 }
                 
                 newAnimations[key] = newNonPrimaryAnimation
+            }
+        }
+        
+        for key in primaryAnimations.keys {
+            
+            if  let newPrimaryAnimation = primaryAnimations[key] {
+                if newPrimaryAnimation != primaryAnimation {
+                    newPrimaryAnimation.duration = duration
+                    newPrimaryAnimation.synchronize()
+                    newAnimations[key] = newPrimaryAnimation
+                }
             }
         }
         
