@@ -1,14 +1,15 @@
 //
-//  FAAnimatable.swift
-//  CoreFlightAnimation
+//  FASequence.swift
+//  
 //
-//  Created by Anton on 9/7/16.
+//  Created by Anton on 9/3/16.
 //
 //
 
 import Foundation
+import UIKit
 
-public protocol FAAnimatable : class {
+public protocol FAAnimatable  {
     
     var animationKey        : String?   { get set }
     var animatingLayer      : CALayer?  { get set }
@@ -20,17 +21,59 @@ public protocol FAAnimatable : class {
     func applyFinalState(animated : Bool)
 }
 
-public protocol FASequenceAnimatable : FAAnimatable {
-    var initialTrigger : FASequenceAnimatable? { get set }
+public protocol FASequenceAnimatable {
+    var animation : FAAnimatable? { get set }
 }
 
-public func ==(lhs:FASequence, rhs:FASequence) -> Bool {
-    return lhs.hashValue == rhs.hashValue
-}
+public class FASequence : FASequenceAnimatable {
+    
+    public var animation : FAAnimatable?
 
-extension FASequence : Hashable {
-    public var hashValue: Int {
-        return animationKey?.hashValue ?? 0
+    internal var queuedTriggers = [(parent : FASequenceAnimation , child : FASequenceAnimation)]()
+    internal var displayLink : CADisplayLink?
+  
+    internal var isAnimating : Bool {
+        get { return displayLink != nil }
+    }
+    
+    public init() { }
+
+    public func startSequence() {
+
+        guard isAnimating == false else { return }
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(FASequenceAnimation.sequenceCurrentFrame))
+        displayLink?.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        
+        animation?.applyFinalState(true)
+    }
+    
+    public func stopSequence() {
+       
+        displayLink?.invalidate()
+        displayLink = nil
+        
+        queuedTriggers = [(parent : FASequenceAnimation , child : FASequenceAnimation)]()
+    }
+    
+    @objc internal func sequenceCurrentFrame() {
+        applyActiveSequenceTriggers()
+    }
+    
+    public func applyActiveSequenceTriggers(forceAnimation : Bool = false) {
+        
+        for trigger in queuedTriggers {
+            if trigger.child.shouldTriggerRelativeTo(trigger.parent, forceAnimation:forceAnimation) {
+
+                queuedTriggers = queuedTriggers.filter { !($0.child == trigger.child && $0.parent == trigger.parent) }
+            }
+        }
+
+        if queuedTriggers.count == 0 { stopSequence() }
+    }
+    
+    public func applyFinalState(animated : Bool) {
+        startSequence()
     }
 }
 
@@ -53,6 +96,10 @@ extension FAAnimationGroup : FAAnimatable {
                 for animation in subAnimations {
                     if let subAnimation = animation as? FABasicAnimation,
                         let toValue = subAnimation.toValue {
+                        
+                        if subAnimation.duration <= 0 {
+                            return
+                        }
                         
                         //TODO: Figure out why the opacity is not reflected on the UIView
                         //All properties work correctly, but to ensure that the opacity is reflected

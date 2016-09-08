@@ -14,14 +14,15 @@ extension ConfigurationView {
     
     func updateProgressEnabledAnimation() {
  
-        let alphaAnimataion = FABasicAnimation(keyPath: "opacity")
-        alphaAnimataion.easingFunction = .InOutSine
-        alphaAnimataion.toValue = secondaryViewSwitch.enabled ? 1.0 : 0.5
-        alphaAnimataion.duration = 0.6
+        let alphaAnimation = FABasicAnimation(keyPath: "opacity")
+        alphaAnimation.easingFunction = .InOutSine
+        alphaAnimation.toValue = secondaryViewSwitch.enabled ? 1.0 : 0.5
+        alphaAnimation.duration = 0.6
         
-        let sequence = FASequenceAnimation(onView: delaySegnmentedControl)
-        sequence.startSequence()
-        
+        let alphaTrigger = FASequenceAnimation(onView: delaySegnmentedControl)
+        alphaTrigger.animation = alphaAnimation
+    
+        alphaTrigger.startSequence()
     }
 
     func updateAnimation() {
@@ -39,56 +40,30 @@ extension ConfigurationView {
             positionAnimation.toValue = NSValue(CGPoint: adjustedPosition)
             positionAnimation.duration = 0.5
 
+    
+            let progressLabelTrigger = FASequenceAnimation(onView: progressLabel)
+            progressLabelTrigger.animation = alphaAnimataion
             
-            let initialTrigger = FASequenceAnimation(onView: atProgressLabel)
-            initialTrigger.animation = alphaAnimataion
+            let atProgressLabelTrigger = FASequenceAnimation(onView: atProgressLabel)
+            atProgressLabelTrigger.animation = alphaAnimataion
+            atProgressLabelTrigger.progessValue = 0.0
             
-            let backgroundTrigger = FASequenceAnimation(onView: enableSecondaryViewLabel)
-            backgroundTrigger.animation = positionAnimation
-            backgroundTrigger.progessValue = 0.5
+            let progressTriggerSliderTrigger = FASequenceAnimation(onView: progressTriggerSlider)
+            progressTriggerSliderTrigger.animation = alphaAnimataion
+            progressTriggerSliderTrigger.progessValue = 0.0
+            
+
+            let titleLabelTrigger = FASequenceAnimation(onView: enableSecondaryViewLabel)
+            titleLabelTrigger.animation = positionAnimation
+            titleLabelTrigger.progessValue = 0.5
             
             
-            let backgroundTrigger2 = FASequenceAnimation(onView: progressTriggerSlider)
-            backgroundTrigger2.animation = alphaAnimataion
-            backgroundTrigger2.progessValue = 0.5
+            let sequence = FASequenceAnimationGroup()
+            sequence.animation = progressLabelTrigger
             
-            let sequence = FASequenceGroup()
-            sequence.initialTrigger = initialTrigger
-            sequence.sequenceAnimations[initialTrigger] = backgroundTrigger
-            sequence.sequenceAnimations[backgroundTrigger] = backgroundTrigger2
-            
-           // configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
-            
-           
-          //  let sequence = FASequenceAnimation(onView: atProgressLabel)
-            /*
-            let sequenceTrigger = FASequenceAnimation(onView: progressLabel)
-            sequenceTrigger.animation = alphaAnimataion
-            sequenceTrigger.progessValue = 0.5
-            
-            let sequenceTrigger2 = FASequenceAnimation(onView: enableSecondaryViewLabel)
-            sequenceTrigger2.animation = positionAnimation
-            sequenceTrigger2.progessValue = 0.5
-        
-            
-            let sequenceTrigger3 = FASequenceAnimation(onView: progressTriggerSlider)
-            sequenceTrigger3.animation = alphaAnimataion
-            sequenceTrigger3.progessValue = 0.5
-            */
-            /*
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger,
-                                           onView: progressLabel,
-                                           atProgress: 0.0)
-            
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger2,
-                                           onView: enableSecondaryViewLabel,
-                                           atProgress: 0.5)
-        
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger3,
-                                           onView: progressTriggerSlider,
-                                           atProgress: 0.0)
- 
-             */
+            sequence.appendSequenceAnimation(progressTriggerSliderTrigger, relativeTo : progressLabelTrigger)
+            sequence.appendSequenceAnimation(atProgressLabelTrigger, relativeTo : progressLabelTrigger)
+            sequence.appendSequenceAnimation(titleLabelTrigger, relativeTo : progressLabelTrigger)
             
             sequence.startSequence()
             
@@ -107,60 +82,29 @@ extension ConfigurationView {
             positionAnimation.duration = 0.5
             
             
+            let titleLabelTrigger = FASequenceAnimation(onView: enableSecondaryViewLabel)
+            titleLabelTrigger.animation = positionAnimation
             
-            let initialTrigger = FASequenceAnimation(onView: progressLabel)
-            initialTrigger.animation = alphaAnimataion
+            let progressLabelTrigger = FASequenceAnimation(onView: progressLabel)
+            progressLabelTrigger.animation = alphaAnimataion
+            progressLabelTrigger.progessValue = 0.5
             
-            let backgroundTrigger = FASequenceAnimation(onView: atProgressLabel)
-            backgroundTrigger.animation = alphaAnimataion
-            backgroundTrigger.progessValue = 0.5
+            let atProgressLabelTrigger = FASequenceAnimation(onView: atProgressLabel)
+            atProgressLabelTrigger.animation = alphaAnimataion
+            atProgressLabelTrigger.progessValue = 0.0
             
+            let progressTriggerSliderTrigger = FASequenceAnimation(onView: progressTriggerSlider)
+            progressTriggerSliderTrigger.animation = alphaAnimataion
+            progressTriggerSliderTrigger.progessValue = 0.0
             
-            let backgroundTrigger2 = FASequenceAnimation(onView: progressTriggerSlider)
-            backgroundTrigger2.animation = alphaAnimataion
-            backgroundTrigger2.progessValue = 0.5
+            let sequence = FASequenceAnimationGroup()
+            sequence.animation = titleLabelTrigger
             
-            let sequence = FASequenceGroup()
-            sequence.initialTrigger = initialTrigger
-            sequence.sequenceAnimations[initialTrigger] = backgroundTrigger
-            sequence.sequenceAnimations[backgroundTrigger] = backgroundTrigger2
-            
-            
-            
-            //let sequence = FASequence2()
-            
-            
-            /*
-            
-            let sequenceTrigger = FASequenceAnimation(onView: progressLabel)
-            sequenceTrigger.animation = alphaAnimataion
-            sequenceTrigger.progessValue = 0.5
-            
-            let sequenceTrigger2 = FASequenceAnimation(onView: atProgressLabel)
-            sequenceTrigger2.animation = positionAnimation
-            sequenceTrigger2.progessValue = 0.5
-            
-            
-            let sequenceTrigger3 = FASequenceAnimation(onView: progressTriggerSlider)
-            sequenceTrigger3.animation = alphaAnimataion
-            sequenceTrigger3.progessValue = 0.5
-            */
-            /*
-            
-            
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger,
-                                           onView: progressLabel,
-                                           atProgress: 0.5)
-            
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger2,
-                                           onView: atProgressLabel,
-                                           atProgress: 0.5)
-            
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger2,
-                                           onView: progressTriggerSlider,
-                                           atProgress: 0.5)
-            */
-             sequence.startSequence()
+            sequence.appendSequenceAnimation(progressLabelTrigger, relativeTo : titleLabelTrigger)
+            sequence.appendSequenceAnimation(atProgressLabelTrigger, relativeTo : progressLabelTrigger)
+            sequence.appendSequenceAnimation(progressTriggerSliderTrigger, relativeTo : progressLabelTrigger)
+         
+            sequence.startSequence()
  
             if selectedDelaySegment == 1 {
                 atProgressLabel.text = "Trigger @ Time Progress:  "

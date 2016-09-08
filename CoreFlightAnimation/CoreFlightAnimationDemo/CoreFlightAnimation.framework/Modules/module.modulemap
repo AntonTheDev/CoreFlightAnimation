@@ -1,0 +1,10 @@
+framework module CoreFlightAnimation {
+  umbrella header "CoreFlightAnimation.h"
+
+  export *
+  module * { export * }
+}
+
+module CoreFlightAnimation.Swift {
+    header "CoreFlightAnimation-Swift.h"
+}

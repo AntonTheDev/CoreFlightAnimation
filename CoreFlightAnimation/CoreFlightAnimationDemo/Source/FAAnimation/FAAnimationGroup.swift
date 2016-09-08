@@ -280,17 +280,30 @@ internal extension FAAnimationGroup {
         for key in primaryAnimations.keys {
             
             if  let newPrimaryAnimation = primaryAnimations[key] {
+                let oldAnimation : FABasicAnimation? = oldAnimations[key]
                 
-                if let oldAnimation : FABasicAnimation? = oldAnimations[key] {
-                    newPrimaryAnimation.synchronize(relativeTo: oldAnimation)
-                } else {
-                    newPrimaryAnimation.synchronize(relativeTo: nil)
+                newPrimaryAnimation.synchronize(relativeTo: oldAnimation)
+                
+                if newPrimaryAnimation.duration > 0.0 {
+                    durationArray.append(newPrimaryAnimation.duration)
                 }
-            
-                durationArray.append(newPrimaryAnimation.duration)
                 newAnimations[key] = newPrimaryAnimation
             }
         }
+        
+        animations = newAnimations.map {$1}
+        updateGroupDurationBasedOnTimePriority(durationArray)
+        
+        // configureAutoreverseIfNeeded()
+    }
+    
+    /**
+     Updates and syncronizes animations based on timing priority 
+     if the primary animations
+     
+     - parameter durationArray: durations considered based on primary state of the animations
+     */
+    func updateGroupDurationBasedOnTimePriority(durationArray: Array<CFTimeInterval>) {
         
         switch timingPriority {
         case .MaxTime:
@@ -302,38 +315,28 @@ internal extension FAAnimationGroup {
         case .Average:
             duration = durationArray.reduce(0, combine: +) / Double(durationArray.count)
         }
-        
-        let filteredAnimation = animations!.filter({
-            $0.duration == duration    ||
-                timingPriority == .Average ||
-                timingPriority == .Median
+
+        var filteredPrimaryAnimations = animations!.filter({
+            $0.duration == duration || timingPriority == .Average || timingPriority == .Median && $0.duration > 0.0
         })
         
-        if let primaryDrivingAnimation = filteredAnimation.first as? FABasicAnimation {
+        if let primaryDrivingAnimation = filteredPrimaryAnimations.first as? FABasicAnimation {
             primaryAnimation = primaryDrivingAnimation
         }
-
-        for key in nonPrimaryAnimations.keys {
+        
+        var filteredNonAnimation = animations!.filter({ $0 != primaryAnimation })
+        
+        for animation in animations! {
             
-            if  let newNonPrimaryAnimation = nonPrimaryAnimations[key] {
-           
-                if let oldAnimation : FABasicAnimation? = oldAnimations[key] {
-                    newNonPrimaryAnimation.synchronize(relativeTo: oldAnimation)
-                } else {
-                    newNonPrimaryAnimation.synchronize(relativeTo: nil)
-                }
-                
-                newAnimations[key] = newNonPrimaryAnimation
+            animation.duration = duration
+            
+            if let customAnimation = animation as? FABasicAnimation {
+                customAnimation.synchronize()
             }
         }
-        
-        animations = newAnimations.map {$1}
-
-        // configureAutoreverseIfNeeded()
     }
-
+    
     func synchronizeSubAnimationLayers() {
-        
         if let currentAnimations = animations {
             for animation in currentAnimations {
                 if let customAnimation = animation as? FABasicAnimation {
@@ -360,7 +363,6 @@ internal extension FAAnimationGroup {
             }
         }
     }
-    
     
     func animationDictionaryForGroup(animationGroup : FAAnimationGroup?) -> [String : FABasicAnimation] {
         var animationDictionary = [String: FABasicAnimation]()
@@ -413,8 +415,6 @@ internal extension FAAnimationGroup {
         return primaryAnimation.timeProgress()
     }
 }
-
-
 
 
 /**

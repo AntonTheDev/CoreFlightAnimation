@@ -346,7 +346,6 @@ class ConfigurationView : UIView {
     }    
     
     func secondary_view_value_changed(sender : UISwitch) {
-      
         delaySegnmentedControl.userInteractionEnabled = sender.on
         interactionDelegate?.toggleSecondaryView(sender.on)
         

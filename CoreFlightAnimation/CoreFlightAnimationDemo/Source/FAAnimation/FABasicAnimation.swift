@@ -125,7 +125,9 @@ internal extension FABasicAnimation {
     
     
     func synchronizeFromValue() {
-
+        if keyPath == "transform" {
+            print("Stop")
+        }
         if let presentationLayer = (animatingLayer?.presentationLayer() as? CALayer),
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             

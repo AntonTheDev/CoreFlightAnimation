@@ -23,12 +23,10 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         setupInterface()
         layoutInterface()
-        toggleSecondaryView(true)
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-
     }
     
     func setupInterface() {

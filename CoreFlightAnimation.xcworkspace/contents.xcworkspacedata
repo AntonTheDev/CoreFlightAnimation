@@ -11,13 +11,10 @@
             location = "group:FASequence.swift">
          </FileRef>
          <FileRef
-            location = "group:/Users/Anton/Developer/OpenSource/CoreFlightAnimation/Source/FASequence/FASequenceGroup.swift">
+            location = "group:FASequenceAnimation.swift">
          </FileRef>
          <FileRef
-            location = "group:/Users/Anton/Developer/OpenSource/CoreFlightAnimation/Source/FASequence/FASequenceAnimation.swift">
-         </FileRef>
-         <FileRef
-            location = "group:FASequenceAnimatable.swift">
+            location = "group:/Users/adoudarev/Developer/personal/CoreFlightAnimation/Source/FASequence/FASequenceAnimationGroup.swift">
          </FileRef>
       </Group>
       <Group
@@ -28,22 +25,6 @@
          </FileRef>
          <FileRef
             location = "group:FABasicAnimation.swift">
-         </FileRef>
-      </Group>
-      <Group
-         location = "group:Extensions"
-         name = "Extensions">
-         <FileRef
-            location = "group:CAAnimation+CoreFlight.swift">
-         </FileRef>
-         <FileRef
-            location = "group:CALayer+CoreFlight.swift">
-         </FileRef>
-         <FileRef
-            location = "group:NSValue+CoreFlight.swift">
-         </FileRef>
-         <FileRef
-            location = "group:UIView+CoreFlight.swift">
          </FileRef>
       </Group>
       <Group
@@ -60,6 +41,22 @@
          </FileRef>
          <FileRef
             location = "group:FAVector.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Extensions"
+         name = "Extensions">
+         <FileRef
+            location = "group:CAAnimation+CoreFlight.swift">
+         </FileRef>
+         <FileRef
+            location = "group:CALayer+CoreFlight.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NSValue+CoreFlight.swift">
+         </FileRef>
+         <FileRef
+            location = "group:UIView+CoreFlight.swift">
          </FileRef>
       </Group>
    </Group>

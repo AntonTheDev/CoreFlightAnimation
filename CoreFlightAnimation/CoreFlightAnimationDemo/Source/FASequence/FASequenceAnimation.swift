@@ -13,28 +13,8 @@ public func ==(lhs:FASequenceAnimation, rhs:FASequenceAnimation) -> Bool {
     return lhs.animationKey == rhs.animationKey
 }
 
+public class FASequenceAnimation : FASequence, FAAnimatable {
 
-extension FASequenceAnimation  {
-    
-    // Protocol properties decalred in class
-    
-    public func applyFinalState(animated : Bool) {
-        animation?.animatingLayer = animatingLayer
-        animation?.animationKey = animationKey
-        animation?.applyFinalState(animated)
-    }
-}
-
-public class FASequenceAnimation : FASequence, FASequenceAnimatable {
-
-    public var animation : FASequenceAnimatable? {
-        get {
-            return rootSequenceAnimation
-        } set {
-            rootSequenceAnimation = newValue
-        }
-    }
-    
     public var animationKey  : String?
     public var animatingLayer : CALayer?
     
@@ -43,12 +23,13 @@ public class FASequenceAnimation : FASequence, FASequenceAnimatable {
     public var triggerOnRemoval : Bool = false
 
     required public init(onView view : UIView) {
+        super.init()
         animatingLayer = view.layer
         animationKey = String(NSUUID().UUIDString)
     }
     
     convenience required public init(onView view : UIView,
-                                            withAnimation anim: FASequenceAnimatable,
+                                            withAnimation anim: FAAnimatable,
                                             forKey key : String? = nil) {
         self.init(onView: view)
         
@@ -82,5 +63,18 @@ public class FASequenceAnimation : FASequence, FASequenceAnimatable {
         }
         
         return false
+    }
+    
+    override public func startSequence() {
+        guard isAnimating == false else { return }
+        animation?.animatingLayer = animatingLayer
+        animation?.animationKey = animationKey
+        super.startSequence()
+    }
+    
+    override public func applyFinalState(animated : Bool) {
+        animation?.animatingLayer = animatingLayer
+        animation?.animationKey = animationKey
+        animation?.applyFinalState(animated)
     }
 }

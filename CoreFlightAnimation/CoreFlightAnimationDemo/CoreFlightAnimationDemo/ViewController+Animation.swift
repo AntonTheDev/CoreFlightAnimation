@@ -35,7 +35,7 @@ struct AnimationConfiguration {
     
     var triggerProgress  : CGFloat = 0
     
-    var enableSecondaryView  : Bool = true
+    var enableSecondaryView  : Bool = false
     
     static func titleForFunction(function : FAEasing) -> String {
         return functionTypes[functions.indexOf(function)!]
@@ -123,7 +123,7 @@ extension ViewController {
         let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
         
-        // BackgroundView AnimationGroup
+       // BackgroundView AnimationGroup
         
         let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
@@ -135,10 +135,10 @@ extension ViewController {
         backgroundTrigger.animation = backgroundViewAnimationGroup
         backgroundTrigger.progessValue = 0.5
         
-        let sequence = FASequenceGroup()
-        sequence.initialTrigger = initialTrigger
-        sequence.sequenceAnimations[initialTrigger] = backgroundTrigger
-
+        let sequence = FASequenceAnimationGroup()
+        sequence.animation = initialTrigger
+        sequence.appendSequenceAnimation(backgroundTrigger, relativeTo : initialTrigger)
+        
         configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
     }
     
@@ -194,10 +194,10 @@ extension ViewController {
         backgroundTrigger.animation = backgroundViewAnimationGroup
         backgroundTrigger.progessValue = 0.5
         
-        let sequence = FASequenceGroup()
-        sequence.initialTrigger = initialTrigger
-        sequence.sequenceAnimations[initialTrigger] = backgroundTrigger
- 
+        let sequence = FASequence()
+        sequence.rootSequenceAnimation = initialTrigger
+        sequence.appendSequenceAnimation(backgroundTrigger, relativeTo : initialTrigger)
+        
         configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
     }
     
@@ -317,41 +317,26 @@ extension ViewController {
         }
         
         let initialTrigger = FASequenceAnimation(onView: dragView, withAnimation: animationgGroup)
-        let sequence = FASequenceGroup()
-    
-        sequence.initialTrigger = initialTrigger
         
+        let sequence = FASequence()
+        sequence.rootSequenceAnimation = initialTrigger
         
         let sequenceTrigger = FASequenceAnimation(onView: dragView2)
         sequenceTrigger.animation = secondaryAnimationGroup
         sequenceTrigger.progessValue = animConfig.triggerProgress
         
-        
         switch animConfig.triggerType {
         case 1:
             sequenceTrigger.isTimeRelative = true
-        /*
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger,
-                                                                      onView: dragView2,
-                                                                      atProgress: 0.5)
- */
+            sequenceTrigger.progessValue = animConfig.triggerProgress
         case 2:
             sequenceTrigger.isTimeRelative = false
-         /*
-            sequence.addSequenceFrame(withAnimation: sequenceTrigger,
-                                                                      onView: dragView2,
-                                                                      relativeToTime : false,
-                                                                      atProgress: 0.5)
- */
+            sequenceTrigger.progessValue = animConfig.triggerProgress
         default:
             sequenceTrigger.progessValue = 0.0
-            
-       //     sequence.addSequenceFrame(withAnimation: sequenceTrigger,
-        //                                                              onView: dragView2,
-       //                                                               atProgress: 0.0)
         }
-    
-        sequence.sequenceAnimations[initialTrigger] = sequenceTrigger
+        
+        sequence.appendSequenceAnimation(sequenceTrigger, relativeTo : initialTrigger)
         return sequence
     }
 }
