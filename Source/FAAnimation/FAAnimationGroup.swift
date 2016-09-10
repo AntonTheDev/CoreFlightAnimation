@@ -15,7 +15,7 @@ import UIKit
 
 func ==(lhs:FAAnimationGroup, rhs:FAAnimationGroup) -> Bool {
     return lhs.animatingLayer == rhs.animatingLayer &&
-        lhs.animationKey == rhs.animationKey
+        lhs.animationUUID == rhs.animationUUID
 }
 
 /**
@@ -73,24 +73,14 @@ public enum FAPrimaryTimingPriority : Int {
 
 public class FAAnimationGroup : CAAnimationGroup {
        
-    public var animationKey : String?
+    public var animationUUID : String?
+    
     public weak var animatingLayer : CALayer? { didSet { synchronizeSubAnimationLayers() }}
+    
     public var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
     
     public var timingPriority : FAPrimaryTimingPriority = .MaxTime
     internal weak var primaryAnimation : FABasicAnimation?
-    
-    public var autoreverse: Bool = false
-    public var autoreverseCount: Int = 1
-    public var autoreverseDelay: NSTimeInterval = 0.0
-    public var autoreverseEasing: Bool = false
-    
-    internal var _autoreverseActiveCount: Int = 1
-    internal var _autoreverseConfigured: Bool = false
-
-    public var isTimeRelative = true
-    public var progessValue : CGFloat = 0.0
-    public var triggerOnRemoval : Bool = false
     
     override public init() {
         super.init()
@@ -104,39 +94,29 @@ public class FAAnimationGroup : CAAnimationGroup {
     }
     
     override public func copyWithZone(zone: NSZone) -> AnyObject {
-        
         let animationGroup = super.copyWithZone(zone) as! FAAnimationGroup
-       
-        animationGroup.animatingLayer          = animatingLayer
-        animationGroup.animationKey            = animationKey
         
+        animationGroup.animationUUID           = animationUUID
+        animationGroup.animatingLayer          = animatingLayer
+       
         animationGroup.animations              = animations
         animationGroup.duration                = duration
     
         animationGroup.primaryAnimation        = primaryAnimation
         animationGroup.startTime               = startTime
         animationGroup.timingPriority          = timingPriority
-        
-        animationGroup.autoreverse             = autoreverse
-        animationGroup.autoreverseCount        = autoreverseCount
-        animationGroup.autoreverseDelay        = autoreverseDelay
-        animationGroup.autoreverseEasing      = autoreverseEasing
-        
-        animationGroup._autoreverseActiveCount  = _autoreverseActiveCount
-        animationGroup._autoreverseConfigured   = _autoreverseConfigured
-        
+    
         return animationGroup
     }
     
     final public func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
         
-        animationKey = key
+        animationUUID = key
         animatingLayer = layer
       
         if let keys = animatingLayer?.animationKeys() {
             for key in Array(Set(keys)) {
                 if let oldAnimation = animatingLayer?.animationForKey(key) as? FAAnimationGroup {
-                    _autoreverseActiveCount = oldAnimation._autoreverseActiveCount
                     synchronizeAnimations(oldAnimation)
                 }
             }
@@ -159,84 +139,6 @@ public class FAAnimationGroup : CAAnimationGroup {
      animatingLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
      }
      */
-}
-
-//MARK: - Auto Reverse Logic
-
-extension FAAnimationGroup {
- 
-    func configureAutoreverseIfNeeded() {
-        if autoreverse {
-            
-            if _autoreverseConfigured == false {
-                configuredAutoreverseGroup()
-            }
-            
-            if autoreverseCount == 0 {
-                return
-            }
-            
-            if _autoreverseActiveCount >= (autoreverseCount * 2) {
-                clearAutoreverseGroup()
-                return
-            }
-            
-            _autoreverseActiveCount = _autoreverseActiveCount + 1
-        }
-    }
-    
-    func configuredAutoreverseGroup() {
-
-        let animationGroup = FAAnimationGroup()
-        
-        animationGroup.animationKey             = animationKey! + "REVERSE"
-        animationGroup.animatingLayer           = animatingLayer
-        animationGroup.animations               = reverseAnimationArray()
-        animationGroup.duration                 = duration
-        
-        animationGroup.timingPriority          = timingPriority
-        animationGroup.autoreverse             = autoreverse
-        animationGroup.autoreverseCount        = autoreverseCount
-        animationGroup._autoreverseActiveCount  = _autoreverseActiveCount
-        animationGroup.autoreverseEasing      = autoreverseEasing
-   /*
-        if let view =  animatingLayer?.owningView() {
-            let progressDelay = max(0.0 , _autoreverseDelay/duration)
-            //configureAnimationTrigger(animationGroup, onView: view, atTimeProgress : 1.0 + CGFloat(progressDelay))
-        }
-    */
-        removedOnCompletion = false
-    }
-    
-    func clearAutoreverseGroup() {
-        //_segmentArray = [FAAnimationTrigger]()
-        // removedOnCompletion = true
-        //stopTriggerTimer()
-    }
-    
-    func reverseAnimationArray() ->[FABasicAnimation] {
-        
-        var reverseAnimationArray = [FABasicAnimation]()
-        
-        if let animations = animations {
-            for animation in animations {
-                if let customAnimation = animation as? FABasicAnimation {
-                    
-                    let newAnimation = FABasicAnimation(keyPath: customAnimation.keyPath)
-                    newAnimation.easingFunction = autoreverseEasing ? customAnimation.easingFunction.autoreverseEasing() : customAnimation.easingFunction
-                    
-                    newAnimation.isPrimary = customAnimation.isPrimary
-                    newAnimation.values = customAnimation.values!.reverse()
-                    newAnimation.toValue = customAnimation.fromValue
-                    newAnimation.fromValue = customAnimation.toValue
-                    
-                    reverseAnimationArray.append(newAnimation)
-                }
-            }
-        }
-        
-        return reverseAnimationArray
-    }
 }
 
 
@@ -399,7 +301,7 @@ internal extension FAAnimationGroup {
     
     func valueProgress() -> CGFloat {
     
-        if let animation = animatingLayer?.animationForKey(animationKey!) as? FAAnimationGroup{
+        if let animation = animatingLayer?.animationForKey(animationUUID!) as? FAAnimationGroup{
             return animation.primaryAnimation!.valueProgress()
         }
         
@@ -414,7 +316,7 @@ internal extension FAAnimationGroup {
     func timeProgress() -> CGFloat {
         
         
-        if let animation = animatingLayer?.animationForKey(animationKey!) as? FAAnimationGroup{
+        if let animation = animatingLayer?.animationForKey(animationUUID!) as? FAAnimationGroup{
             return animation.primaryAnimation!.timeProgress()
         }
         

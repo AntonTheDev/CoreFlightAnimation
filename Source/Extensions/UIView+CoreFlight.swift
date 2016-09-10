@@ -15,12 +15,20 @@ public extension UIView {
     
     public func applyCachedAnimation(forKey key: String) {
         if let sequence = cachedSequences[key]  {
-            sequence.startSequence()
+            self.layer.addSequence(sequence, forKey: nil)
         }
     }
     
     public func cacheAnimation(animation : FASequence, forKey key: String) {
         cachedSequences[key] = animation
+    }
+}
+
+extension CALayer {
+    
+    public func addSequence(sequence: FASequence, forKey key: String?) {
+        sequence.rootSequenceAnimation?.animatingLayer = self
+        sequence.startSequence()
     }
 }
 

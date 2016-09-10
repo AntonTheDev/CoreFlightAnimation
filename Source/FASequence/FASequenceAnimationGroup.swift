@@ -1,42 +1,159 @@
 //
-//  FASequenceAnimator.swift
-//  
+//  FASequenceAnimationGroup.swift
+//  CoreFlightAnimation
 //
-//  Created by Anton on 8/26/16.
+//  Created by Anton Doudarev on 9/9/16.
 //
 //
 
 import Foundation
-import UIKit
+import UIKit 
 
+public class FASequenceAnimationGroup : FAAnimationGroup {
+    
+    public weak var sequenceDelegate    : FASequenceDelegate?
+    
+    public var timeRelative = true
+    public var progessValue : CGFloat = 0.0
+    public var triggerOnRemoval : Bool = false
+    
+    public var autoreverse : Bool = false
+    public var autoreverseCount: Int = 1
+    public var autoreverseDelay: NSTimeInterval = 1.0
+    public var autoreverseEasing: Bool = false
 
-public func ==(lhs:FASequenceAnimationGroup, rhs:FASequenceAnimationGroup) -> Bool {
-    return lhs.animationKey == rhs.animationKey
+    public var reverseAnimation : FASequenceAnimatable?
+    
+    override public func copyWithZone(zone: NSZone) -> AnyObject {
+        
+        let sequenceAnimation = super.copyWithZone(zone) as! FASequenceAnimationGroup
+        
+        sequenceAnimation.sequenceDelegate         = sequenceDelegate
+        sequenceAnimation.timeRelative           = timeRelative
+        sequenceAnimation.progessValue             = progessValue
+        sequenceAnimation.triggerOnRemoval         = triggerOnRemoval
+        
+        sequenceAnimation.autoreverse              = autoreverse
+        sequenceAnimation.autoreverseCount         = autoreverseCount
+        sequenceAnimation.autoreverseDelay         = autoreverseDelay
+        sequenceAnimation.autoreverseEasing        = autoreverseEasing
+        sequenceAnimation.duration                 = duration
+        sequenceAnimation.reverseAnimation         = reverseAnimation
+        
+        return sequenceAnimation
+    }
+    
+    required public override init() {
+        super.init()
+        animationUUID = String(NSUUID().UUIDString)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
+        
+        super.synchronizeAnimations(oldAnimationGroup)
+       
+        var reverseAnimationArray = [FABasicAnimation]()
+        
+        if let animations = animations {
+            for animation in animations {
+                if let customAnimation = animation as? FASequenceAnimation,
+                   let reverseAnimation = customAnimation.reverseAnimation  as? FASequenceAnimation {
+                    reverseAnimationArray.append(reverseAnimation)
+                }
+            }
+        }
+
+        let animationGroup = self.sequenceCopy() as! FASequenceAnimationGroup
+        animationGroup.animationUUID             = animationUUID! + "REVERSE"
+        animationGroup.animations                = reverseAnimationArray
+        animationGroup.progessValue              = 1.0 - progessValue
+        reverseAnimation                         = animationGroup
+    }
 }
+
 
 extension FASequenceAnimationGroup : FASequenceAnimatable {
 
-    public func applyFinalState(animated : Bool) {
-        guard isAnimating == false else { return }
-        queuedTriggers = sequenceAnimations
-        super.startSequence()
+    public func sequenceCopy() -> FASequenceAnimatable {
+        return self.copy() as! FASequenceAnimatable
     }
-}
-
-public class FASequenceAnimationGroup : FASequence {
     
     public var animation : FASequenceAnimatable? {
-        get {
-            return rootSequenceAnimation
-        } set {
-            rootSequenceAnimation = newValue
-        }
+        get { return self }
+        set { }
+    }
+    
+    public func appendSequenceAnimationOnStart(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger? {
+        return configuredSequenceCopy(child, onView: view,progress: 0.0, timeRelative: true)
+    }
+    
+    public func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView, atProgress progress : CGFloat) -> FASequenceTrigger? {
+        return configuredSequenceCopy(child, onView: view, progress: progress, timeRelative: true)
+    }
+    
+    public func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger?  {
+        return configuredSequenceCopy(child, onView: view, progress: child.progessValue, timeRelative: child.timeRelative)
+    }
+    
+    public func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView, atValueProgress progress : CGFloat) -> FASequenceTrigger? {
+        return configuredSequenceCopy(child, onView: view, progress: progress, timeRelative: false)
+    }
+    
+    private func configuredSequenceCopy(child : FASequenceAnimatable,
+                                        onView view: UIView,
+                                        progress : CGFloat = 0.0,
+                                        timeRelative : Bool = true) -> FASequenceTrigger? {
+        
+        let sequence = child.sequenceCopy()
+        
+        sequence.animatingLayer = view.layer
+        sequence.animationUUID = String(NSUUID().UUIDString)
+        sequence.progessValue = progress
+        sequence.timeRelative = timeRelative
+        sequence.sequenceDelegate = sequenceDelegate
+        
+        return sequenceDelegate?.appendSequenceAnimation(sequence, relativeTo : self)
     }
 
-    public var animationKey  : String?
-    public var animatingLayer : CALayer?
-    
-    public var isTimeRelative = true
-    public var progessValue : CGFloat = 0.0
-    public var triggerOnRemoval : Bool = false
+
+    public func applyFinalState(animated : Bool = false) {
+        
+        if let animatingLayer = animatingLayer {
+            if animated {
+                animatingLayer.speed = 1.0
+                animatingLayer.timeOffset = 0.0
+                
+                if let animationUUID = animationUUID {
+                    startTime = animatingLayer.convertTime(CACurrentMediaTime(), fromLayer: nil)
+                    animatingLayer.addAnimation(self, forKey: animationUUID)
+                }
+            }
+            
+            if let subAnimations = animations {
+                for animation in subAnimations {
+                    if let subAnimation = animation as? FABasicAnimation,
+                        let toValue = subAnimation.toValue {
+                        
+                        if subAnimation.duration <= 0 {
+                            return
+                        }
+                        
+                        print (subAnimation.keyPath, subAnimation.duration)
+                        //TODO: Figure out why the opacity is not reflected on the UIView
+                        //All properties work correctly, but to ensure that the opacity is reflected
+                        //I am setting the alpha on the UIView itsel ?? WTF
+                        if subAnimation.keyPath! == "opacity" {
+                            animatingLayer.owningView()!.setValue(toValue, forKeyPath: "alpha")
+                        } else {
+                            animatingLayer.setValue(toValue, forKeyPath: subAnimation.keyPath!)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

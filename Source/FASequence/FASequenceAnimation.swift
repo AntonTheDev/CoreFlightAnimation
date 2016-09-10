@@ -9,78 +9,126 @@
 import Foundation
 import UIKit
 
-public func ==(lhs:FASequenceAnimation, rhs:FASequenceAnimation) -> Bool {
-    return lhs.animationKey == rhs.animationKey
-}
-
-
-extension FASequenceAnimation  {
+public class FASequenceAnimation : FABasicAnimation {
     
-    // Protocol properties decalred in class
-    
-    public func applyFinalState(animated : Bool) {
-        animation?.animatingLayer = animatingLayer
-        animation?.animationKey = animationKey
-        animation?.applyFinalState(animated)
-    }
-}
+    public weak var sequenceDelegate    : FASequenceDelegate?
 
-public class FASequenceAnimation : FASequence, FASequenceAnimatable {
-
-    public var animation : FASequenceAnimatable? {
-        get {
-            return rootSequenceAnimation
-        } set {
-            rootSequenceAnimation = newValue
-        }
-    }
-    
-    public var animationKey  : String?
-    public var animatingLayer : CALayer?
-    
-    public var isTimeRelative = true
+    public var timeRelative = true
     public var progessValue : CGFloat = 0.0
     public var triggerOnRemoval : Bool = false
+    
+    public var autoreverse : Bool = false
+    public var autoreverseCount: Int = 1
+    public var autoreverseDelay: NSTimeInterval = 1.0
+    public var autoreverseEasing: Bool = false
+    
+    public var reverseAnimation : FASequenceAnimatable?
+    
+    public override var duration: CFTimeInterval {
+        didSet {
+            self.reverseAnimation?.duration = duration
+        }
+    }
 
-    required public init(onView view : UIView) {
-        animatingLayer = view.layer
-        animationKey = String(NSUUID().UUIDString)
+    required public override init() {
+        super.init()
+        animationUUID = String(NSUUID().UUIDString)
     }
     
-    convenience required public init(onView view : UIView,
-                                            withAnimation anim: FASequenceAnimatable,
-                                            forKey key : String? = nil) {
-        self.init(onView: view)
-        
-        animation = anim
-        animatingLayer = view.layer
-        animationKey = key ??  String(NSUUID().UUIDString)
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    internal func shouldTriggerRelativeTo(parent : FASequenceAnimation?, forceAnimation : Bool = false) -> Bool {
+    override public func copyWithZone(zone: NSZone) -> AnyObject {
         
-        if parent == nil {
-            animation?.animatingLayer = animatingLayer
-            animation?.animationKey = animationKey
-            animation?.applyFinalState(true)
-            return true
-        }
+        let sequenceAnimation = super.copyWithZone(zone) as! FASequenceAnimation
         
-        if let animKey = parent?.animation?.animationKey,
-            let animationgLayer = parent?.animation?.animatingLayer,
-            let runningAnimationGroup = animationgLayer.animationForKey(animKey) as? FAAnimationGroup {
-            
-            let fireTimeTrigger  = isTimeRelative && runningAnimationGroup.timeProgress() >= progessValue
-            let fireValueTrigger = isTimeRelative == false && runningAnimationGroup.valueProgress() >= progessValue
-            
-            if fireTimeTrigger || fireValueTrigger || forceAnimation  {
-                animation?.animationKey = animationKey
-                animation?.animatingLayer = animatingLayer
-                animation?.applyFinalState(true)
-                return true
-            }
-        }
+        sequenceAnimation.sequenceDelegate         = sequenceDelegate
+        sequenceAnimation.timeRelative           = timeRelative
+        sequenceAnimation.progessValue             = progessValue
+        sequenceAnimation.triggerOnRemoval         = triggerOnRemoval
         
-        return false
+        sequenceAnimation.autoreverse              = autoreverse
+        sequenceAnimation.autoreverseCount         = autoreverseCount
+        sequenceAnimation.autoreverseDelay         = autoreverseDelay
+        sequenceAnimation.autoreverseEasing        = autoreverseEasing
+
+        sequenceAnimation.reverseAnimation         = reverseAnimation
+        return sequenceAnimation
     }
+    
+    override func synchronize(relativeTo animation : FABasicAnimation? = nil) {
+        super.synchronize(relativeTo: animation)
+  
+        let newAnimation = sequenceCopy()  as! FASequenceAnimation
+        newAnimation.animationUUID             = animationUUID! + "REVERSE"
+        newAnimation.values                    = values!.reverse()
+        newAnimation.fromValue = toValue
+        newAnimation.toValue = fromValue
+    
+        reverseAnimation = newAnimation
+    }
+}
+
+extension FASequenceAnimation : FASequenceAnimatable {
+
+    public func sequenceCopy() -> FASequenceAnimatable {
+        return (self.copy()  as? FASequenceAnimation)!
+    }
+    
+    public var animation : FASequenceAnimatable? {
+        get { return self }
+        set { }
+    }
+    
+    public func appendSequenceAnimationOnStart(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger? {
+        return configuredSequenceCopy(child, onView: view,progress: 0.0, timeRelative: true)
+    }
+    
+    public func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView, atProgress progress : CGFloat) -> FASequenceTrigger? {
+        return configuredSequenceCopy(child, onView: view, progress: progress, timeRelative: true)
+    }
+    
+    public func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger?  {
+        return configuredSequenceCopy(child, onView: view, progress: child.progessValue, timeRelative: child.timeRelative)
+    }
+    
+    public func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView, atValueProgress progress : CGFloat) -> FASequenceTrigger? {
+        return configuredSequenceCopy(child, onView: view, progress: progress, timeRelative: false)
+    }
+    
+    public func applyFinalState(animated : Bool = false) {
+        
+        let newAnimationGroup = FASequenceAnimationGroup()
+        
+        newAnimationGroup.animationUUID            = animationUUID
+        newAnimationGroup.animatingLayer           = animatingLayer
+        newAnimationGroup.startTime                = startTime
+        
+        newAnimationGroup.autoreverse              = autoreverse
+        newAnimationGroup.autoreverseCount         = autoreverseCount
+        newAnimationGroup.autoreverseDelay         = autoreverseDelay
+        newAnimationGroup.autoreverseEasing        = autoreverseEasing
+        
+        newAnimationGroup.animations = [self]
+        
+        newAnimationGroup.applyFinalState(animated)
+    }
+    
+    private func configuredSequenceCopy(child : FASequenceAnimatable,
+                                        onView view: UIView,
+                                        progress : CGFloat = 0.0,
+                                        timeRelative : Bool = true) -> FASequenceTrigger? {
+        
+        let sequence = child.sequenceCopy()
+        
+        sequence.animatingLayer = view.layer
+        sequence.animationUUID = String(NSUUID().UUIDString)
+        sequence.progessValue = progress
+        sequence.timeRelative = timeRelative
+        sequence.sequenceDelegate = sequenceDelegate
+       
+        return sequenceDelegate?.appendSequenceAnimation(sequence, relativeTo : self)
+    }
+    
 }

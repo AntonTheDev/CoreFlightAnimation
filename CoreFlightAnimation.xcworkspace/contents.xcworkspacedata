@@ -13,9 +13,6 @@
          <FileRef
             location = "group:FASequenceAnimation.swift">
          </FileRef>
-         <FileRef
-            location = "group:/Users/adoudarev/Developer/personal/CoreFlightAnimation/Source/FASequence/FASequenceAnimationGroup.swift">
-         </FileRef>
       </Group>
       <Group
          location = "group:FAAnimation"

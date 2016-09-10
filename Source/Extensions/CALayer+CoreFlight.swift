@@ -77,7 +77,7 @@ extension CALayer {
     internal func FA_removeAnimationForKey(key: String) {
 
         if let animation = self.animationForKey(key) as? FAAnimationGroup  {
-            if DebugTriggerLogEnabled { print("STOPPED FORKEY ", animation.animationKey) }
+            if DebugTriggerLogEnabled { print("STOPPED FORKEY ", animation.animationUUID) }
         }
         
         FA_removeAnimationForKey(key)
@@ -92,7 +92,7 @@ extension CALayer {
         
         for key in keys {
             if let animation = self.animationForKey(key) as? FAAnimationGroup  {
-                if DebugTriggerLogEnabled { print("STOPPED ALL ", animation.animationKey) }
+                if DebugTriggerLogEnabled { print("STOPPED ALL ", animation.animationUUID) }
             }
         }
 

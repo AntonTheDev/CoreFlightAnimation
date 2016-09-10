@@ -13,28 +13,19 @@ import UIKit
 
 public class FABasicAnimation : CAKeyframeAnimation {
     
+    public var animationUUID : String?
+   
+    public weak var animatingLayer : CALayer?
+    
     public var toValue: AnyObject?
     public var fromValue: AnyObject?
+    
     public var easingFunction : FAEasing = .Linear
     public var isPrimary : Bool = false
     
     internal var interpolator : FAInterpolator?
-    
-    public weak var animatingLayer : CALayer?
-    public var animationKey : String?
+
     public var startTime : CFTimeInterval?
-    
-    public var isTimeRelative = true
-    public var progessValue : CGFloat = 0.0
-    public var triggerOnRemoval : Bool = false
-    
-    public var autoreverse : Bool = false
-    public var autoreverseCount: Int = 1
-    public var autoreverseDelay: NSTimeInterval = 1.0
-    public var autoreverseEasing: Bool = false
-    
-    internal var _autoreverseActiveCount: Int = 1
-    internal var _autoreverseConfigured: Bool = false
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -64,24 +55,19 @@ public class FABasicAnimation : CAKeyframeAnimation {
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         let animation = super.copyWithZone(zone) as! FABasicAnimation
        
-        animation.animationKey           = animationKey
-        animation.animatingLayer         = animatingLayer
-        animation.startTime              = startTime
-        animation.interpolator           = interpolator
-
-        animation.easingFunction         = easingFunction
-        animation.toValue                = toValue
-        animation.fromValue              = fromValue
-        animation.isPrimary              = isPrimary
+        animation.animationUUID             = animationUUID
         
-        animation.autoreverse            = autoreverse
-        animation.autoreverseCount       = autoreverseCount
-        animation.autoreverseDelay       = autoreverseDelay
-        animation.autoreverseEasing    = autoreverseEasing
+        animation.animatingLayer            = animatingLayer
         
-        animation._autoreverseConfigured = _autoreverseConfigured
-        animation._autoreverseActiveCount = _autoreverseActiveCount
+        animation.toValue                   = toValue
+        animation.fromValue                 = fromValue
         
+        animation.easingFunction            = easingFunction
+        animation.isPrimary                 = isPrimary
+   
+        animation.interpolator              = interpolator
+        animation.duration                  = duration
+    
         return animation
     }
     
@@ -122,7 +108,6 @@ internal extension FABasicAnimation {
         duration = config!.duration
         values = config!.values
     }
-    
     
     func synchronizeFromValue() {
 

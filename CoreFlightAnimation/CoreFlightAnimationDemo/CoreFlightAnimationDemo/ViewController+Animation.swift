@@ -120,14 +120,24 @@ extension ViewController {
         
         // ConfigView AnimationGroup
         
-        let configViewAnimationGroup = FAAnimationGroup()
+        let configViewAnimationGroup = FASequenceAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
         
        // BackgroundView AnimationGroup
         
-        let backgroundViewAnimationGroup = FAAnimationGroup()
+        let backgroundViewAnimationGroup = FASequenceAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
+        backgroundViewAnimationGroup.progessValue = 0.5
         
+        let sequence = FASequence()
+        
+        sequence.setRootSequenceAnimation(configViewAnimationGroup, onView: configView)
+        sequence.appendSequenceAnimationOnStart(backgroundViewAnimationGroup, onView : dimmerView)
+        
+        configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
+        
+        
+        /*
         let initialTrigger = FASequenceAnimation(onView: configView)
         initialTrigger.animation = configViewAnimationGroup
 
@@ -135,11 +145,12 @@ extension ViewController {
         backgroundTrigger.animation = backgroundViewAnimationGroup
         backgroundTrigger.progessValue = 0.5
         
-        let sequence = FASequenceAnimationGroup()
-        sequence.animation = initialTrigger
+        let sequence = FASequence()
+        sequence.rootSequenceAnimation = initialTrigger
         sequence.appendSequenceAnimation(backgroundTrigger, relativeTo : initialTrigger)
         
         configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
+        */
     }
     
     
@@ -177,17 +188,28 @@ extension ViewController {
         backgroundColorAnimation.toValue = UIColor.clearColor().CGColor
         backgroundColorAnimation.duration = 0.6
         
-        
         // ConfigView AnimationGroup
         
-        let configViewAnimationGroup = FAAnimationGroup()
+        let configViewAnimationGroup = FASequenceAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
         
         // BackgroundView AnimationGroup
         
-        let backgroundViewAnimationGroup = FAAnimationGroup()
+        let backgroundViewAnimationGroup = FASequenceAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
+        backgroundViewAnimationGroup.progessValue = 0.5
         
+        let sequence = FASequence()
+        sequence.setRootSequenceAnimation(configViewAnimationGroup, onView: configView)
+        sequence.appendSequenceAnimationOnStart(backgroundViewAnimationGroup, onView : dimmerView)
+        
+        configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
+        
+        // dragView.layer.addSequence(sequence, forKey: nil)
+        
+        
+        
+        /*
         let initialTrigger = FASequenceAnimation(onView: configView, withAnimation: configViewAnimationGroup)
         
         let backgroundTrigger = FASequenceAnimation(onView: dimmerView)
@@ -199,6 +221,8 @@ extension ViewController {
         sequence.appendSequenceAnimation(backgroundTrigger, relativeTo : initialTrigger)
         
         configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
+ 
+         */
     }
     
     func tappedShowConfig() {
@@ -220,11 +244,11 @@ extension ViewController {
                      transform : CATransform3D = CATransform3DIdentity,
                      toAlpha : CGFloat = 1.0,
                      duration : Double = 0.5,
-                     animationKey : String = AnimationKeys.TapStageOneAnimationKey) {
+                     animationUUID : String = AnimationKeys.TapStageOneAnimationKey) {
         
-        guard lastToFrame != toFrame else {
-            return
-        }
+      //  guard lastToFrame != toFrame else {
+      //      return
+      //  }
         
         let toBounds = CGRectMake(0, 0, toFrame.size.width , toFrame.size.height)
         let toPosition = CGCSRectGetCenter(toFrame)
@@ -235,14 +259,21 @@ extension ViewController {
                                                                  toTransform: transform,
                                                                  duration: 0.5,
                                                                  velocity : velocity,
-                                                                 animationKey : animationKey)
+                                                                 animationUUID : animationUUID)
         
         if animConfig.enableSecondaryView {
-            let sequence = self.appendTriggerToAnimation(dragViewViewAnimationGroup)
-            sequence.startSequence()
+            let sequence = FASequence()
+            sequence.rootSequenceAnimation = dragViewViewAnimationGroup
+            sequence.autoreverse = true
+            dragViewViewAnimationGroup.appendSequenceAnimation(secondaryAnimation(), onView: dragView2)
+            
+            dragView.layer.addSequence(sequence, forKey: nil)
         } else {
-            dragView.layer.addAnimation(dragViewViewAnimationGroup, forKey: animationKey)
-            dragViewViewAnimationGroup.applyFinalState()
+            
+            let sequence = FASequence()
+            sequence.rootSequenceAnimation = dragViewViewAnimationGroup
+           
+            dragView.layer.addSequence(sequence, forKey: nil)
         }
         
         lastToFrame = toFrame
@@ -254,39 +285,39 @@ extension ViewController {
                            toTransform : CATransform3D,
                            duration : Double = 0.7,
                            velocity : Any? = nil,
-                           animationKey : String = AnimationKeys.TapStageOneAnimationKey) -> FAAnimationGroup {
+                           animationUUID : String = AnimationKeys.TapStageOneAnimationKey) -> FASequenceAnimationGroup {
         
         var positionAnimationEasing = animConfig.positionFunction
         
-        if animationKey == AnimationKeys.PanGestureKey {
+        if animationUUID == AnimationKeys.PanGestureKey {
            positionAnimationEasing = adjustedEasingCurveForVelocity(velocity)
         }
         
-        let boundsAnimation = FABasicAnimation(keyPath: "bounds")
+        let boundsAnimation = FASequenceAnimation(keyPath: "bounds")
         boundsAnimation.easingFunction = animConfig.sizeFunction
         boundsAnimation.toValue = NSValue(CGRect: toBounds)
         boundsAnimation.duration = duration
         boundsAnimation.isPrimary = animConfig.sizePrimary
         
-        let positionAnimation = FABasicAnimation(keyPath: "position")
+        let positionAnimation = FASequenceAnimation(keyPath: "position")
         positionAnimation.easingFunction = positionAnimationEasing
         positionAnimation.toValue = NSValue(CGPoint: toPosition)
         positionAnimation.duration = duration
         positionAnimation.isPrimary = animConfig.positionPrimary
         
-        let alphaAnimation = FABasicAnimation(keyPath: "opacity")
+        let alphaAnimation = FASequenceAnimation(keyPath: "opacity")
         alphaAnimation.easingFunction = animConfig.alphaFunction
         alphaAnimation.toValue = toAlpha
         alphaAnimation.duration = duration
         alphaAnimation.isPrimary = animConfig.alphaPrimary
         
-        let transformAnimation = FABasicAnimation(keyPath: "transform")
+        let transformAnimation = FASequenceAnimation(keyPath: "transform")
         transformAnimation.easingFunction = animConfig.transformFunction
         transformAnimation.toValue = NSValue(CATransform3D : toTransform)
         transformAnimation.duration = duration
         transformAnimation.isPrimary = animConfig.transformPrimary
         
-        let animationGroup = FAAnimationGroup()
+        let animationGroup = FASequenceAnimationGroup()
         animationGroup.timingPriority = animConfig.primaryTimingPriority
         animationGroup.animations = [boundsAnimation, positionAnimation, alphaAnimation, transformAnimation]
        // animationGroup.autoreverse = true
@@ -295,49 +326,32 @@ extension ViewController {
         return animationGroup
     }
     
-    func appendTriggerToAnimation(animationgGroup : FAAnimationGroup) -> FASequence {
+    func secondaryAnimation() -> FASequenceAnimationGroup {
         
         let currentBounds = CGRectMake(0, 0, lastToFrame.size.width , lastToFrame.size.height)
         let currentPosition = CGCSRectGetCenter(lastToFrame)
-        let currentAlpha = self.dragView.alpha
-        let currentTransform = self.dragView.layer.transform
+        let currentAlpha = dragView.alpha
+        let currentTransform = dragView.layer.transform
         
         let secondaryAnimationGroup = createNewAnimationGroup(currentBounds,
                                                               toPosition: currentPosition,
                                                               toAlpha: currentAlpha,
                                                               toTransform: currentTransform,
-                                                              duration: animationgGroup.duration)
+                                                              duration: 0.5)
         
-        if secondaryAnimationGroup.animationKey == nil {
-            secondaryAnimationGroup.animationKey = String(NSUUID().UUIDString)
-        }
-        
-        if secondaryAnimationGroup.animatingLayer == nil {
-            secondaryAnimationGroup.animatingLayer = view.layer
-        }
-        
-        let initialTrigger = FASequenceAnimation(onView: dragView, withAnimation: animationgGroup)
-        
-        let sequence = FASequence()
-        sequence.rootSequenceAnimation = initialTrigger
-        
-        let sequenceTrigger = FASequenceAnimation(onView: dragView2)
-        sequenceTrigger.animation = secondaryAnimationGroup
-        sequenceTrigger.progessValue = animConfig.triggerProgress
         
         switch animConfig.triggerType {
         case 1:
-            sequenceTrigger.isTimeRelative = true
-            sequenceTrigger.progessValue = animConfig.triggerProgress
+            secondaryAnimationGroup.timeRelative = true
+            secondaryAnimationGroup.progessValue = animConfig.triggerProgress
         case 2:
-            sequenceTrigger.isTimeRelative = false
-            sequenceTrigger.progessValue = animConfig.triggerProgress
+            secondaryAnimationGroup.timeRelative = false
+            secondaryAnimationGroup.progessValue = animConfig.triggerProgress
         default:
-            sequenceTrigger.progessValue = 0.0
+            secondaryAnimationGroup.progessValue = 0.0
         }
-        
-        sequence.appendSequenceAnimation(sequenceTrigger, relativeTo : initialTrigger)
-        return sequence
+
+        return secondaryAnimationGroup
     }
 }
 
@@ -363,7 +377,7 @@ extension ViewController {
         case .Ended:
             let finalFrame = CGRectMake(0, 0, UIScreen.mainScreen().bounds.width, 240)
             let currentVelocity = recognizer.velocityInView(view)
-            animateView(finalFrame,  velocity: currentVelocity, animationKey:  AnimationKeys.PanGestureKey)
+            animateView(finalFrame,  velocity: currentVelocity, animationUUID:  AnimationKeys.PanGestureKey)
         default:
             break
         }
