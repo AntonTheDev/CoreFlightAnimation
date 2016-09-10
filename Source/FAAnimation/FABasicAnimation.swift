@@ -13,8 +13,6 @@ import UIKit
 
 public class FABasicAnimation : CAKeyframeAnimation {
     
-    public var animationUUID : String?
-   
     public weak var animatingLayer : CALayer?
     
     public var toValue: AnyObject?
@@ -24,8 +22,7 @@ public class FABasicAnimation : CAKeyframeAnimation {
     public var isPrimary : Bool = false
     
     internal var interpolator : FAInterpolator?
-
-    public var startTime : CFTimeInterval?
+    internal var startTime : CFTimeInterval?
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -55,24 +52,15 @@ public class FABasicAnimation : CAKeyframeAnimation {
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         let animation = super.copyWithZone(zone) as! FABasicAnimation
        
-        animation.animationUUID             = animationUUID
-        
         animation.animatingLayer            = animatingLayer
         
         animation.toValue                   = toValue
         animation.fromValue                 = fromValue
-        
         animation.easingFunction            = easingFunction
         animation.isPrimary                 = isPrimary
    
         animation.interpolator              = interpolator
-        animation.duration                  = duration
-    
         return animation
-    }
-    
-    final public func configureAnimation(withLayer layer: CALayer?) {
-        animatingLayer = layer
     }
     
     
@@ -91,7 +79,7 @@ public class FABasicAnimation : CAKeyframeAnimation {
 
 internal extension FABasicAnimation {
     
-    func synchronize(relativeTo animation : FABasicAnimation? = nil) {
+    internal func synchronize(relativeTo animation : FABasicAnimation? = nil) {
 
         synchronizeFromValue()
         
@@ -100,17 +88,19 @@ internal extension FABasicAnimation {
         }
     
         interpolator = FAInterpolator(toValue, fromValue, relativeTo : animation?.fromValue)
-        
-        // adjustSpringVelocityIfNeeded(relativeTo : animation)
-        
+    
         let config = interpolator?.interpolatedConfigurationFor(self, relativeTo: animation)
         easingFunction = config!.easing
         duration = config!.duration
         values = config!.values
     }
     
-    func synchronizeFromValue() {
+    internal func synchronizeFromValue() {
 
+      //  guard fromValue == nil else {
+      //      return
+      //  }
+        
         if let presentationLayer = (animatingLayer?.presentationLayer() as? CALayer),
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             

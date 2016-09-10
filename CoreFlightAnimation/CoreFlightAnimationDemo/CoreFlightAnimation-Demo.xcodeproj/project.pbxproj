@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		134057F51D6781DE006D584E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 134057F41D6781DE006D584E /* Assets.xcassets */; };
+		1367938A1D841D1100BD2303 /* CoreFlightAnimation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 136793891D841D1100BD2303 /* CoreFlightAnimation.framework */; };
 		13933B6D1D8366B100F6F037 /* FASequenceAnimationGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13933B6C1D8366B100F6F037 /* FASequenceAnimationGroup.swift */; };
 		13FD15931D80B4D0005B5840 /* CoreFlightAnimation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13FD15921D80B4D0005B5840 /* CoreFlightAnimation.framework */; };
 		13FD15951D80B4F4005B5840 /* CoreFlightAnimation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 13FD15921D80B4D0005B5840 /* CoreFlightAnimation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		134057F41D6781DE006D584E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		136793891D841D1100BD2303 /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFlightAnimation.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/CoreFlightAnimation-fruuiapgodzecqgbofivwegibdih/Build/Products/Debug-iphoneos/CoreFlightAnimation.framework"; sourceTree = "<group>"; };
 		13933B6C1D8366B100F6F037 /* FASequenceAnimationGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FASequenceAnimationGroup.swift; sourceTree = "<group>"; };
 		13FD15921D80B4D0005B5840 /* CoreFlightAnimation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFlightAnimation.framework; path = /Users/adoudarev/Developer/personal/CoreFlightAnimation/CoreFlightAnimation/CoreFlightAnimationDemo/CoreFlightAnimation.framework; sourceTree = "<absolute>"; };
 		13FD15B81D80E3BF005B5840 /* CAAnimation+CoreFlight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CAAnimation+CoreFlight.swift"; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1367938A1D841D1100BD2303 /* CoreFlightAnimation.framework in Frameworks */,
 				13FD15931D80B4D0005B5840 /* CoreFlightAnimation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -159,6 +162,7 @@
 		3ADCBB7D1D654D4700BBD71C = {
 			isa = PBXGroup;
 			children = (
+				136793891D841D1100BD2303 /* CoreFlightAnimation.framework */,
 				13FD15B61D80E3BF005B5840 /* Source */,
 				3ADCBB881D654D4700BBD71C /* CoreFlightAnimationDemo */,
 				3ADCBB871D654D4700BBD71C /* Products */,

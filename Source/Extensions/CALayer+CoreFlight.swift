@@ -22,7 +22,6 @@ internal func swizzleSelector(cls: AnyClass!, originalSelector : Selector, swizz
                                        method_getImplementation(swizzledMethod),
                                        method_getTypeEncoding(swizzledMethod))
     if didAddMethod {
-        
         class_replaceMethod(cls,
                             swizzledSelector,
                             method_getImplementation(originalMethod),
@@ -63,6 +62,13 @@ extension CALayer {
     
     internal func FA_addAnimation(anim: CAAnimation, forKey key: String?) {
         
+        if let animation = anim as? FASequence  {
+            stopRunningSequence()
+            animation.rootSequenceAnimation?.animatingLayer = self
+            animation.startSequence()
+            return
+        }
+        
         guard let animation = anim as? FAAnimationGroup else {
             FA_addAnimation(anim, forKey: key)
             return
@@ -75,28 +81,52 @@ extension CALayer {
       
     }
     internal func FA_removeAnimationForKey(key: String) {
-
+        
+        if let animation = self.animationForKey(key) as? FASequenceAnimationGroup  {
+            animation.sequenceDelegate?.stopSequence()
+            if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED FORKEY ", animation.animationUUID) }
+        }
+        
+        if let animation = self.animationForKey(key) as? FASequenceAnimation  {
+            animation.sequenceDelegate?.stopSequence()
+            if DebugTriggerLogEnabled { print("FASequenceAnimation STOPPED FORKEY ", animation.animationUUID) }
+        }
+        
         if let animation = self.animationForKey(key) as? FAAnimationGroup  {
-            if DebugTriggerLogEnabled { print("STOPPED FORKEY ", animation.animationUUID) }
+            if DebugTriggerLogEnabled { print("FAAnimationGroup STOPPED FORKEY ", animation.animationUUID) }
         }
         
         FA_removeAnimationForKey(key)
     }
     
     internal func FA_removeAllAnimations() {
+        stopRunningSequence()
+        FA_removeAllAnimations()
+    }
+    
+    final private func stopRunningSequence() {
         
         guard let keys = self.animationKeys() else {
-            FA_removeAllAnimations()
             return
         }
         
         for key in keys {
+            
             if let animation = self.animationForKey(key) as? FAAnimationGroup  {
-                if DebugTriggerLogEnabled { print("STOPPED ALL ", animation.animationUUID) }
+                if DebugTriggerLogEnabled { print("FAAnimationGroup STOPPED ALL ", animation.animationUUID) }
+            }
+            
+            if let animation = self.animationForKey(key) as? FASequenceAnimationGroup  {
+                animation.sequenceDelegate?.stopSequence()
+                if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED ALL FORKEY ", animation.animationUUID) }
+            }
+            
+            if let animation = self.animationForKey(key) as? FASequenceAnimation  {
+                animation.sequenceDelegate?.stopSequence()
+                if DebugTriggerLogEnabled { print("FASequenceAnimation STOPPED ALL FORKEY ", animation.animationUUID) }
             }
         }
 
-        FA_removeAllAnimations()
     }
     
     final public func anyValueForKeyPath(keyPath: String) -> Any? {

@@ -13,7 +13,6 @@ public protocol FASequenceAnimatable : FASequenceTrigger  {
     
     weak var sequenceDelegate    : FASequenceDelegate? { get set }
     
-    var animation           : FASequenceAnimatable? { get set }
     var reverseAnimation    : FASequenceAnimatable? { get set }
     
     var animationUUID       : String?   { get set }
@@ -25,53 +24,90 @@ public protocol FASequenceAnimatable : FASequenceTrigger  {
     
     var duration            : NSTimeInterval    { get set }
     
-    var autoreverse         : Bool              { get set }
-    var autoreverseCount    : Int               { get set }
-    var autoreverseDelay    : NSTimeInterval    { get set }
-    var autoreverseEasing   : Bool              { get set }
+    var autoreverse                 : Bool              { get set }
+    var autoreverseCount            : Int               { get set }
+    var autoreverseDelay            : NSTimeInterval    { get set }
+    var autoreverseInvertEasing      : Bool              { get set }
+    var autoreverseInvertProgress   : Bool              { get set }
     
     func applyFinalState(animated : Bool)
     
     func sequenceCopy() -> FASequenceAnimatable
 }
 
-public protocol FASequenceTrigger :  class {
+public protocol FASequenceTrigger : class {
     
-    func appendSequenceAnimationOnStart(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger?
+    func appendSequenceAnimationOnStart(child : FASequenceAnimatable,
+                                        onView view: UIView) -> FASequenceTrigger?
     
-    func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger?
-    func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView, atProgress progress : CGFloat) -> FASequenceTrigger?
-    func appendSequenceAnimation(child : FASequenceAnimatable, onView view: UIView, atValueProgress progress : CGFloat) -> FASequenceTrigger?
+    func appendSequenceAnimation(child : FASequenceAnimatable,
+                                 onView view: UIView) -> FASequenceTrigger?
+    
+    func appendSequenceAnimation(child : FASequenceAnimatable,
+                                 onView view: UIView,
+                                 atProgress progress : CGFloat) -> FASequenceTrigger?
+    
+    func appendSequenceAnimation(child : FASequenceAnimatable,
+                                 onView view: UIView,
+                                 atValueProgress progress : CGFloat) -> FASequenceTrigger?
 }
 
 public protocol FASequenceDelegate : FASequenceTrigger {
-    func appendSequenceAnimation(child : FASequenceAnimatable, relativeTo parent : FASequenceAnimatable) -> FASequenceTrigger?
+    
+    func appendSequenceAnimation(child : FASequenceAnimatable,
+                                 relativeTo parent : FASequenceAnimatable) -> FASequenceTrigger?
+    
+    func startSequence()
+    func stopSequence()
 }
 
-public class FASequence  {
+public class FASequence : CAAnimation  {
     
     public var rootSequenceAnimation : FASequenceAnimatable? {
         didSet { rootSequenceAnimation?.sequenceDelegate = self }
     }
     
-    // [ Parent : Child ]
-    internal var sequenceAnimations = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
-    internal var queuedTriggers = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
-    
     internal var displayLink : CADisplayLink?
+
+    internal var sequenceAnimations         = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
+    internal var queuedSequenceAnimations   = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
+    
     
     public var autoreverse: Bool = false
     public var autoreverseCount: Int = 1
     public var autoreverseDelay: NSTimeInterval = 0.0
-    public var autoreverseEasing: Bool = false
+    public var autoreverseInvertEasing : Bool = false
+    public var autoreverseInvertProgress : Bool = false
     
     internal var autoreverseActiveCount: Int = 1
+    internal var autoreversePendingDelay: Bool = false
+    internal var stopTime : CFTimeInterval?
     
+    public override init() {
+        super.init()
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - Sequence State Flags
+
+extension FASequence {
+   
     internal var isAnimating : Bool {
         get { return displayLink != nil }
     }
     
-    public init() { }
+    internal var reachedEndOfSequence : Bool {
+        get { return (queuedSequenceAnimations.count == 0) }
+    }
+    
+    internal var reversableSequenceInProgress : Bool {
+        get { return ( autoreverse == true && autoreverseActiveCount <= autoreverseCount * 2) }
+    }
+    
 }
 
 // MARK: - FASequenceDelegate : FASequenceTrigger
@@ -120,12 +156,18 @@ extension FASequence : FASequenceDelegate {
         
         let sequence = child.sequenceCopy() 
         
-        sequence.animatingLayer     = view.layer
-        sequence.animationUUID      = String(NSUUID().UUIDString)
-        sequence.progessValue       = progress
-        sequence.timeRelative       = timeRelative
-        sequence.sequenceDelegate   = self
+        sequence.animatingLayer           = view.layer
+        sequence.animationUUID            = String(NSUUID().UUIDString)
+        sequence.progessValue             = progress
+        sequence.timeRelative             = timeRelative
+        sequence.sequenceDelegate         = self
         
+        sequence.autoreverse                = autoreverse
+        sequence.autoreverseCount           = autoreverseCount
+        sequence.autoreverseDelay           = autoreverseDelay
+        sequence.autoreverseInvertEasing     = autoreverseInvertEasing
+        sequence.autoreverseInvertProgress  = autoreverseInvertProgress
+
         if let rootSequenceAnimation = rootSequenceAnimation {
             sequenceAnimations.append((parent : rootSequenceAnimation , child : sequence))
         }
@@ -153,12 +195,13 @@ public extension FASequence {
     public func stopSequence() {
         
         displayLink?.invalidate()
+        queuedSequenceAnimations = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
+        
         displayLink = nil
+        stopTime = nil
         
         autoreverseActiveCount = 1
-        queuedTriggers = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
     }
-    
     
     @objc private func sequenceCurrentFrame() {
         applyActiveSequenceTriggers()
@@ -166,17 +209,16 @@ public extension FASequence {
     
     private func synchronizeRootSequenceTriggers() {
         
-        queuedTriggers = sequenceAnimations
+        queuedSequenceAnimations = sequenceAnimations
         
-        for trigger in queuedTriggers {
+        for trigger in queuedSequenceAnimations {
             if trigger.parent.animationUUID == rootSequenceAnimation?.animationUUID {
-                
-                if let  index = queuedTriggers.indexOf({$0.parent.animationUUID == rootSequenceAnimation?.animationUUID }) {
-                    queuedTriggers[index].parent.animatingLayer     = rootSequenceAnimation?.animatingLayer
-                    queuedTriggers[index].parent.reverseAnimation   = rootSequenceAnimation?.reverseAnimation
-                    queuedTriggers[index].parent.progessValue       = (rootSequenceAnimation?.progessValue)!
-                    queuedTriggers[index].parent.timeRelative     = (rootSequenceAnimation?.timeRelative)!
-                    queuedTriggers[index].parent.sequenceDelegate   = rootSequenceAnimation?.sequenceDelegate
+                if let  index = queuedSequenceAnimations.indexOf({$0.parent.animationUUID == rootSequenceAnimation?.animationUUID }) {
+                    queuedSequenceAnimations[index].parent.animatingLayer     = rootSequenceAnimation?.animatingLayer
+                    queuedSequenceAnimations[index].parent.reverseAnimation   = rootSequenceAnimation?.reverseAnimation
+                    queuedSequenceAnimations[index].parent.progessValue       = (rootSequenceAnimation?.progessValue)!
+                    queuedSequenceAnimations[index].parent.timeRelative       = (rootSequenceAnimation?.timeRelative)!
+                    queuedSequenceAnimations[index].parent.sequenceDelegate   = rootSequenceAnimation?.sequenceDelegate
                 }
             }
         }
@@ -184,77 +226,106 @@ public extension FASequence {
     
     private func applyActiveSequenceTriggers(forceAnimation : Bool = false) {
         
-        for trigger in queuedTriggers {
-            if shouldTriggerRelativeTo(trigger.child, parent : trigger.parent, forceAnimation : forceAnimation) {
-                
-                trigger.child.applyFinalState(true)
-                
-                queuedTriggers = queuedTriggers.filter {
-                    !($0.child.animationUUID == trigger.child.animationUUID &&
-                        $0.parent.animationUUID == trigger.parent.animationUUID)
-                }
+        for sequenceAnimation in queuedSequenceAnimations {
+            if sequenceAnimationActivated(sequenceAnimation, forceAnimation : forceAnimation) {
+                removeAnimationFromQueue(sequenceAnimation)
             }
         }
         
-        if queuedTriggers.count == 0 && autoreverse == true && autoreverseActiveCount <= autoreverseCount * 2 {
-            reverseSequenceIfNeeded()
-        } else if queuedTriggers.count == 0 {
+        guard reachedEndOfSequence else {
+            return
+        }
+        
+        if reversableSequenceInProgress {
+            applyReverseSequenceIfNeeded()
+        } else {
             stopSequence()
         }
     }
     
-    
-    private func shouldTriggerRelativeTo(child : FASequenceAnimatable,
-                                         parent : FASequenceAnimatable?,
-                                         forceAnimation : Bool = false) -> Bool {
-        if parent == nil {
+    private func sequenceAnimationActivated(sequence: (parent : FASequenceAnimatable , child : FASequenceAnimatable),
+                                            forceAnimation force: Bool = false) -> Bool {
+        
+        if animationShouldActivate(sequence, forceAnimation : force) {
+            sequence.child.applyFinalState(true)
             return true
         }
         
-        if let animKey = parent?.animation?.animationUUID,
-               animationgLayer = parent?.animation?.animatingLayer,
-               runningAnimationGroup = animationgLayer.animationForKey(animKey) as? FAAnimationGroup {
+        return false
+    }
+    
+    
+    private func animationShouldActivate(sequence: (parent : FASequenceAnimatable , child : FASequenceAnimatable),
+                                         forceAnimation shouldForceAnimation: Bool = false) -> Bool {
+        let child  = sequence.child
+        let parent = sequence.parent
+        
+        if let animKey = parent.animationUUID,
+            animationgLayer = parent.animatingLayer,
+            runningAnimationGroup = animationgLayer.animationForKey(animKey) as? FAAnimationGroup {
             
-            let fireTimeTrigger  = child.timeRelative && runningAnimationGroup.timeProgress() >= child.progessValue
-            let fireValueTrigger = child.timeRelative == false && runningAnimationGroup.valueProgress() >= child.progessValue
+            let shouldActivateTimeRelativeAnimation  = child.timeRelative && runningAnimationGroup.timeProgress() >= child.progessValue
+            let shouldActivateValueRelativeAnimation = child.timeRelative == false && runningAnimationGroup.valueProgress() >= child.progessValue
             
-            if fireTimeTrigger || fireValueTrigger || forceAnimation  {
+            if shouldActivateTimeRelativeAnimation || shouldActivateValueRelativeAnimation || shouldForceAnimation  {
                 return true
             }
         }
         
         return false
     }
+    
+    private func removeAnimationFromQueue(sequenceAnimation: (parent : FASequenceAnimatable , child : FASequenceAnimatable)) {
+        queuedSequenceAnimations = queuedSequenceAnimations.filter {
+            !($0.parent.animationUUID == sequenceAnimation.parent.animationUUID &&
+                $0.child.animationUUID == sequenceAnimation.child.animationUUID)
+        }
+    }
 }
 
 
 // MARK: - Auto Reverse Logic
 
-public extension FASequence {
+internal extension FASequence {
     
-    func reverseSequenceIfNeeded() {
-        
+    internal func applyReverseSequenceIfNeeded() {
+  
         var startAutoReverse = true
         
-        if queuedTriggers.count == 0 {
+        if queuedSequenceAnimations.count == 0 {
+            
             for trigger in sequenceAnimations {
-                if let animation = trigger.child.animation as? FAAnimationGroup {
+                if let animation = trigger.child as? FAAnimationGroup {
                     if animation.timeProgress() < 1.0 {
                         startAutoReverse = false
                     }
                 }
             }
             
-            if let animation = rootSequenceAnimation?.animation as? FAAnimationGroup {
+            if let animation = rootSequenceAnimation as? FAAnimationGroup {
                 if animation.timeProgress() < 1.0 {
                     startAutoReverse = false
                 }
             }
         }
         
-        if startAutoReverse == false {  return }
+        if startAutoReverse == false { return }
+    
+        if autoreverseDelay > 0.0 {
+            
+            if stopTime == nil {
+                stopTime = CFAbsoluteTimeGetCurrent()
+            }
+            
+            let diff =  CFAbsoluteTimeGetCurrent() - stopTime!
+            
+            if diff < autoreverseDelay {
+                return
+            }
+        }
         
         if self.autoreverseActiveCount >= self.autoreverseCount * 2 {
+            
             stopSequence()
             
             rootSequenceAnimation = rootSequenceAnimation!.reverseAnimation
@@ -279,11 +350,9 @@ public extension FASequence {
         }
         
         sequenceAnimations = newSequenceAnimations
-        queuedTriggers = newSequenceAnimations
-        
+        queuedSequenceAnimations = newSequenceAnimations
         rootSequenceAnimation?.applyFinalState(true)
     }
-
 }
 // if let view =  weakLayer?.owningView() {
 //      let progressDelay = max(0.0 , _autoreverseDelay/duration)

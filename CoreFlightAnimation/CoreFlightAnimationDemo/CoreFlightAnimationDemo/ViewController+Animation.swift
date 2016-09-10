@@ -265,15 +265,20 @@ extension ViewController {
             let sequence = FASequence()
             sequence.rootSequenceAnimation = dragViewViewAnimationGroup
             sequence.autoreverse = true
+            sequence.autoreverseDelay = 1.0
+            sequence.autoreverseInvertProgress = true
+            sequence.autoreverseInvertEasing = true
+            
             dragViewViewAnimationGroup.appendSequenceAnimation(secondaryAnimation(), onView: dragView2)
             
-            dragView.layer.addSequence(sequence, forKey: nil)
+            dragView.layer.addAnimation(sequence, forKey: nil)
+        
         } else {
             
             let sequence = FASequence()
             sequence.rootSequenceAnimation = dragViewViewAnimationGroup
-           
-            dragView.layer.addSequence(sequence, forKey: nil)
+            
+            dragView.layer.addAnimation(sequence, forKey: nil)
         }
         
         lastToFrame = toFrame

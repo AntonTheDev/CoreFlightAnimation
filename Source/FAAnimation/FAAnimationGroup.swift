@@ -76,10 +76,10 @@ public class FAAnimationGroup : CAAnimationGroup {
     public var animationUUID : String?
     
     public weak var animatingLayer : CALayer? { didSet { synchronizeSubAnimationLayers() }}
-    
-    public var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
+    internal var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
     
     public var timingPriority : FAPrimaryTimingPriority = .MaxTime
+    
     internal weak var primaryAnimation : FABasicAnimation?
     
     override public init() {
@@ -98,10 +98,7 @@ public class FAAnimationGroup : CAAnimationGroup {
         
         animationGroup.animationUUID           = animationUUID
         animationGroup.animatingLayer          = animatingLayer
-       
-        animationGroup.animations              = animations
-        animationGroup.duration                = duration
-    
+      
         animationGroup.primaryAnimation        = primaryAnimation
         animationGroup.startTime               = startTime
         animationGroup.timingPriority          = timingPriority
@@ -109,13 +106,19 @@ public class FAAnimationGroup : CAAnimationGroup {
         return animationGroup
     }
     
-    final public func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
+    final internal func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
         
         animationUUID = key
         animatingLayer = layer
       
         if let keys = animatingLayer?.animationKeys() {
             for key in Array(Set(keys)) {
+                
+                if let oldAnimation = animatingLayer?.animationForKey(key) as? FASequenceAnimationGroup {
+                    oldAnimation.sequenceDelegate?.stopSequence()
+                    synchronizeAnimations(oldAnimation)
+                }
+                
                 if let oldAnimation = animatingLayer?.animationForKey(key) as? FAAnimationGroup {
                     synchronizeAnimations(oldAnimation)
                 }
@@ -124,21 +127,6 @@ public class FAAnimationGroup : CAAnimationGroup {
             synchronizeAnimations(nil)
         }
     }
-    
-    
-    
-    /**
-     Not Ready for Prime Time, being declared as private
-     
-     Adjusts animation based on the progress form 0 - 1
-     
-     - parameter progress: scrub "to progress" value
-     
-     private func scrubToProgress(progress : CGFloat) {
-     animatingLayer?.speed = 0.0
-     animatingLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
-     }
-     */
 }
 
 
@@ -151,7 +139,7 @@ internal extension FAAnimationGroup {
      
      - parameter oldAnimationGroup: old animation in flight
      */
-    func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
+    internal func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
         
         var durationArray =  [Double]()
         
@@ -243,12 +231,16 @@ internal extension FAAnimationGroup {
         }
         
         animations = newAnimations.map {$1}
-
-        // configureAutoreverseIfNeeded()
     }
+}
 
+internal extension FAAnimationGroup {
+    
+    /**
+     Called by the didSet observer of the animatingLayer, ensures
+     that all the sub animations have their layer set for synchronization
+     */
     func synchronizeSubAnimationLayers() {
-        
         if let currentAnimations = animations {
             for animation in currentAnimations {
                 if let customAnimation = animation as? FABasicAnimation {
@@ -258,6 +250,11 @@ internal extension FAAnimationGroup {
         }
     }
     
+    /**
+     Called by the didSet observer of the startTime, ensures
+     that all the sub animations have a synchromous startTime
+     for calculating progress
+     */
     func synchronizeSubAnimationStartTime() {
         if let currentAnimations = animations {
             for animation in currentAnimations {
@@ -266,18 +263,20 @@ internal extension FAAnimationGroup {
                 }
             }
         }
-        
-        if let currentAnimations = animations {
-            for animation in currentAnimations {
-                if let customAnimation = animation as? FABasicAnimation {
-                    customAnimation.animatingLayer = animatingLayer
-                }
-            }
-        }
     }
     
-    
+    /**
+     Returns a dictionary format of the animations in the FAAnimationGroup.
+     The keypath of the animation is used as the key
+     
+     i.e [keyPath : FABasicAnimation]
+     
+     - parameter animationGroup: The animation group to transform
+     
+     - returns: [keyPath : FABasicAnimation] representation of hte animations array
+     */
     func animationDictionaryForGroup(animationGroup : FAAnimationGroup?) -> [String : FABasicAnimation] {
+        
         var animationDictionary = [String: FABasicAnimation]()
         
         if let group = animationGroup {
@@ -315,7 +314,6 @@ internal extension FAAnimationGroup {
     
     func timeProgress() -> CGFloat {
         
-        
         if let animation = animatingLayer?.animationForKey(animationUUID!) as? FAAnimationGroup{
             return animation.primaryAnimation!.timeProgress()
         }
@@ -327,6 +325,20 @@ internal extension FAAnimationGroup {
         
         return primaryAnimation.timeProgress()
     }
+    
+    
+    /**
+     Not Ready for Prime Time, being declared as private
+     
+     Adjusts animation based on the progress form 0 - 1
+     
+     - parameter progress: scrub "to progress" value
+     
+     private func scrubToProgress(progress : CGFloat) {
+     animatingLayer?.speed = 0.0
+     animatingLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
+     }
+     */
 }
 
 

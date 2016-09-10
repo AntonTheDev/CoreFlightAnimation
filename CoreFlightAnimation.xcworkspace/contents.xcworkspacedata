@@ -13,15 +13,18 @@
          <FileRef
             location = "group:FASequenceAnimation.swift">
          </FileRef>
+         <FileRef
+            location = "group:FASequenceAnimationGroup.swift">
+         </FileRef>
       </Group>
       <Group
          location = "group:FAAnimation"
          name = "FAAnimation">
          <FileRef
-            location = "group:FAAnimationGroup.swift">
+            location = "group:FABasicAnimation.swift">
          </FileRef>
          <FileRef
-            location = "group:FABasicAnimation.swift">
+            location = "group:FAAnimationGroup.swift">
          </FileRef>
       </Group>
       <Group

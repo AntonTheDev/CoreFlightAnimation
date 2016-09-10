@@ -20,25 +20,28 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
     public var autoreverse : Bool = false
     public var autoreverseCount: Int = 1
     public var autoreverseDelay: NSTimeInterval = 1.0
-    public var autoreverseEasing: Bool = false
-
+    public var autoreverseInvertEasing : Bool = false
+    public var autoreverseInvertProgress : Bool = false
+    
     public var reverseAnimation : FASequenceAnimatable?
     
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         
         let sequenceAnimation = super.copyWithZone(zone) as! FASequenceAnimationGroup
         
-        sequenceAnimation.sequenceDelegate         = sequenceDelegate
-        sequenceAnimation.timeRelative           = timeRelative
-        sequenceAnimation.progessValue             = progessValue
-        sequenceAnimation.triggerOnRemoval         = triggerOnRemoval
+        sequenceAnimation.sequenceDelegate              = sequenceDelegate
+        sequenceAnimation.timeRelative                  = timeRelative
+        sequenceAnimation.progessValue                  = progessValue
+        sequenceAnimation.triggerOnRemoval              = triggerOnRemoval
         
-        sequenceAnimation.autoreverse              = autoreverse
-        sequenceAnimation.autoreverseCount         = autoreverseCount
-        sequenceAnimation.autoreverseDelay         = autoreverseDelay
-        sequenceAnimation.autoreverseEasing        = autoreverseEasing
-        sequenceAnimation.duration                 = duration
-        sequenceAnimation.reverseAnimation         = reverseAnimation
+        sequenceAnimation.autoreverse                   = autoreverse
+        sequenceAnimation.autoreverseCount              = autoreverseCount
+        sequenceAnimation.autoreverseDelay              = autoreverseDelay
+        sequenceAnimation.autoreverseInvertEasing        = autoreverseInvertEasing
+        sequenceAnimation.autoreverseInvertProgress     = autoreverseInvertEasing
+        sequenceAnimation.duration                      = duration
+      
+        sequenceAnimation.reverseAnimation              = reverseAnimation
         
         return sequenceAnimation
     }
@@ -62,16 +65,30 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
             for animation in animations {
                 if let customAnimation = animation as? FASequenceAnimation,
                    let reverseAnimation = customAnimation.reverseAnimation  as? FASequenceAnimation {
+                    
+                    if autoreverseInvertEasing {
+                        reverseAnimation.easingFunction = reverseAnimation.easingFunction.autoreverseEasing()
+                    }
+                    
                     reverseAnimationArray.append(reverseAnimation)
                 }
             }
         }
 
         let animationGroup = self.sequenceCopy() as! FASequenceAnimationGroup
-        animationGroup.animationUUID             = animationUUID! + "REVERSE"
-        animationGroup.animations                = reverseAnimationArray
-        animationGroup.progessValue              = 1.0 - progessValue
-        reverseAnimation                         = animationGroup
+        animationGroup.animationUUID                = animationUUID! + "REVERSE"
+        animationGroup.animations                   = reverseAnimationArray
+        animationGroup.progessValue                 = autoreverseInvertProgress ? (1.0 - progessValue) : progessValue
+      
+        animationGroup.autoreverse                  = autoreverse
+        animationGroup.autoreverseCount             = autoreverseCount
+        animationGroup.autoreverseDelay             = autoreverseDelay
+        animationGroup.autoreverseInvertEasing       = autoreverseInvertEasing
+        animationGroup.autoreverseInvertProgress    = autoreverseInvertProgress
+       
+        animationGroup.reverseAnimation             = self
+       
+        reverseAnimation                            = animationGroup
     }
 }
 
@@ -80,11 +97,6 @@ extension FASequenceAnimationGroup : FASequenceAnimatable {
 
     public func sequenceCopy() -> FASequenceAnimatable {
         return self.copy() as! FASequenceAnimatable
-    }
-    
-    public var animation : FASequenceAnimatable? {
-        get { return self }
-        set { }
     }
     
     public func appendSequenceAnimationOnStart(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger? {
@@ -119,7 +131,6 @@ extension FASequenceAnimationGroup : FASequenceAnimatable {
         return sequenceDelegate?.appendSequenceAnimation(sequence, relativeTo : self)
     }
 
-
     public func applyFinalState(animated : Bool = false) {
         
         if let animatingLayer = animatingLayer {
@@ -142,7 +153,7 @@ extension FASequenceAnimationGroup : FASequenceAnimatable {
                             return
                         }
                         
-                        print (subAnimation.keyPath, subAnimation.duration)
+                       // print (subAnimation.keyPath, subAnimation.duration)
                         //TODO: Figure out why the opacity is not reflected on the UIView
                         //All properties work correctly, but to ensure that the opacity is reflected
                         //I am setting the alpha on the UIView itsel ?? WTF
