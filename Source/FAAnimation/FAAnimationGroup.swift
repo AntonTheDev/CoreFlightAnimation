@@ -134,99 +134,57 @@ public class FAAnimationGroup : CAAnimationGroup {
 
 internal extension FAAnimationGroup {
     
-    /**
-     Synchronizes the calling animation group with the passed animation group
-     
-     - parameter oldAnimationGroup: old animation in flight
-     */
     internal func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
-        
-        var durationArray =  [Double]()
         
         var oldAnimations = animationDictionaryForGroup(oldAnimationGroup)
         var newAnimations = animationDictionaryForGroup(self)
         
-        // Find all Primary Animations
-        let filteredPrimaryAnimations = newAnimations.filter({ $0.1.isPrimary == true })
-        let filteredNonPrimaryAnimations = newAnimations.filter({ $0.1.isPrimary == false })
-        
-        var primaryAnimations = [String : FABasicAnimation]()
-        var nonPrimaryAnimations = [String : FABasicAnimation]()
-        
-        for result in filteredPrimaryAnimations {
-            primaryAnimations[result.0] = result.1
-        }
-        
-        for result in filteredNonPrimaryAnimations {
-            nonPrimaryAnimations[result.0] = result.1
-        }
-        
-        //If no animation is primary, all animations become primary
-        if primaryAnimations.count == 0 {
-            primaryAnimations = newAnimations
-            nonPrimaryAnimations = [String : FABasicAnimation]()
-        }
-        
-        for key in primaryAnimations.keys {
+        for key in newAnimations.keys {
             
-            if  let newPrimaryAnimation = primaryAnimations[key] {
-                
-                if let oldAnimation : FABasicAnimation? = oldAnimations[key] {
-                    newPrimaryAnimation.synchronize(relativeTo: oldAnimation)
-                } else {
-                    newPrimaryAnimation.synchronize(relativeTo: nil)
-                }
+            newAnimations[key]!.animatingLayer = animatingLayer
             
-                durationArray.append(newPrimaryAnimation.duration)
-                newAnimations[key] = newPrimaryAnimation
+            if let oldAnimation = oldAnimations[key] {
+                newAnimations[key]!.synchronize(relativeTo: oldAnimation)
+            } else {
+                newAnimations[key]!.synchronize(relativeTo: nil)
             }
         }
         
+        var primaryAnimations = newAnimations.filter({ $0.1.isPrimary == true })
+        let hasPrimaryAnimations : Bool = (primaryAnimations.count > 0)
+       
+        if hasPrimaryAnimations == false {
+            primaryAnimations = newAnimations.filter({ $0.1 != nil })
+        }
+        
+        let durationsArray = primaryAnimations.map({ $0.1.duration})
+
         switch timingPriority {
         case .MaxTime:
-            duration = durationArray.maxElement()!
+            duration = durationsArray.maxElement()!
         case .MinTime:
-            duration = durationArray.minElement()!
+            duration = durationsArray.minElement()!
         case .Median:
-            duration = durationArray.sort(<)[durationArray.count / 2]
+            duration = durationsArray.sort(<)[durationsArray.count / 2]
         case .Average:
-            duration = durationArray.reduce(0, combine: +) / Double(durationArray.count)
+            duration = durationsArray.reduce(0, combine: +) / Double(durationsArray.count)
         }
         
-        let filteredAnimation = animations!.filter({
-            $0.duration == duration    ||
-                timingPriority == .Average ||
-                timingPriority == .Median
-        })
+        let nonSynchronizedAnimations = newAnimations.filter({ $0.1.duration != duration })
         
-        if let primaryDrivingAnimation = filteredAnimation.first as? FABasicAnimation {
-            primaryAnimation = primaryDrivingAnimation
+        if hasPrimaryAnimations {
+            primaryAnimation = (primaryAnimations.filter({ $0.1.duration == duration})).first?.1
+        } else {
+            primaryAnimation = (newAnimations.filter({ $0.1.duration == duration})).first?.1
         }
-
-        for key in nonPrimaryAnimations.keys {
-            
-            if let newNonPrimaryAnimation = nonPrimaryAnimations[key] {
+    
+        for animation in nonSynchronizedAnimations {
+            if animation.1.keyPath != primaryAnimation?.keyPath &&
+               animation.1.duration > primaryAnimation?.duration {
                 
-                newNonPrimaryAnimation.duration = duration
                 
-                if let oldAnimation : FABasicAnimation? = oldAnimations[key] {
-                    newNonPrimaryAnimation.synchronize(relativeTo: oldAnimation)
-                } else {
-                    newNonPrimaryAnimation.synchronize(relativeTo: nil)
-                }
-                
-                newAnimations[key] = newNonPrimaryAnimation
-            }
-        }
-        
-        for key in primaryAnimations.keys {
-            
-            if  let newPrimaryAnimation = primaryAnimations[key] {
-                if newPrimaryAnimation != primaryAnimation {
-                    newPrimaryAnimation.duration = duration
-                    newPrimaryAnimation.synchronize()
-                    newAnimations[key] = newPrimaryAnimation
-                }
+                newAnimations[animation.1.keyPath!]!.duration = duration
+                newAnimations[animation.1.keyPath!]!.synchronize()
             }
         }
         
@@ -241,6 +199,9 @@ internal extension FAAnimationGroup {
      that all the sub animations have their layer set for synchronization
      */
     func synchronizeSubAnimationLayers() {
+        
+        primaryAnimation?.animatingLayer = animatingLayer
+        
         if let currentAnimations = animations {
             for animation in currentAnimations {
                 if let customAnimation = animation as? FABasicAnimation {
@@ -256,6 +217,9 @@ internal extension FAAnimationGroup {
      for calculating progress
      */
     func synchronizeSubAnimationStartTime() {
+        
+        primaryAnimation?.startTime = startTime
+        
         if let currentAnimations = animations {
             for animation in currentAnimations {
                 if let customAnimation = animation as? FABasicAnimation {
@@ -275,7 +239,7 @@ internal extension FAAnimationGroup {
      
      - returns: [keyPath : FABasicAnimation] representation of hte animations array
      */
-    func animationDictionaryForGroup(animationGroup : FAAnimationGroup?) -> [String : FABasicAnimation] {
+    func animationDictionaryForGroup(animationGroup : FAAnimationGroup?, primary : Bool = false) -> [String : FABasicAnimation] {
         
         var animationDictionary = [String: FABasicAnimation]()
         
@@ -283,7 +247,14 @@ internal extension FAAnimationGroup {
             if let currentAnimations = group.animations {
                 for animation in currentAnimations {
                     if let customAnimation = animation as? FABasicAnimation {
-                        animationDictionary[customAnimation.keyPath!] = customAnimation
+                        
+                        if primary {
+                            if customAnimation.isPrimary {
+                                animationDictionary[customAnimation.keyPath!] = customAnimation
+                            }
+                        } else {
+                            animationDictionary[customAnimation.keyPath!] = customAnimation
+                        }
                     }
                 }
             }
@@ -314,7 +285,7 @@ internal extension FAAnimationGroup {
     
     func timeProgress() -> CGFloat {
         
-        if let animation = animatingLayer?.animationForKey(animationUUID!) as? FAAnimationGroup{
+        if let animation = animatingLayer?.presentationLayer()?.animationForKey(animationUUID!) as? FAAnimationGroup {
             return animation.primaryAnimation!.timeProgress()
         }
         

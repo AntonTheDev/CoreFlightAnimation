@@ -103,7 +103,7 @@ public class FAVector : Equatable {
     
     public func valueRepresentation(value : Any) -> AnyObject? {
         
-        if  value is CGPoint {
+        if value is CGPoint {
             let valueRepresentation = NSValue(CGPoint : CGPointMake(components[0], components[1]))
             return valueRepresentation
         }

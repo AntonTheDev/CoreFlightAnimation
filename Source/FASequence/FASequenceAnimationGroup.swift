@@ -23,7 +23,7 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
     public var autoreverseInvertEasing : Bool = false
     public var autoreverseInvertProgress : Bool = false
     
-    public var reverseAnimation : FASequenceAnimatable?
+    public weak var reverseAnimation : FASequenceAnimatable?
     
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         

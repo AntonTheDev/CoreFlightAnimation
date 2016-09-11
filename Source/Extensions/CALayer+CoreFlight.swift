@@ -81,21 +81,7 @@ extension CALayer {
       
     }
     internal func FA_removeAnimationForKey(key: String) {
-        
-        if let animation = self.animationForKey(key) as? FASequenceAnimationGroup  {
-            animation.sequenceDelegate?.stopSequence()
-            if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED FORKEY ", animation.animationUUID) }
-        }
-        
-        if let animation = self.animationForKey(key) as? FASequenceAnimation  {
-            animation.sequenceDelegate?.stopSequence()
-            if DebugTriggerLogEnabled { print("FASequenceAnimation STOPPED FORKEY ", animation.animationUUID) }
-        }
-        
-        if let animation = self.animationForKey(key) as? FAAnimationGroup  {
-            if DebugTriggerLogEnabled { print("FAAnimationGroup STOPPED FORKEY ", animation.animationUUID) }
-        }
-        
+        stopSequenceForKey(key)
         FA_removeAnimationForKey(key)
     }
     
@@ -106,31 +92,33 @@ extension CALayer {
     
     final private func stopRunningSequence() {
         
-        guard let keys = self.animationKeys() else {
+        guard let keys = animationKeys() else {
             return
         }
         
         for key in keys {
-            
-            if let animation = self.animationForKey(key) as? FAAnimationGroup  {
-                if DebugTriggerLogEnabled { print("FAAnimationGroup STOPPED ALL ", animation.animationUUID) }
-            }
-            
-            if let animation = self.animationForKey(key) as? FASequenceAnimationGroup  {
-                animation.sequenceDelegate?.stopSequence()
-                if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED ALL FORKEY ", animation.animationUUID) }
-            }
-            
-            if let animation = self.animationForKey(key) as? FASequenceAnimation  {
-                animation.sequenceDelegate?.stopSequence()
-                if DebugTriggerLogEnabled { print("FASequenceAnimation STOPPED ALL FORKEY ", animation.animationUUID) }
-            }
+            stopSequenceForKey(key)
         }
-
+    }
+    
+    final private func stopSequenceForKey(key : String) {
+        if let animation = animationForKey(key) as? FAAnimationGroup  {
+            if DebugTriggerLogEnabled { print("FAAnimationGroup STOPPED ALL ", animation.animationUUID) }
+        }
+        
+        if let animation = animationForKey(key) as? FASequenceAnimationGroup  {
+            animation.sequenceDelegate?.stopSequence()
+            if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED ALL FORKEY ", animation.animationUUID) }
+        }
+        
+        if let animation = animationForKey(key) as? FASequenceAnimation  {
+            animation.sequenceDelegate?.stopSequence()
+            if DebugTriggerLogEnabled { print("FASequenceAnimation STOPPED ALL FORKEY ", animation.animationUUID) }
+        }
     }
     
     final public func anyValueForKeyPath(keyPath: String) -> Any? {
-        if let currentFromValue = self.valueForKeyPath(keyPath) {
+        if let currentFromValue = valueForKeyPath(keyPath) {
             
             if let value = typeCastCGColor(currentFromValue) {
                 return value
@@ -156,7 +144,7 @@ extension CALayer {
     }
     
     final public func owningView() -> UIView? {
-        if let owningView = self.delegate as? UIView {
+        if let owningView = delegate as? UIView {
             return owningView
         }
         

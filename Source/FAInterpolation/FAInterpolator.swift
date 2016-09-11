@@ -33,14 +33,14 @@ struct FAAnimationConfig {
     static let AnimationTimeAdjustment   : CGFloat = 2.0 * (1.0 / FAAnimationConfig.InterpolationFrameCount)
 }
 
-public struct FAInterpolator {
+public class FAInterpolator {
     
     var toValue : Any
     var fromValue : Any
     var previousValue : Any?
     
-    var toVector : FAVector
-    var fromVector : FAVector
+    var toVector : FAVector?
+    var fromVector : FAVector?
     var previousValueVector : FAVector?
     
     var springs : [FASpring]?
@@ -70,7 +70,17 @@ public struct FAInterpolator {
         }
     }
     
-    mutating func interpolatedConfigurationFor(animation : FABasicAnimation, relativeTo oldAnimation : FABasicAnimation?) ->  (duration : Double, easing : FAEasing,  values : [AnyObject])? {
+    deinit {
+        previousValue = nil
+        
+        toVector = nil
+        fromVector = nil
+        previousValueVector = nil
+        
+        springs = nil
+    }
+    
+    func interpolatedConfigurationFor(animation : FABasicAnimation, relativeTo oldAnimation : FABasicAnimation?) ->  (duration : Double, easing : FAEasing,  values : [AnyObject])? {
        
         var easing = animation.easingFunction
     
@@ -134,12 +144,12 @@ public struct FAInterpolator {
     internal func adjustedVelocity(at deltaTime : CGFloat?) -> Any {
        
         guard let deltaTime = deltaTime else {
-            return self.zeroVelocityValue()
+            return zeroVelocityValue()
         }
         
         var progressComponents = [CGFloat]()
         
-        for index in 0..<toVector.components.count {
+        for index in 0..<toVectoCount {
             progressComponents.append(springs![index].velocity(deltaTime))
         }
         
@@ -152,8 +162,8 @@ extension FAInterpolator {
     public func valueProgress(value : Any) -> CGFloat {
         let currentVector = FAVector(value: value)
         
-        let progressedMagnitude = currentVector.magnitudeToVector(fromVector)
-        let overallMagnitude = fromVector.magnitudeToVector(toVector)
+        let progressedMagnitude = currentVector.magnitudeToVector(fromVector!)
+        let overallMagnitude = fromVector!.magnitudeToVector(toVector!)
         return progressedMagnitude / overallMagnitude
     }
     
@@ -166,8 +176,8 @@ extension FAInterpolator {
         var progress : CGFloat  = 1.0
         
         if previousValueVector != nil {
-            let progressedMagnitude = previousValueVector!.magnitudeToVector(fromVector)
-            let overallMagnitude = fromVector.magnitudeToVector(toVector)
+            let progressedMagnitude = previousValueVector!.magnitudeToVector(fromVector!)
+            let overallMagnitude = fromVector!.magnitudeToVector(toVector!)
             
             progress = progressedMagnitude / overallMagnitude
         }
@@ -217,13 +227,13 @@ extension FAInterpolator {
 
 extension FAInterpolator {
     
-    private mutating func decayComponentSprings(initialVelocity: Any?) {
+    private func decayComponentSprings(initialVelocity: Any?) {
         customComponentSprings(initialVelocity,
                                angularFrequency: FAAnimationConfig.SpringDecayFrequency,
                                dampingRatio: FAAnimationConfig.SpringDecayDamping)
     }
     
-    private mutating func customComponentSprings(initialVelocity: Any?,
+    private func customComponentSprings(initialVelocity: Any?,
                                         angularFrequency: CGFloat,
                                         dampingRatio: CGFloat) {
      
@@ -235,9 +245,9 @@ extension FAInterpolator {
 
         springs = [FASpring]()
         
-        for index in 0..<toVector.components.count {
-            let floatSpring = FASpring(finalValue   : toVector.components[index],
-                                       initialValue : fromVector.components[index],
+        for index in 0..<toVectoCount {
+            let floatSpring = FASpring(finalValue   : toVector!.components[index],
+                                       initialValue : fromVector!.components[index],
                                        positionVelocity: vectorVelocity.components[index],
                                        angularFrequency:angularFrequency,
                                        dampingRatio: dampingRatio)
@@ -261,7 +271,10 @@ extension FAInterpolator {
             animationTime += frameRateTimeUnit
             let progress = easingFunction.parametricProgress(CGFloat(animationTime / duration))
             let newValue = interpolatedValue(progress)
-            newArray.append(newValue.valueRepresentation(toValue)!)
+            if let valueRep = newValue.valueRepresentation(toValue) {
+                newArray.append(valueRep)
+            }
+            
         } while (animationTime <= duration)
         
         newArray.removeLast()
@@ -274,8 +287,8 @@ extension FAInterpolator {
     private func interpolatedValue(progress : CGFloat) -> FAVector {
         var progressComponents = [CGFloat]()
         
-        for index in 0..<toVector.components.count {
-            progressComponents.append(interpolateCGFloat(fromVector.components[index], end : toVector.components[index], progress: progress))
+        for index in 0..<toVectoCount {
+            progressComponents.append(interpolateCGFloat(fromVector!.components[index], end : toVector!.components[index], progress: progress))
         }
         
         return FAVector(comps: progressComponents)
@@ -293,7 +306,7 @@ extension FAInterpolator {
         case .SpringDecay(_):
             repeat {
                 let newValue = interpolatedSpringValue(animationTime)
-                animationComplete = newValue.magnitudeToVector(toVector) < FAAnimationConfig.SpringDecayMagnitudeThreshold
+                animationComplete = newValue.magnitudeToVector(toVector!) < FAAnimationConfig.SpringDecayMagnitudeThreshold
                 valueArray.append(newValue.valueRepresentation(toValue)!)
                 animationTime += frameRateTimeUnit
             } while (animationComplete == false)
@@ -303,7 +316,7 @@ extension FAInterpolator {
             
             repeat {
                 let newValue = interpolatedSpringValue(animationTime)
-                if floor(newValue.magnitudeToVector(toVector)) == 0.0 {
+                if floor(newValue.magnitudeToVector(toVector!)) == 0.0 {
                     bouncCount += 1
                 }
                 
@@ -314,7 +327,7 @@ extension FAInterpolator {
             break
         }
         
-        valueArray.append(toVector.valueRepresentation(toValue)!)
+        valueArray.append(toVector!.valueRepresentation(toValue)!)
         animationTime += frameRateTimeUnit
         
         return (Double(animationTime),  values : valueArray)
@@ -323,11 +336,24 @@ extension FAInterpolator {
     private func interpolatedSpringValue(deltaTime: CGFloat) -> FAVector {
         var progressComponents = [CGFloat]()
         
-        for index in 0..<toVector.components.count {
+        for index in 0..<toVectoCount {
             progressComponents.append(springs![index].updatedValue(deltaTime))
         }
         
         return FAVector(comps: progressComponents)
+    }
+    
+    
+    var toVectoCount :Int {
+        get {
+            if let toVector = toVector {
+                return toVector.components.count
+            } else if let fromVector = fromVector {
+                return fromVector.components.count
+            } else {
+                return 0
+            }
+        }
     }
     
     /**

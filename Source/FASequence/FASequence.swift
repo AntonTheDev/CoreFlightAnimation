@@ -13,11 +13,11 @@ public protocol FASequenceAnimatable : FASequenceTrigger  {
     
     weak var sequenceDelegate    : FASequenceDelegate? { get set }
     
-    var reverseAnimation    : FASequenceAnimatable? { get set }
+    weak var reverseAnimation    : FASequenceAnimatable? { get set }
+    weak var animatingLayer      : CALayer?  { get set }
     
-    var animationUUID       : String?   { get set }
-    var animatingLayer      : CALayer?  { get set }
-    
+    var animationUUID            : String?   { get set }
+  
     var timeRelative        : Bool      { get set }
     var progessValue        : CGFloat   { get set }
     var triggerOnRemoval    : Bool      { get set }
@@ -27,7 +27,7 @@ public protocol FASequenceAnimatable : FASequenceTrigger  {
     var autoreverse                 : Bool              { get set }
     var autoreverseCount            : Int               { get set }
     var autoreverseDelay            : NSTimeInterval    { get set }
-    var autoreverseInvertEasing      : Bool              { get set }
+    var autoreverseInvertEasing     : Bool              { get set }
     var autoreverseInvertProgress   : Bool              { get set }
     
     func applyFinalState(animated : Bool)
@@ -193,11 +193,12 @@ public extension FASequence {
     }
     
     public func stopSequence() {
-        
+        displayLink?.paused = true
         displayLink?.invalidate()
+        displayLink = nil
+        
         queuedSequenceAnimations = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
         
-        displayLink = nil
         stopTime = nil
         
         autoreverseActiveCount = 1
@@ -324,7 +325,7 @@ internal extension FASequence {
             }
         }
         
-        if self.autoreverseActiveCount >= self.autoreverseCount * 2 {
+        if autoreverseActiveCount >= autoreverseCount * 2 {
             
             stopSequence()
             
