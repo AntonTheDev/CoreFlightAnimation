@@ -264,8 +264,8 @@ extension ViewController {
         if animConfig.enableSecondaryView {
             let sequence = FASequence()
             sequence.rootSequenceAnimation = dragViewViewAnimationGroup
-          //  sequence.autoreverse = true
-          //  sequence.autoreverseDelay = 1.0
+            sequence.autoreverse = true
+            sequence.autoreverseDelay = 1.0
           //  sequence.autoreverseInvertProgress = true
           //  sequence.autoreverseInvertEasing = true
             

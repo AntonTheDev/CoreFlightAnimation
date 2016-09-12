@@ -74,6 +74,7 @@ public class FASequence : CAAnimation  {
     
     
     public var autoreverse: Bool = false
+    
     public var autoreverseCount: Int = 1
     public var autoreverseDelay: NSTimeInterval = 0.0
     public var autoreverseInvertEasing : Bool = false
@@ -165,7 +166,7 @@ extension FASequence : FASequenceDelegate {
         sequence.autoreverse                = autoreverse
         sequence.autoreverseCount           = autoreverseCount
         sequence.autoreverseDelay           = autoreverseDelay
-        sequence.autoreverseInvertEasing     = autoreverseInvertEasing
+        sequence.autoreverseInvertEasing    = autoreverseInvertEasing
         sequence.autoreverseInvertProgress  = autoreverseInvertProgress
 
         if let rootSequenceAnimation = rootSequenceAnimation {

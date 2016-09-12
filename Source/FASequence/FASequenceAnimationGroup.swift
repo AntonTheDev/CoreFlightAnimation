@@ -23,7 +23,13 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
     public var autoreverseInvertEasing : Bool = false
     public var autoreverseInvertProgress : Bool = false
     
-    public weak var reverseAnimation : FASequenceAnimatable?
+    public var reverseAnimation : FASequenceAnimatable?
+    
+    
+    deinit {
+        reverseAnimation = nil
+        print("DEINIT GROUP")
+    }
     
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         
@@ -55,10 +61,45 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override internal func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
+        super.synchronizeAnimationGroup(withLayer: layer, forKey: key)
+       
+        var reverseAnimationArray = [FABasicAnimation]()
+        
+        if let animations = animations {
+            for animation in animations {
+                if let customAnimation = animation as? FASequenceAnimation,
+                    let reverseAnimation = customAnimation.reverseAnimation  as? FASequenceAnimation {
+                    
+                    if autoreverseInvertEasing {
+                        reverseAnimation.easingFunction = reverseAnimation.easingFunction.autoreverseEasing()
+                    }
+                    
+                    reverseAnimationArray.append(reverseAnimation)
+                }
+            }
+        }
+        
+        let animationGroup = self.sequenceCopy() as! FASequenceAnimationGroup
+        animationGroup.animationUUID                = animationUUID! + "REVERSE"
+        animationGroup.animations                   = reverseAnimationArray
+        animationGroup.progessValue                 = autoreverseInvertProgress ? (1.0 - progessValue) : progessValue
+        
+        animationGroup.autoreverse                  = autoreverse
+        animationGroup.autoreverseCount             = autoreverseCount
+        animationGroup.autoreverseDelay             = autoreverseDelay
+        animationGroup.autoreverseInvertEasing      = autoreverseInvertEasing
+        animationGroup.autoreverseInvertProgress    = autoreverseInvertProgress
+        
+        animationGroup.reverseAnimation             = self
+     
+        reverseAnimation                            = animationGroup
+    }
+    
     override func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
         
         super.synchronizeAnimations(oldAnimationGroup)
-       
+       /*
         var reverseAnimationArray = [FABasicAnimation]()
         
         if let animations = animations {
@@ -89,6 +130,7 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
         animationGroup.reverseAnimation             = self
        
         reverseAnimation                            = animationGroup
+         */
     }
 }
 

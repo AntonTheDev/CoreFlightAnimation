@@ -27,6 +27,10 @@ public class FASequenceAnimation : FABasicAnimation {
     
     public var reverseAnimation : FASequenceAnimatable?
     
+    deinit {
+        reverseAnimation = nil
+    }
+    
     public var animation : FASequenceAnimatable? {
         get { return self }
         set { }
@@ -61,7 +65,7 @@ public class FASequenceAnimation : FABasicAnimation {
         sequenceAnimation.autoreverse                   = autoreverse
         sequenceAnimation.autoreverseCount              = autoreverseCount
         sequenceAnimation.autoreverseDelay              = autoreverseDelay
-        sequenceAnimation.autoreverseInvertEasing        = autoreverseInvertEasing
+        sequenceAnimation.autoreverseInvertEasing       = autoreverseInvertEasing
         sequenceAnimation.autoreverseInvertProgress     = autoreverseInvertProgress
         
         sequenceAnimation.reverseAnimation         = reverseAnimation

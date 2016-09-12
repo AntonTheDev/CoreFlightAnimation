@@ -106,7 +106,7 @@ public class FAAnimationGroup : CAAnimationGroup {
         return animationGroup
     }
     
-    final internal func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
+    internal func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
         
         animationUUID = key
         animatingLayer = layer
