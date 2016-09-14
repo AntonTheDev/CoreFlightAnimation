@@ -11,9 +11,7 @@ import UIKit
 
 //MARK: - FABasicAnimation
 
-public class FABasicAnimation : CAKeyframeAnimation {
-    
-    public weak var animatingLayer : CALayer?
+public class FABasicAnimation : FASequenceAnimation {
     
     public var toValue: AnyObject?
     public var fromValue: AnyObject?
@@ -22,14 +20,18 @@ public class FABasicAnimation : CAKeyframeAnimation {
     public var isPrimary : Bool = false
     
     internal var interpolator : FAInterpolator?
-    internal var startTime : CFTimeInterval?
-
+    
+    public var animation : FASequenceAnimatable? {
+        get { return self }
+        set { }
+    }
+    
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         initializeInitialValues()
     }
     
-    override public init() {
+    required public init() {
         super.init()
         initializeInitialValues()
     }
@@ -52,8 +54,6 @@ public class FABasicAnimation : CAKeyframeAnimation {
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         let animation = super.copyWithZone(zone) as! FABasicAnimation
        
-        animation.animatingLayer            = animatingLayer
-        
         animation.toValue                   = toValue
         animation.fromValue                 = fromValue
         animation.easingFunction            = easingFunction
@@ -83,7 +83,7 @@ internal extension FABasicAnimation {
 
         synchronizeFromValue()
         
-        guard let toValue = toValue, fromValue = fromValue else {
+        guard let toValue = toValue, let fromValue = fromValue else {
             return
         }
     
@@ -93,6 +93,23 @@ internal extension FABasicAnimation {
         easingFunction = config!.easing
         duration = config!.duration
         values = config!.values
+        
+        let newAnimation = sequenceCopy()  as! FABasicAnimation
+        
+        newAnimation.animationUUID              = animationUUID! + "REVERSE"
+        newAnimation.values                     = values!.reverse()
+        newAnimation.fromValue                  = toValue
+        newAnimation.toValue                    = fromValue
+        
+        newAnimation.autoreverse                = autoreverse
+        newAnimation.autoreverseCount           = autoreverseCount
+        newAnimation.autoreverseDelay           = autoreverseDelay
+        newAnimation.autoreverseInvertEasing     = autoreverseInvertEasing
+        newAnimation.autoreverseInvertProgress  = autoreverseInvertProgress
+        newAnimation.reverseAnimation           = self
+        
+        reverseAnimation = newAnimation
+
     }
     
     internal func synchronizeFromValue() {
@@ -101,7 +118,7 @@ internal extension FABasicAnimation {
       //      return
       //  }
         
-        if let presentationLayer = (animatingLayer?.presentationLayer() as? CALayer),
+        if let presentationLayer = animatingLayer?.presentationLayer() as? CALayer,
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             
             if let currentValue = presentationValue as? CGPoint {

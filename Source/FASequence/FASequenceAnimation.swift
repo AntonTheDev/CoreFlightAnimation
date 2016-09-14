@@ -9,10 +9,13 @@
 import Foundation
 import UIKit
 
-public class FASequenceAnimation : FABasicAnimation {
+public class FASequenceAnimation : CAKeyframeAnimation {
     
     public var animationUUID : String?
    
+    public weak var animatingLayer : CALayer?
+    public var startTime : CFTimeInterval?
+
     public weak var sequenceDelegate : FASequenceDelegate?
 
     public var timeRelative = true
@@ -30,12 +33,7 @@ public class FASequenceAnimation : FABasicAnimation {
     deinit {
         reverseAnimation = nil
     }
-    
-    public var animation : FASequenceAnimatable? {
-        get { return self }
-        set { }
-    }
-    
+        
     public override var duration: CFTimeInterval {
         didSet {
          //   reverseAnimation?.duration = newValue
@@ -55,7 +53,9 @@ public class FASequenceAnimation : FABasicAnimation {
         
         let sequenceAnimation = super.copyWithZone(zone) as! FASequenceAnimation
         
-        sequenceAnimation.animationUUID             = animationUUID
+        sequenceAnimation.animationUUID                 = animationUUID
+        sequenceAnimation.animatingLayer                = animatingLayer
+        sequenceAnimation.startTime                     = startTime
         
         sequenceAnimation.sequenceDelegate              = sequenceDelegate
         sequenceAnimation.timeRelative                  = timeRelative
@@ -72,32 +72,12 @@ public class FASequenceAnimation : FABasicAnimation {
        
         return sequenceAnimation
     }
-    
-    override internal func synchronize(relativeTo animation : FABasicAnimation? = nil) {
-        super.synchronize(relativeTo: animation)
-  
-        let newAnimation = sequenceCopy()  as! FASequenceAnimation
-        
-        newAnimation.animationUUID              = animationUUID! + "REVERSE"
-        newAnimation.values                     = values!.reverse()
-        newAnimation.fromValue                  = toValue
-        newAnimation.toValue                    = fromValue
-    
-        newAnimation.autoreverse                = autoreverse
-        newAnimation.autoreverseCount           = autoreverseCount
-        newAnimation.autoreverseDelay           = autoreverseDelay
-        newAnimation.autoreverseInvertEasing     = autoreverseInvertEasing
-        newAnimation.autoreverseInvertProgress  = autoreverseInvertProgress
-        newAnimation.reverseAnimation           = self
-        
-        reverseAnimation = newAnimation
-    }
 }
 
-extension FASequenceAnimation : FASequenceAnimatable {
+extension FABasicAnimation : FASequenceAnimatable {
 
     public func sequenceCopy() -> FASequenceAnimatable {
-        return (self.copy()  as? FASequenceAnimation)!
+        return (self.copy()  as? FABasicAnimation)!
     }
     
     public func appendSequenceAnimationOnStart(child : FASequenceAnimatable, onView view: UIView) -> FASequenceTrigger? {
@@ -118,7 +98,7 @@ extension FASequenceAnimation : FASequenceAnimatable {
     
     public func applyFinalState(animated : Bool = false) {
         
-        let newAnimationGroup = FASequenceAnimationGroup()
+        let newAnimationGroup = FAAnimationGroup()
         
         newAnimationGroup.animationUUID            = animationUUID
         newAnimationGroup.animatingLayer           = animatingLayer

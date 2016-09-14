@@ -102,16 +102,13 @@ extension CALayer {
     }
     
     final private func stopSequenceForKey(key : String) {
-        if let animation = animationForKey(key) as? FAAnimationGroup  {
-            if DebugTriggerLogEnabled { print("FAAnimationGroup STOPPED ALL ", animation.animationUUID) }
-        }
-        
+    
         if let animation = animationForKey(key) as? FASequenceAnimationGroup  {
             animation.sequenceDelegate?.stopSequence()
             if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED ALL FORKEY ", animation.animationUUID) }
         }
         
-        if let animation = animationForKey(key) as? FASequenceAnimation  {
+        if let animation = animationForKey(key) as? FABasicAnimation  {
             animation.sequenceDelegate?.stopSequence()
             if DebugTriggerLogEnabled { print("FASequenceAnimation STOPPED ALL FORKEY ", animation.animationUUID) }
         }

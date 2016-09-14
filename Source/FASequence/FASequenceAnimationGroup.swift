@@ -9,7 +9,12 @@
 import Foundation
 import UIKit 
 
-public class FASequenceAnimationGroup : FAAnimationGroup {
+public class FASequenceAnimationGroup : CAAnimationGroup {
+    
+    public var animationUUID : String?
+    
+    public weak var animatingLayer : CALayer? { didSet { synchronizeSubAnimationLayers() }}
+    public var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
     
     public weak var sequenceDelegate    : FASequenceDelegate?
     
@@ -25,7 +30,6 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
     
     public var reverseAnimation : FASequenceAnimatable?
     
-    
     deinit {
         reverseAnimation = nil
         print("DEINIT GROUP")
@@ -34,6 +38,10 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         
         let sequenceAnimation = super.copyWithZone(zone) as! FASequenceAnimationGroup
+       
+        sequenceAnimation.animationUUID                 = animationUUID
+        sequenceAnimation.animatingLayer                = animatingLayer
+        sequenceAnimation.startTime                     = startTime
         
         sequenceAnimation.sequenceDelegate              = sequenceDelegate
         sequenceAnimation.timeRelative                  = timeRelative
@@ -43,8 +51,8 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
         sequenceAnimation.autoreverse                   = autoreverse
         sequenceAnimation.autoreverseCount              = autoreverseCount
         sequenceAnimation.autoreverseDelay              = autoreverseDelay
-        sequenceAnimation.autoreverseInvertEasing        = autoreverseInvertEasing
-        sequenceAnimation.autoreverseInvertProgress     = autoreverseInvertEasing
+        sequenceAnimation.autoreverseInvertEasing       = autoreverseInvertEasing
+        sequenceAnimation.autoreverseInvertProgress     = autoreverseInvertProgress
         sequenceAnimation.duration                      = duration
       
         sequenceAnimation.reverseAnimation              = reverseAnimation
@@ -61,77 +69,8 @@ public class FASequenceAnimationGroup : FAAnimationGroup {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override internal func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
-        super.synchronizeAnimationGroup(withLayer: layer, forKey: key)
-       
-        var reverseAnimationArray = [FABasicAnimation]()
-        
-        if let animations = animations {
-            for animation in animations {
-                if let customAnimation = animation as? FASequenceAnimation,
-                    let reverseAnimation = customAnimation.reverseAnimation  as? FASequenceAnimation {
-                    
-                    if autoreverseInvertEasing {
-                        reverseAnimation.easingFunction = reverseAnimation.easingFunction.autoreverseEasing()
-                    }
-                    
-                    reverseAnimationArray.append(reverseAnimation)
-                }
-            }
-        }
-        
-        let animationGroup = self.sequenceCopy() as! FASequenceAnimationGroup
-        animationGroup.animationUUID                = animationUUID! + "REVERSE"
-        animationGroup.animations                   = reverseAnimationArray
-        animationGroup.progessValue                 = autoreverseInvertProgress ? (1.0 - progessValue) : progessValue
-        
-        animationGroup.autoreverse                  = autoreverse
-        animationGroup.autoreverseCount             = autoreverseCount
-        animationGroup.autoreverseDelay             = autoreverseDelay
-        animationGroup.autoreverseInvertEasing      = autoreverseInvertEasing
-        animationGroup.autoreverseInvertProgress    = autoreverseInvertProgress
-        
-        animationGroup.reverseAnimation             = self
-     
-        reverseAnimation                            = animationGroup
-    }
-    
-    override func synchronizeAnimations(oldAnimationGroup : FAAnimationGroup?) {
-        
-        super.synchronizeAnimations(oldAnimationGroup)
-       /*
-        var reverseAnimationArray = [FABasicAnimation]()
-        
-        if let animations = animations {
-            for animation in animations {
-                if let customAnimation = animation as? FASequenceAnimation,
-                   let reverseAnimation = customAnimation.reverseAnimation  as? FASequenceAnimation {
-                    
-                    if autoreverseInvertEasing {
-                        reverseAnimation.easingFunction = reverseAnimation.easingFunction.autoreverseEasing()
-                    }
-                    
-                    reverseAnimationArray.append(reverseAnimation)
-                }
-            }
-        }
-
-        let animationGroup = self.sequenceCopy() as! FASequenceAnimationGroup
-        animationGroup.animationUUID                = animationUUID! + "REVERSE"
-        animationGroup.animations                   = reverseAnimationArray
-        animationGroup.progessValue                 = autoreverseInvertProgress ? (1.0 - progessValue) : progessValue
-      
-        animationGroup.autoreverse                  = autoreverse
-        animationGroup.autoreverseCount             = autoreverseCount
-        animationGroup.autoreverseDelay             = autoreverseDelay
-        animationGroup.autoreverseInvertEasing       = autoreverseInvertEasing
-        animationGroup.autoreverseInvertProgress    = autoreverseInvertProgress
-       
-        animationGroup.reverseAnimation             = self
-       
-        reverseAnimation                            = animationGroup
-         */
-    }
+    func synchronizeSubAnimationLayers() { }
+    func synchronizeSubAnimationStartTime() { }
 }
 
 

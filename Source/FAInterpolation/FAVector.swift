@@ -102,7 +102,7 @@ public class FAVector : Equatable {
     }
     
     public func valueRepresentation(value : Any) -> AnyObject? {
-        
+       
         if value is CGPoint {
             let valueRepresentation = NSValue(CGPoint : CGPointMake(components[0], components[1]))
             return valueRepresentation
@@ -140,12 +140,12 @@ public class FAVector : Equatable {
                 return UIColor(hue: components[0],  saturation: components[1],  brightness: components[2],  alpha: components[3]).CGColor
             }
         }
-        
+
         return nil
     }
     
     public func typeRepresentation(value : Any) -> Any? {
-        
+
         if let _ = value as? CGPoint {
             return CGPointMake(components[0], components[1])
         }

@@ -263,7 +263,9 @@ extension FAInterpolator {
         var newArray = [AnyObject]()
         var animationTime : CGFloat = 0.0
         let frameRateTimeUnit = 1.0 / FAAnimationConfig.InterpolationFrameCount
-        
+        autoreleasepool {
+      
+ 
         let firstValue = interpolatedValue(0.0)
         newArray.append(firstValue.valueRepresentation(toValue)!)
         
@@ -278,7 +280,7 @@ extension FAInterpolator {
         } while (animationTime <= duration)
         
         newArray.removeLast()
-        
+               }
         let finalValue = interpolatedValue(1.0)
         newArray.append(finalValue.valueRepresentation(toValue)!)
         return newArray

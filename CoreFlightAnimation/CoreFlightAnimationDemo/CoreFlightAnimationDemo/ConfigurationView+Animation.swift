@@ -14,7 +14,7 @@ extension ConfigurationView {
     
     func updateProgressEnabledAnimation() {
  
-        let alphaAnimation = FASequenceAnimation(keyPath: "opacity")
+        let alphaAnimation = FABasicAnimation(keyPath: "opacity")
         alphaAnimation.easingFunction = .InOutSine
         alphaAnimation.toValue = secondaryViewSwitch.enabled ? 1.0 : 0.5
         alphaAnimation.duration = 0.6
@@ -30,12 +30,12 @@ extension ConfigurationView {
         if delaySegnmentedControl.selectedSegmentIndex == 0 {
             selectedDelaySegment = delaySegnmentedControl.selectedSegmentIndex
         
-            let alphaAnimataion = FASequenceAnimation(keyPath: "opacity")
+            let alphaAnimataion = FABasicAnimation(keyPath: "opacity")
             alphaAnimataion.easingFunction = .InOutSine
             alphaAnimataion.toValue = 0.0
             alphaAnimataion.duration = 0.5
            
-            let positionAnimation = FASequenceAnimation(keyPath: "position")
+            let positionAnimation = FABasicAnimation(keyPath: "position")
             positionAnimation.easingFunction = .InOutSine
             positionAnimation.toValue = NSValue(CGPoint: adjustedPosition)
             positionAnimation.duration = 0.5
@@ -84,12 +84,12 @@ extension ConfigurationView {
            
             selectedDelaySegment = delaySegnmentedControl.selectedSegmentIndex
             
-            let alphaAnimataion = FASequenceAnimation(keyPath: "opacity")
+            let alphaAnimataion = FABasicAnimation(keyPath: "opacity")
             alphaAnimataion.easingFunction = .InOutSine
             alphaAnimataion.toValue = 1.0
             alphaAnimataion.duration = 0.5
       
-            let positionAnimation = FASequenceAnimation(keyPath: "position")
+            let positionAnimation = FABasicAnimation(keyPath: "position")
             positionAnimation.easingFunction = .InOutSine
             positionAnimation.toValue = NSValue(CGPoint: initialCenter)
             positionAnimation.duration = 0.5

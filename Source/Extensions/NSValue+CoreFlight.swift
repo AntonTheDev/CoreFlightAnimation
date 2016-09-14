@@ -12,8 +12,12 @@ import UIKit
 extension NSValue {    
    
     final public func typeValue() -> Any? {
-        let type : NSString =  NSString(UTF8String: objCType) ?? ""
-
+        var type : NSString = ""
+        
+        autoreleasepool {
+            type = NSString(UTF8String: objCType) ?? ""
+        }
+        
         if type.hasPrefix("{CGPoint") {
             return self.CGPointValue()
         } else if type.hasPrefix("{CGSize") {
@@ -25,6 +29,7 @@ extension NSValue {
         } else {
             return self
         }
+
     }
 }
 

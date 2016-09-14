@@ -71,18 +71,12 @@ public enum FAPrimaryTimingPriority : Int {
 
 //MARK: - FAAnimationGroup
 
-public class FAAnimationGroup : CAAnimationGroup {
+public class FAAnimationGroup : FASequenceAnimationGroup {
        
-    public var animationUUID : String?
-    
-    public weak var animatingLayer : CALayer? { didSet { synchronizeSubAnimationLayers() }}
-    internal var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
-    
     public var timingPriority : FAPrimaryTimingPriority = .MaxTime
-    
     internal weak var primaryAnimation : FABasicAnimation?
     
-    override public init() {
+    required public init() {
         super.init()
         animations = [CAAnimation]()
         fillMode = kCAFillModeForwards
@@ -96,17 +90,14 @@ public class FAAnimationGroup : CAAnimationGroup {
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         let animationGroup = super.copyWithZone(zone) as! FAAnimationGroup
         
-        animationGroup.animationUUID           = animationUUID
-        animationGroup.animatingLayer          = animatingLayer
-      
         animationGroup.primaryAnimation        = primaryAnimation
-        animationGroup.startTime               = startTime
         animationGroup.timingPriority          = timingPriority
     
         return animationGroup
     }
     
     internal func synchronizeAnimationGroup(withLayer layer: CALayer, forKey key: String?) {
+       
         
         animationUUID = key
         animatingLayer = layer
@@ -114,18 +105,46 @@ public class FAAnimationGroup : CAAnimationGroup {
         if let keys = animatingLayer?.animationKeys() {
             for key in Array(Set(keys)) {
                 
-                if let oldAnimation = animatingLayer?.animationForKey(key) as? FASequenceAnimationGroup {
-                    oldAnimation.sequenceDelegate?.stopSequence()
-                    synchronizeAnimations(oldAnimation)
-                }
-                
                 if let oldAnimation = animatingLayer?.animationForKey(key) as? FAAnimationGroup {
+                    oldAnimation.sequenceDelegate?.stopSequence()
                     synchronizeAnimations(oldAnimation)
                 }
             }
         } else {
             synchronizeAnimations(nil)
         }
+        
+        
+        var reverseAnimationArray = [FABasicAnimation]()
+        
+        if let animations = animations {
+            for animation in animations {
+                if let customAnimation = animation as? FABasicAnimation,
+                    let reverseAnimation = customAnimation.reverseAnimation  as? FABasicAnimation {
+                    
+                    if autoreverseInvertEasing {
+                        reverseAnimation.easingFunction = reverseAnimation.easingFunction.autoreverseEasing()
+                    }
+                    
+                    reverseAnimationArray.append(reverseAnimation)
+                }
+            }
+        }
+        
+        let animationGroup = self.sequenceCopy() as! FAAnimationGroup
+        animationGroup.animationUUID                = animationUUID! + "REVERSE"
+        animationGroup.animations                   = reverseAnimationArray
+        animationGroup.progessValue                 = autoreverseInvertProgress ? (1.0 - progessValue) : progessValue
+        
+        animationGroup.autoreverse                  = autoreverse
+        animationGroup.autoreverseCount             = autoreverseCount
+        animationGroup.autoreverseDelay             = autoreverseDelay
+        animationGroup.autoreverseInvertEasing      = autoreverseInvertEasing
+        animationGroup.autoreverseInvertProgress    = autoreverseInvertProgress
+        
+        animationGroup.reverseAnimation             = self
+        
+        reverseAnimation = animationGroup
     }
 }
 
@@ -198,7 +217,8 @@ internal extension FAAnimationGroup {
      Called by the didSet observer of the animatingLayer, ensures
      that all the sub animations have their layer set for synchronization
      */
-    func synchronizeSubAnimationLayers() {
+    override func synchronizeSubAnimationLayers() {
+        super.synchronizeSubAnimationLayers()
         
         primaryAnimation?.animatingLayer = animatingLayer
         
@@ -216,8 +236,8 @@ internal extension FAAnimationGroup {
      that all the sub animations have a synchromous startTime
      for calculating progress
      */
-    func synchronizeSubAnimationStartTime() {
-        
+    override func synchronizeSubAnimationStartTime() {
+        super.synchronizeSubAnimationStartTime()
         primaryAnimation?.startTime = startTime
         
         if let currentAnimations = animations {

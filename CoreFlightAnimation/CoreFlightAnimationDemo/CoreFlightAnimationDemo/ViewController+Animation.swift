@@ -120,12 +120,12 @@ extension ViewController {
         
         // ConfigView AnimationGroup
         
-        let configViewAnimationGroup = FASequenceAnimationGroup()
+        let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
         
        // BackgroundView AnimationGroup
         
-        let backgroundViewAnimationGroup = FASequenceAnimationGroup()
+        let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         backgroundViewAnimationGroup.progessValue = 0.5
         
@@ -190,12 +190,12 @@ extension ViewController {
         
         // ConfigView AnimationGroup
         
-        let configViewAnimationGroup = FASequenceAnimationGroup()
+        let configViewAnimationGroup = FAAnimationGroup()
         configViewAnimationGroup.animations = [boundsAnimation, positionAnimation]
         
         // BackgroundView AnimationGroup
         
-        let backgroundViewAnimationGroup = FASequenceAnimationGroup()
+        let backgroundViewAnimationGroup = FAAnimationGroup()
         backgroundViewAnimationGroup.animations = [alphaAnimation, backgroundColorAnimation]
         backgroundViewAnimationGroup.progessValue = 0.5
         
@@ -290,7 +290,7 @@ extension ViewController {
                            toTransform : CATransform3D,
                            duration : Double = 0.7,
                            velocity : Any? = nil,
-                           animationUUID : String = AnimationKeys.TapStageOneAnimationKey) -> FASequenceAnimationGroup {
+                           animationUUID : String = AnimationKeys.TapStageOneAnimationKey) -> FAAnimationGroup {
         
         var positionAnimationEasing = animConfig.positionFunction
         
@@ -298,31 +298,31 @@ extension ViewController {
            positionAnimationEasing = adjustedEasingCurveForVelocity(velocity)
         }
         
-        let boundsAnimation = FASequenceAnimation(keyPath: "bounds")
+        let boundsAnimation = FABasicAnimation(keyPath: "bounds")
         boundsAnimation.easingFunction = animConfig.sizeFunction
         boundsAnimation.toValue = NSValue(CGRect: toBounds)
         boundsAnimation.duration = duration
         boundsAnimation.isPrimary = animConfig.sizePrimary
         
-        let positionAnimation = FASequenceAnimation(keyPath: "position")
+        let positionAnimation = FABasicAnimation(keyPath: "position")
         positionAnimation.easingFunction = positionAnimationEasing
         positionAnimation.toValue = NSValue(CGPoint: toPosition)
         positionAnimation.duration = duration
         positionAnimation.isPrimary = animConfig.positionPrimary
         
-        let alphaAnimation = FASequenceAnimation(keyPath: "opacity")
+        let alphaAnimation = FABasicAnimation(keyPath: "opacity")
         alphaAnimation.easingFunction = animConfig.alphaFunction
         alphaAnimation.toValue = toAlpha
         alphaAnimation.duration = duration
         alphaAnimation.isPrimary = animConfig.alphaPrimary
         
-        let transformAnimation = FASequenceAnimation(keyPath: "transform")
+        let transformAnimation = FABasicAnimation(keyPath: "transform")
         transformAnimation.easingFunction = animConfig.transformFunction
         transformAnimation.toValue = NSValue(CATransform3D : toTransform)
         transformAnimation.duration = duration
         transformAnimation.isPrimary = animConfig.transformPrimary
         
-        let animationGroup = FASequenceAnimationGroup()
+        let animationGroup = FAAnimationGroup()
         animationGroup.timingPriority = animConfig.primaryTimingPriority
         animationGroup.animations = [boundsAnimation, positionAnimation, alphaAnimation, transformAnimation]
        // animationGroup.autoreverse = true
@@ -331,7 +331,7 @@ extension ViewController {
         return animationGroup
     }
     
-    func secondaryAnimation() -> FASequenceAnimationGroup {
+    func secondaryAnimation() -> FAAnimationGroup {
         
         let currentBounds = CGRectMake(0, 0, lastToFrame.size.width , lastToFrame.size.height)
         let currentPosition = CGCSRectGetCenter(lastToFrame)
