@@ -15,7 +15,7 @@ public protocol FASequenceAnimatable : FASequenceTrigger  {
     
     weak var reverseAnimation    : FASequenceAnimatable? { get set }
     weak var animatingLayer      : CALayer?  { get set }
-    
+    var startTime                : CFTimeInterval? { get set }
     var animationUUID            : String?   { get set }
   
     var timeRelative        : Bool      { get set }
@@ -73,7 +73,11 @@ public class FASequence : CAAnimation  {
     internal var queuedSequenceAnimations   = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
     
     
-    public var autoreverse: Bool = false
+    public var autoreverse: Bool = false {
+        didSet {
+            print("REVERSE")
+        }
+    }
     
     public var autoreverseCount: Int = 1
     public var autoreverseDelay: NSTimeInterval = 0.0
@@ -184,7 +188,7 @@ public extension FASequence {
     public func startSequence() {
         
         guard isAnimating == false else { return }
-        
+      
         synchronizeRootSequenceTriggers()
         
         displayLink = CADisplayLink(target: self, selector: #selector(FASequence.sequenceCurrentFrame))
@@ -211,6 +215,8 @@ public extension FASequence {
     
     private func synchronizeRootSequenceTriggers() {
         
+        rootSequenceAnimation?.startTime = rootSequenceAnimation?.animatingLayer?.convertTime(CACurrentMediaTime(), fromLayer: nil)
+        
         queuedSequenceAnimations = sequenceAnimations
         
         for trigger in queuedSequenceAnimations {
@@ -221,6 +227,7 @@ public extension FASequence {
                     queuedSequenceAnimations[index].parent.progessValue       = (rootSequenceAnimation?.progessValue)!
                     queuedSequenceAnimations[index].parent.timeRelative       = (rootSequenceAnimation?.timeRelative)!
                     queuedSequenceAnimations[index].parent.sequenceDelegate   = rootSequenceAnimation?.sequenceDelegate
+                    queuedSequenceAnimations[index].parent.startTime          = rootSequenceAnimation?.startTime
                 }
             }
         }
@@ -291,7 +298,11 @@ public extension FASequence {
 internal extension FASequence {
     
     internal func applyReverseSequenceIfNeeded() {
-  
+        
+        if autoreverse == false {
+            stopSequence()
+        }
+        
         var startAutoReverse = true
         
         if queuedSequenceAnimations.count == 0 {
@@ -343,8 +354,10 @@ internal extension FASequence {
         }
         
         autoreverseActiveCount = autoreverseActiveCount + 1
-        rootSequenceAnimation = rootSequenceAnimation!.reverseAnimation
+        synchronizeRootSequenceTriggers()
+       
         
+        rootSequenceAnimation = rootSequenceAnimation!.reverseAnimation
         var newSequenceAnimations  = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
         
         for trigger in sequenceAnimations {

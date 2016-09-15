@@ -65,19 +65,31 @@ extension CALayer {
         if let animation = anim as? FASequence  {
             stopRunningSequence()
             animation.rootSequenceAnimation?.animatingLayer = self
+            animation.rootSequenceAnimation?.startTime = self.convertTime(CACurrentMediaTime(), fromLayer: nil)
             animation.startSequence()
             return
         }
         
-        guard let animation = anim as? FAAnimationGroup else {
+        if let animation = anim as? FAAnimationGroup {
+            animation.startTime = self.convertTime(CACurrentMediaTime(), fromLayer: nil)
+            animation.synchronizeAnimationGroup(withLayer: self, forKey : key)
+            removeAllAnimations()
             FA_addAnimation(anim, forKey: key)
             return
         }
         
-        animation.synchronizeAnimationGroup(withLayer: self, forKey : key)
+        if let animation = anim as? FABasicAnimation {
+            if let groupedAnimation = animation.groupedRepresendation() {
+                groupedAnimation.startTime = self.convertTime(CACurrentMediaTime(), fromLayer: nil)
+                groupedAnimation.synchronizeAnimationGroup(withLayer: self, forKey : key)
+                removeAllAnimations()
+                FA_addAnimation(groupedAnimation, forKey: key)
+            }
+            return
+        }
         
         removeAllAnimations()
-        FA_addAnimation(animation, forKey: key)
+        FA_addAnimation(anim, forKey: key)
       
     }
     internal func FA_removeAnimationForKey(key: String) {
@@ -103,7 +115,7 @@ extension CALayer {
     
     final private func stopSequenceForKey(key : String) {
     
-        if let animation = animationForKey(key) as? FASequenceAnimationGroup  {
+        if let animation = animationForKey(key) as? FAAnimationGroup  {
             animation.sequenceDelegate?.stopSequence()
             if DebugTriggerLogEnabled { print("FASequenceAnimationGroup STOPPED ALL FORKEY ", animation.animationUUID) }
         }

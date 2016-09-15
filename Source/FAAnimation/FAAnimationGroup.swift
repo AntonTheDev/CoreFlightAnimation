@@ -74,8 +74,7 @@ public enum FAPrimaryTimingPriority : Int {
 public class FAAnimationGroup : FASequenceAnimationGroup {
        
     public var timingPriority : FAPrimaryTimingPriority = .MaxTime
-    internal weak var primaryAnimation : FABasicAnimation?
-    
+
     required public init() {
         super.init()
         animations = [CAAnimation]()
@@ -91,6 +90,7 @@ public class FAAnimationGroup : FASequenceAnimationGroup {
         let animationGroup = super.copyWithZone(zone) as! FAAnimationGroup
         
         animationGroup.primaryAnimation        = primaryAnimation
+        animationGroup.startTime =   startTime
         animationGroup.timingPriority          = timingPriority
     
         return animationGroup
@@ -209,45 +209,13 @@ internal extension FAAnimationGroup {
         
         animations = newAnimations.map {$1}
     }
+    
+
+
 }
 
 internal extension FAAnimationGroup {
     
-    /**
-     Called by the didSet observer of the animatingLayer, ensures
-     that all the sub animations have their layer set for synchronization
-     */
-    override func synchronizeSubAnimationLayers() {
-        super.synchronizeSubAnimationLayers()
-        
-        primaryAnimation?.animatingLayer = animatingLayer
-        
-        if let currentAnimations = animations {
-            for animation in currentAnimations {
-                if let customAnimation = animation as? FABasicAnimation {
-                    customAnimation.animatingLayer = animatingLayer
-                }
-            }
-        }
-    }
-    
-    /**
-     Called by the didSet observer of the startTime, ensures
-     that all the sub animations have a synchromous startTime
-     for calculating progress
-     */
-    override func synchronizeSubAnimationStartTime() {
-        super.synchronizeSubAnimationStartTime()
-        primaryAnimation?.startTime = startTime
-        
-        if let currentAnimations = animations {
-            for animation in currentAnimations {
-                if let customAnimation = animation as? FABasicAnimation {
-                    customAnimation.startTime = startTime
-                }
-            }
-        }
-    }
     
     /**
      Returns a dictionary format of the animations in the FAAnimationGroup.
@@ -330,43 +298,4 @@ internal extension FAAnimationGroup {
      animatingLayer?.timeOffset = CFTimeInterval(duration * Double(progress))
      }
      */
-}
-
-
-
-
-/**
- Attaches the specified animation, on the specified view, and relative
- the progress value type defined in the method call
- 
- Ommit both timeProgress and valueProgress, to trigger the animation specified
- at the start of the calling animation group
- 
- Ommit timeProgress, to trigger the animation specified
- at the relative time progress of the calling animation group
- 
- Ommit valueProgress, to trigger the animation specified
- at the relative value progress of the calling animation group
- 
- If both valueProgres, and timeProgress values are defined,
- it will trigger the animation specified at the relative time
- progress of the calling animation group
- 
- - parameter animation:     the animation or animation group to attach
- - parameter view:          the view to attach it to
- - parameter timeProgress:  the relative time progress to trigger animation on the view
- - parameter valueProgress: the relative value progress to trigger animation on the view
- */
-/*
- 
- public func triggerAnimation(animation : AnyObject,
- onView view : UIView,
- atTimeProgress timeProgress: CGFloat? = nil,
- atValueProgress valueProgress: CGFloat? = nil) {
- 
- configureAnimationTrigger(animation,
- onView : view,
- atTimeProgress : timeProgress,
- atValueProgress : valueProgress)
- }
- */
+}   

@@ -63,6 +63,36 @@ public class FABasicAnimation : FASequenceAnimation {
         return animation
     }
     
+    public func groupedRepresendation() -> FAAnimationGroup? {
+        
+        let groupedAnimation = FAAnimationGroup()
+        
+        groupedAnimation.sequenceDelegate              = sequenceDelegate
+        
+        groupedAnimation.animations = [self]
+        groupedAnimation.animationUUID                = animationUUID!
+        groupedAnimation.animatingLayer               = animatingLayer
+        
+        groupedAnimation.progessValue                 = progessValue
+        groupedAnimation.timeRelative                  = timeRelative
+        groupedAnimation.progessValue                  = progessValue
+        groupedAnimation.triggerOnRemoval              = triggerOnRemoval
+        
+        groupedAnimation.autoreverse                  = autoreverse
+        groupedAnimation.autoreverseCount             = autoreverseCount
+        groupedAnimation.autoreverseDelay             = autoreverseDelay
+        groupedAnimation.autoreverseInvertEasing      = autoreverseInvertEasing
+        groupedAnimation.autoreverseInvertProgress    = autoreverseInvertProgress
+        
+        groupedAnimation.startTime                     = startTime
+        groupedAnimation.duration                      = duration
+        
+        groupedAnimation.reverseAnimation              = (reverseAnimation as? FABasicAnimation)?.groupedRepresendation()
+        
+        
+        return groupedAnimation
+    }
+    
     
     /// Not Ready for Prime Time, being declared as private
     /// Adjusts animation based on the progress form 0 - 1
@@ -118,7 +148,8 @@ internal extension FABasicAnimation {
       //      return
       //  }
         
-        if let presentationLayer = animatingLayer?.presentationLayer() as? CALayer,
+        if let presentationLayerObject = animatingLayer?.presentationLayer(),
+            let presentationLayer = presentationLayerObject as? CALayer,
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!) {
             
             if let currentValue = presentationValue as? CGPoint {
@@ -173,8 +204,12 @@ internal extension FABasicAnimation {
 internal extension FABasicAnimation {
     
     func valueProgress() -> CGFloat {
-        if let presentationValue = (animatingLayer?.presentationLayer() as? CALayer)?.anyValueForKeyPath(keyPath!),
-           let interpolator = interpolator {
+        
+        if let presentationLayerObject = animatingLayer?.presentationLayer(),
+            let presentationLayer = presentationLayerObject as? CALayer,
+            let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!),
+            let interpolator = interpolator {
+            
                 return interpolator.valueProgress(presentationValue)
         }
         

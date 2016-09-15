@@ -8,26 +8,31 @@
 
 import Foundation
 import UIKit
+import QuartzCore
+
 
 public typealias FAAnimationDidStart = ((anim: CAAnimation) -> Void)
 public typealias FAAnimationDidStop  = ((anim: CAAnimation, complete: Bool) -> Void)
 
-public class FAAnimationDelegate : NSObject {
+#if swift(>=2.3)
+
+public class FAAnimationDelegate : NSObject, CAAnimationDelegate {
     
     var animationDidStart : FAAnimationDidStart?
     var animationDidStop : FAAnimationDidStop?
     
-    override public func animationDidStart(anim: CAAnimation) {
+    public func animationDidStart(anim: CAAnimation) {
         if let startCallback = animationDidStart {
             startCallback(anim : anim)
         }
     }
     
-    override public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if let stopCallback = animationDidStop {
             stopCallback(anim : anim, complete: flag)
         }
     }
+
     
     public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
         animationDidStop = stopCallback
@@ -37,6 +42,39 @@ public class FAAnimationDelegate : NSObject {
         animationDidStart = startCallback
     }
 }
+
+#else
+
+public class FAAnimationDelegate : NSObject {
+        
+    var animationDidStart : FAAnimationDidStart?
+    var animationDidStop : FAAnimationDidStop?
+        
+        
+    public override func animationDidStart(anim: CAAnimation) {
+        if let startCallback = animationDidStart {
+            startCallback(anim : anim)
+        }
+    }
+        
+    public override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+        if let stopCallback = animationDidStop {
+            stopCallback(anim : anim, complete: flag)
+        }
+    }
+
+        
+    public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
+        animationDidStop = stopCallback
+    }
+        
+    public func setDidStartCallback(startCallback : FAAnimationDidStart) {
+        animationDidStart = startCallback
+    }
+}
+    
+#endif
+
 
 public extension CAAnimation {
     

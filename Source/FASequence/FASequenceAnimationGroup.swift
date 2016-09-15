@@ -13,8 +13,17 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
     
     public var animationUUID : String?
     
-    public weak var animatingLayer : CALayer? { didSet { synchronizeSubAnimationLayers() }}
-    public var startTime : CFTimeInterval?  { didSet { synchronizeSubAnimationStartTime() }}
+    public weak var animatingLayer : CALayer? {
+        didSet {
+            synchronizeSubAnimationLayers()
+        }
+    }
+    
+    public var startTime : CFTimeInterval?  {
+        didSet {
+            synchronizeSubAnimationStartTime()
+        }
+    }
     
     public weak var sequenceDelegate    : FASequenceDelegate?
     
@@ -29,6 +38,7 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
     public var autoreverseInvertProgress : Bool = false
     
     public var reverseAnimation : FASequenceAnimatable?
+    internal weak var primaryAnimation : FABasicAnimation?
     
     deinit {
         reverseAnimation = nil
@@ -69,12 +79,43 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func synchronizeSubAnimationLayers() { }
-    func synchronizeSubAnimationStartTime() { }
+    /**
+     Called by the didSet observer of the animatingLayer, ensures
+     that all the sub animations have their layer set for synchronization
+     */
+    func synchronizeSubAnimationLayers() {
+        
+        primaryAnimation?.animatingLayer = animatingLayer
+        
+        if let currentAnimations = animations {
+            for animation in currentAnimations {
+                if let customAnimation = animation as? FABasicAnimation {
+                    customAnimation.animatingLayer = animatingLayer
+                }
+            }
+        }
+    }
+    
+    /**
+     Called by the didSet observer of the startTime, ensures
+     that all the sub animations have a synchromous startTime
+     for calculating progress
+     */
+    func synchronizeSubAnimationStartTime() {
+
+        primaryAnimation?.startTime = startTime
+        
+        if let currentAnimations = animations {
+            for animation in currentAnimations {
+                if let customAnimation = animation as? FABasicAnimation {
+                    customAnimation.startTime = startTime
+                }
+            }
+        }
+    }
 }
 
-
-extension FASequenceAnimationGroup : FASequenceAnimatable {
+extension FAAnimationGroup : FASequenceAnimatable {
 
     public func sequenceCopy() -> FASequenceAnimatable {
         return self.copy() as! FASequenceAnimatable
