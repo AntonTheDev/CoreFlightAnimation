@@ -15,62 +15,62 @@ public typealias FAAnimationDidStart = ((anim: CAAnimation) -> Void)
 public typealias FAAnimationDidStop  = ((anim: CAAnimation, complete: Bool) -> Void)
 
 #if swift(>=2.3)
-
-public class FAAnimationDelegate : NSObject, CAAnimationDelegate {
+    
+    public class FAAnimationDelegate : NSObject, CAAnimationDelegate {
     
     var animationDidStart : FAAnimationDidStart?
     var animationDidStop : FAAnimationDidStop?
     
     public func animationDidStart(anim: CAAnimation) {
-        if let startCallback = animationDidStart {
-            startCallback(anim : anim)
-        }
+    if let startCallback = animationDidStart {
+    startCallback(anim : anim)
+    }
     }
     
     public func animationDidStop(anim: CAAnimation, finished flag: Bool) {
-        if let stopCallback = animationDidStop {
-            stopCallback(anim : anim, complete: flag)
-        }
+    if let stopCallback = animationDidStop {
+    stopCallback(anim : anim, complete: flag)
     }
-
+    }
+    
     public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
-        animationDidStop = stopCallback
+    animationDidStop = stopCallback
     }
     
     public func setDidStartCallback(startCallback : FAAnimationDidStart) {
-        animationDidStart = startCallback
+    animationDidStart = startCallback
     }
-}
-
+    }
+    
 #else
-
-public class FAAnimationDelegate : NSObject {
+    
+    public class FAAnimationDelegate : NSObject {
         
-    var animationDidStart : FAAnimationDidStart?
-    var animationDidStop : FAAnimationDidStop?
+        var animationDidStart : FAAnimationDidStart?
+        var animationDidStop : FAAnimationDidStop?
         
         
-    public override func animationDidStart(anim: CAAnimation) {
-        if let startCallback = animationDidStart {
-            startCallback(anim : anim)
+        public override func animationDidStart(anim: CAAnimation) {
+            if let startCallback = animationDidStart {
+                startCallback(anim : anim)
+            }
+        }
+        
+        public override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+            if let stopCallback = animationDidStop {
+                stopCallback(anim : anim, complete: flag)
+            }
+        }
+        
+        
+        public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
+            animationDidStop = stopCallback
+        }
+        
+        public func setDidStartCallback(startCallback : FAAnimationDidStart) {
+            animationDidStart = startCallback
         }
     }
-        
-    public override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
-        if let stopCallback = animationDidStop {
-            stopCallback(anim : anim, complete: flag)
-        }
-    }
-
-        
-    public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
-        animationDidStop = stopCallback
-    }
-        
-    public func setDidStartCallback(startCallback : FAAnimationDidStart) {
-        animationDidStart = startCallback
-    }
-}
     
 #endif
 
@@ -91,8 +91,8 @@ public extension CAAnimation {
             activeDelegate = FAAnimationDelegate()
         }
         
-        activeDelegate!.setDidStopCallback { [weak self] (anim, complete) in
-            if let _ = self?.delegate as? FAAnimationDelegate {
+        activeDelegate!.setDidStopCallback { (anim, complete) in
+            if let _ = self.delegate as? FAAnimationDelegate {
                 stopCallback(anim : anim, complete: complete)
             }
         }
@@ -114,8 +114,8 @@ public extension CAAnimation {
             activeDelegate = FAAnimationDelegate()
         }
         
-        activeDelegate!.setDidStartCallback { [weak self] (anim) in
-            if let _ = self?.delegate as? FAAnimationDelegate {
+        activeDelegate!.setDidStartCallback { (anim) in
+            if let _ = self.delegate as? FAAnimationDelegate {
                 startCallback(anim : anim)
             }
         }

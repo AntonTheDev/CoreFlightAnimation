@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import UIKit 
+import UIKit
 
 public class FASequenceAnimationGroup : CAAnimationGroup {
     
@@ -48,7 +48,7 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
     override public func copyWithZone(zone: NSZone) -> AnyObject {
         
         let sequenceAnimation = super.copyWithZone(zone) as! FASequenceAnimationGroup
-       
+        
         sequenceAnimation.animationUUID                 = animationUUID
         sequenceAnimation.animatingLayer                = animatingLayer
         sequenceAnimation.startTime                     = startTime
@@ -64,7 +64,7 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
         sequenceAnimation.autoreverseInvertEasing       = autoreverseInvertEasing
         sequenceAnimation.autoreverseInvertProgress     = autoreverseInvertProgress
         sequenceAnimation.duration                      = duration
-      
+        
         sequenceAnimation.reverseAnimation              = reverseAnimation
         
         return sequenceAnimation
@@ -102,7 +102,7 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
      for calculating progress
      */
     func synchronizeSubAnimationStartTime() {
-
+        
         primaryAnimation?.startTime = startTime
         
         if let currentAnimations = animations {
@@ -116,7 +116,7 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
 }
 
 extension FAAnimationGroup : FASequenceAnimatable {
-
+    
     public func sequenceCopy() -> FASequenceAnimatable {
         return self.copy() as! FASequenceAnimatable
     }
@@ -139,20 +139,19 @@ extension FAAnimationGroup : FASequenceAnimatable {
     
     private func configuredSequenceCopy(child : FASequenceAnimatable,
                                         onView view: UIView,
-                                        progress : CGFloat = 0.0,
-                                        timeRelative : Bool = true) -> FASequenceTrigger? {
+                                               progress : CGFloat = 0.0,
+                                               timeRelative : Bool = true) -> FASequenceTrigger? {
         
         let sequence = child.sequenceCopy()
         
         sequence.animatingLayer = view.layer
-        sequence.animationUUID = String(NSUUID().UUIDString)
         sequence.progessValue = progress
         sequence.timeRelative = timeRelative
         sequence.sequenceDelegate = sequenceDelegate
         
         return sequenceDelegate?.appendSequenceAnimation(sequence, relativeTo : self)
     }
-
+    
     public func applyFinalState(animated : Bool = false) {
         
         if let animatingLayer = animatingLayer {
@@ -175,7 +174,7 @@ extension FAAnimationGroup : FASequenceAnimatable {
                             return
                         }
                         
-                       // print (subAnimation.keyPath, subAnimation.duration)
+                        // print (subAnimation.keyPath, subAnimation.duration)
                         //TODO: Figure out why the opacity is not reflected on the UIView
                         //All properties work correctly, but to ensure that the opacity is reflected
                         //I am setting the alpha on the UIView itsel ?? WTF

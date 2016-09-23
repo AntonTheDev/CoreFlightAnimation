@@ -17,7 +17,7 @@ public protocol FASequenceAnimatable : FASequenceTrigger  {
     weak var animatingLayer         : CALayer?  { get set }
     var startTime                   : CFTimeInterval? { get set }
     var animationUUID               : String?   { get set }
-  
+    
     var timeRelative                : Bool      { get set }
     var progessValue                : CGFloat   { get set }
     var triggerOnRemoval            : Bool      { get set }
@@ -45,11 +45,11 @@ public protocol FASequenceTrigger : class {
     
     func appendSequenceAnimation(child : FASequenceAnimatable,
                                  onView view: UIView,
-                                 atProgress progress : CGFloat) -> FASequenceTrigger?
+                                        atProgress progress : CGFloat) -> FASequenceTrigger?
     
     func appendSequenceAnimation(child : FASequenceAnimatable,
                                  onView view: UIView,
-                                 atValueProgress progress : CGFloat) -> FASequenceTrigger?
+                                        atValueProgress progress : CGFloat) -> FASequenceTrigger?
 }
 
 public protocol FASequenceDelegate : FASequenceTrigger {
@@ -61,7 +61,7 @@ public protocol FASequenceDelegate : FASequenceTrigger {
     func stopSequence()
 }
 
-public class FASequence : CAAnimation  {
+public class FASequence   {
     
     public var rootSequenceAnimation : FASequenceAnimatable? {
         didSet { rootSequenceAnimation?.sequenceDelegate = self }
@@ -71,7 +71,7 @@ public class FASequence : CAAnimation  {
     internal var queuedSequenceAnimations   = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
     
     internal var displayLink : CADisplayLink?
-
+    
     public var autoreverse: Bool = false
     public var autoreverseCount: Int = 1
     public var autoreverseDelay: NSTimeInterval = 0.0
@@ -82,8 +82,8 @@ public class FASequence : CAAnimation  {
     internal var autoreversePendingDelay: Bool = false
     internal var stopTime : CFTimeInterval?
     
-    public override init() {
-        super.init()
+    public init() {
+        
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -94,7 +94,7 @@ public class FASequence : CAAnimation  {
 // MARK: - Sequence State Flags
 
 extension FASequence {
-   
+    
     internal var isAnimating : Bool {
         get { return displayLink != nil }
     }
@@ -117,42 +117,42 @@ extension FASequence : FASequenceDelegate {
         childAnimatable.animatingLayer = view.layer
         rootSequenceAnimation = childAnimatable
     }
-
+    
     public func appendSequenceAnimationOnStart(child : FASequenceAnimatable,
                                                onView view: UIView) -> FASequenceTrigger? {
-    
+        
         return configuredSequenceCopy(child, onView: view, progress: 0.0, timeRelative: true)
     }
-
+    
     public func appendSequenceAnimation(child : FASequenceAnimatable,
                                         onView view: UIView,
-                                        atValueProgress progress : CGFloat) -> FASequenceTrigger? {
+                                               atValueProgress progress : CGFloat) -> FASequenceTrigger? {
         return configuredSequenceCopy(child, onView: view, progress: progress, timeRelative: false)
     }
     
     public func appendSequenceAnimation(child : FASequenceAnimatable,
                                         onView view: UIView,
-                                        atProgress progress : CGFloat) -> FASequenceTrigger? {
+                                               atProgress progress : CGFloat) -> FASequenceTrigger? {
         
         return configuredSequenceCopy(child, onView: view, progress: progress)
     }
-
+    
     public func appendSequenceAnimation(child : FASequenceAnimatable,
                                         onView view: UIView) -> FASequenceTrigger? {
         return configuredSequenceCopy(child, onView: view, progress: child.progessValue, timeRelative: child.timeRelative)
     }
-
+    
     public func appendSequenceAnimation(child : FASequenceAnimatable, relativeTo parent : FASequenceAnimatable) -> FASequenceTrigger?  {
         sequenceAnimations.append((parent : parent , child : child))
         return child
     }
-
+    
     private func configuredSequenceCopy(child : FASequenceAnimatable,
                                         onView view: UIView,
-                                        progress : CGFloat = 0.0,
-                                        timeRelative : Bool = true) -> FASequenceAnimatable {
+                                               progress : CGFloat = 0.0,
+                                               timeRelative : Bool = true) -> FASequenceAnimatable {
         
-        let sequence = child.sequenceCopy() 
+        let sequence = child.sequenceCopy()
         
         sequence.animatingLayer           = view.layer
         sequence.animationUUID            = String(NSUUID().UUIDString)
@@ -165,7 +165,7 @@ extension FASequence : FASequenceDelegate {
         sequence.autoreverseDelay           = autoreverseDelay
         sequence.autoreverseInvertEasing    = autoreverseInvertEasing
         sequence.autoreverseInvertProgress  = autoreverseInvertProgress
-
+        
         if let rootSequenceAnimation = rootSequenceAnimation {
             sequenceAnimations.append((parent : rootSequenceAnimation , child : sequence))
         }
@@ -174,6 +174,7 @@ extension FASequence : FASequenceDelegate {
     }
 }
 
+
 // MARK: - Trigger Logic
 
 public extension FASequence {
@@ -181,7 +182,7 @@ public extension FASequence {
     public func startSequence() {
         
         guard isAnimating == false else { return }
-      
+        
         synchronizeRootSequenceTriggers()
         
         displayLink = CADisplayLink(target: self, selector: #selector(FASequence.sequenceCurrentFrame))
@@ -206,7 +207,7 @@ public extension FASequence {
         applyActiveSequenceTriggers()
     }
     
-    private func synchronizeRootSequenceTriggers() {
+    public func synchronizeRootSequenceTriggers() {
         
         rootSequenceAnimation?.startTime = rootSequenceAnimation?.animatingLayer?.convertTime(CACurrentMediaTime(), fromLayer: nil)
         
@@ -316,7 +317,7 @@ internal extension FASequence {
         }
         
         if startAutoReverse == false { return }
-    
+        
         if autoreverseDelay > 0.0 {
             
             if stopTime == nil {
@@ -347,8 +348,6 @@ internal extension FASequence {
         }
         
         autoreverseActiveCount = autoreverseActiveCount + 1
-        synchronizeRootSequenceTriggers()
-       
         
         rootSequenceAnimation = rootSequenceAnimation!.reverseAnimation
         var newSequenceAnimations  = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
@@ -366,4 +365,3 @@ internal extension FASequence {
 //      let progressDelay = max(0.0 , _autoreverseDelay/duration)
 //       configureAnimationTrigger(animationGroup, onView: view, atTimeProgress : 1.0 + CGFloat(progressDelay))
 //  }
-

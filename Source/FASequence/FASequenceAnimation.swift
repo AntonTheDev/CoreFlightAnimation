@@ -12,12 +12,12 @@ import UIKit
 public class FASequenceAnimation : CAKeyframeAnimation {
     
     public var animationUUID : String?
-   
+    
     public weak var animatingLayer : CALayer?
     public var startTime : CFTimeInterval?
-
+    
     public weak var sequenceDelegate : FASequenceDelegate?
-
+    
     public var timeRelative = true
     public var progessValue : CGFloat = 0.0
     public var triggerOnRemoval : Bool = false
@@ -33,13 +33,13 @@ public class FASequenceAnimation : CAKeyframeAnimation {
     deinit {
         reverseAnimation = nil
     }
-        
+    
     public override var duration: CFTimeInterval {
         didSet {
-         //   reverseAnimation?.duration = newValue
+            //   reverseAnimation?.duration = newValue
         }
     }
-
+    
     required public override init() {
         super.init()
         animationUUID = String(NSUUID().UUIDString)
@@ -68,14 +68,16 @@ public class FASequenceAnimation : CAKeyframeAnimation {
         sequenceAnimation.autoreverseInvertEasing       = autoreverseInvertEasing
         sequenceAnimation.autoreverseInvertProgress     = autoreverseInvertProgress
         
-        sequenceAnimation.reverseAnimation         = reverseAnimation
-       
+        sequenceAnimation.delegate                      = delegate
+        
+        sequenceAnimation.reverseAnimation              = reverseAnimation
+        
         return sequenceAnimation
     }
 }
 
 extension FABasicAnimation : FASequenceAnimatable {
-
+    
     public func sequenceCopy() -> FASequenceAnimatable {
         return (self.copy()  as? FABasicAnimation)!
     }
@@ -109,7 +111,7 @@ extension FABasicAnimation : FASequenceAnimatable {
         newAnimationGroup.autoreverseDelay         = autoreverseDelay
         newAnimationGroup.autoreverseInvertEasing         = autoreverseInvertEasing
         newAnimationGroup.autoreverseInvertProgress      = autoreverseInvertProgress
-       
+        
         newAnimationGroup.animations = [self]
         
         newAnimationGroup.applyFinalState(animated)
@@ -117,8 +119,8 @@ extension FABasicAnimation : FASequenceAnimatable {
     
     private func configuredSequenceCopy(child : FASequenceAnimatable,
                                         onView view: UIView,
-                                        progress : CGFloat = 0.0,
-                                        timeRelative : Bool = true) -> FASequenceTrigger? {
+                                               progress : CGFloat = 0.0,
+                                               timeRelative : Bool = true) -> FASequenceTrigger? {
         
         let sequence = child.sequenceCopy()
         
@@ -127,7 +129,7 @@ extension FABasicAnimation : FASequenceAnimatable {
         sequence.progessValue = progress
         sequence.timeRelative = timeRelative
         sequence.sequenceDelegate = sequenceDelegate
-       
+        
         return sequenceDelegate?.appendSequenceAnimation(sequence, relativeTo : self)
     }
     

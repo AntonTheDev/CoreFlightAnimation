@@ -135,24 +135,7 @@ extension ViewController {
         sequence.appendSequenceAnimationOnStart(backgroundViewAnimationGroup, onView : dimmerView)
         
         configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
-        
-        
-        /*
-        let initialTrigger = FASequenceAnimation(onView: configView)
-        initialTrigger.animation = configViewAnimationGroup
-
-        let backgroundTrigger = FASequenceAnimation(onView: dimmerView)
-        backgroundTrigger.animation = backgroundViewAnimationGroup
-        backgroundTrigger.progessValue = 0.5
-        
-        let sequence = FASequence()
-        sequence.rootSequenceAnimation = initialTrigger
-        sequence.appendSequenceAnimation(backgroundTrigger, relativeTo : initialTrigger)
-        
-        configView.cacheAnimation(sequence, forKey: AnimationKeys.ShowConfigAnimation)
-        */
     }
-    
     
     /**
      Register the animations required to hide the ConfigView
@@ -268,21 +251,19 @@ extension ViewController {
         if animConfig.enableSecondaryView {
             let sequence = FASequence()
             sequence.rootSequenceAnimation = dragViewViewAnimationGroup
+            sequence.rootSequenceAnimation?.animatingLayer = dragView.layer
             sequence.autoreverse = true
             sequence.autoreverseDelay = 1.0
-          //  sequence.autoreverseInvertProgress = true
-          //  sequence.autoreverseInvertEasing = true
             
             dragViewViewAnimationGroup.appendSequenceAnimation(secondaryAnimation(), onView: dragView2)
-
-            dragView.layer.addAnimation(sequence, forKey: nil)
+            dragView.layer.addSequence(sequence, forKey: nil)
         
         } else {
             
             let sequence = FASequence()
             sequence.rootSequenceAnimation = dragViewViewAnimationGroup
-            
-            dragView.layer.addAnimation(sequence, forKey: nil)
+           
+            dragView.layer.addSequence(sequence, forKey: nil)
         }
         
         lastToFrame = toFrame
@@ -347,8 +328,6 @@ extension ViewController {
                                                               toAlpha: currentAlpha,
                                                               toTransform: currentTransform,
                                                               duration: 0.5)
-        
-        
         switch animConfig.triggerType {
         case 1:
             secondaryAnimationGroup.timeRelative = true

@@ -60,8 +60,17 @@ extension CALayer {
         }
     }
     
+    
+    
+    public func addSequence(sequence: FASequence, forKey key: String?) {
+       // stopRunningSequence()
+        sequence.rootSequenceAnimation?.animatingLayer = self
+        sequence.rootSequenceAnimation?.startTime = self.convertTime(CACurrentMediaTime(), fromLayer: nil)
+        sequence.startSequence()
+    }
+    
     internal func FA_addAnimation(anim: CAAnimation, forKey key: String?) {
-        
+       /*
         if let animation = anim as? FASequence  {
             stopRunningSequence()
             animation.rootSequenceAnimation?.animatingLayer = self
@@ -69,7 +78,7 @@ extension CALayer {
             animation.startSequence()
             return
         }
-        
+        */
         if let animation = anim as? FAAnimationGroup {
             animation.startTime = self.convertTime(CACurrentMediaTime(), fromLayer: nil)
             animation.synchronizeAnimationGroup(withLayer: self, forKey : key)
