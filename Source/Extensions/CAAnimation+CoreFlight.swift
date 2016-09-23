@@ -33,7 +33,6 @@ public class FAAnimationDelegate : NSObject, CAAnimationDelegate {
         }
     }
 
-    
     public func setDidStopCallback(stopCallback : FAAnimationDidStop) {
         animationDidStop = stopCallback
     }

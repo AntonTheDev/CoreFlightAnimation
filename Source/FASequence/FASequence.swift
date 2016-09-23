@@ -11,18 +11,18 @@ import UIKit
 
 public protocol FASequenceAnimatable : FASequenceTrigger  {
     
-    weak var sequenceDelegate    : FASequenceDelegate? { get set }
+    weak var sequenceDelegate       : FASequenceDelegate? { get set }
     
-    weak var reverseAnimation    : FASequenceAnimatable? { get set }
-    weak var animatingLayer      : CALayer?  { get set }
-    var startTime                : CFTimeInterval? { get set }
-    var animationUUID            : String?   { get set }
+    weak var reverseAnimation       : FASequenceAnimatable? { get set }
+    weak var animatingLayer         : CALayer?  { get set }
+    var startTime                   : CFTimeInterval? { get set }
+    var animationUUID               : String?   { get set }
   
-    var timeRelative        : Bool      { get set }
-    var progessValue        : CGFloat   { get set }
-    var triggerOnRemoval    : Bool      { get set }
+    var timeRelative                : Bool      { get set }
+    var progessValue                : CGFloat   { get set }
+    var triggerOnRemoval            : Bool      { get set }
     
-    var duration            : NSTimeInterval    { get set }
+    var duration                    : NSTimeInterval    { get set }
     
     var autoreverse                 : Bool              { get set }
     var autoreverseCount            : Int               { get set }
@@ -67,18 +67,12 @@ public class FASequence : CAAnimation  {
         didSet { rootSequenceAnimation?.sequenceDelegate = self }
     }
     
-    internal var displayLink : CADisplayLink?
-
     internal var sequenceAnimations         = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
     internal var queuedSequenceAnimations   = [(parent : FASequenceAnimatable , child : FASequenceAnimatable)]()
     
-    
-    public var autoreverse: Bool = false {
-        didSet {
-            print("REVERSE")
-        }
-    }
-    
+    internal var displayLink : CADisplayLink?
+
+    public var autoreverse: Bool = false
     public var autoreverseCount: Int = 1
     public var autoreverseDelay: NSTimeInterval = 0.0
     public var autoreverseInvertEasing : Bool = false
@@ -112,7 +106,6 @@ extension FASequence {
     internal var reversableSequenceInProgress : Bool {
         get { return ( autoreverse == true && autoreverseActiveCount <= autoreverseCount * 2) }
     }
-    
 }
 
 // MARK: - FASequenceDelegate : FASequenceTrigger

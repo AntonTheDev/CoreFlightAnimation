@@ -260,6 +260,10 @@ extension ViewController {
                                                                  duration: 0.5,
                                                                  velocity : velocity,
                                                                  animationUUID : animationUUID)
+       
+        dragViewViewAnimationGroup.setDidStopCallback({ (anim, complete) in
+            print("DID STOP")
+        })
         
         if animConfig.enableSecondaryView {
             let sequence = FASequence()
@@ -270,7 +274,7 @@ extension ViewController {
           //  sequence.autoreverseInvertEasing = true
             
             dragViewViewAnimationGroup.appendSequenceAnimation(secondaryAnimation(), onView: dragView2)
-            
+
             dragView.layer.addAnimation(sequence, forKey: nil)
         
         } else {
