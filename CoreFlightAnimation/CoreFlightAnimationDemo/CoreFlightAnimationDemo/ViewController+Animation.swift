@@ -187,25 +187,6 @@ extension ViewController {
         sequence.appendSequenceAnimationOnStart(backgroundViewAnimationGroup, onView : dimmerView)
         
         configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
-        
-        // dragView.layer.addSequence(sequence, forKey: nil)
-        
-        
-        
-        /*
-        let initialTrigger = FASequenceAnimation(onView: configView, withAnimation: configViewAnimationGroup)
-        
-        let backgroundTrigger = FASequenceAnimation(onView: dimmerView)
-        backgroundTrigger.animation = backgroundViewAnimationGroup
-        backgroundTrigger.progessValue = 0.5
-        
-        let sequence = FASequence()
-        sequence.rootSequenceAnimation = initialTrigger
-        sequence.appendSequenceAnimation(backgroundTrigger, relativeTo : initialTrigger)
-        
-        configView.cacheAnimation(sequence, forKey: AnimationKeys.HideConfigAnimation)
- 
-         */
     }
     
     func tappedShowConfig() {
@@ -244,8 +225,13 @@ extension ViewController {
                                                                  velocity : velocity,
                                                                  animationUUID : animationUUID)
        
+        
+        dragViewViewAnimationGroup.setDidStartCallback { (anim) in
+            print("DID START dragView animationGroup")
+        }
+        
         dragViewViewAnimationGroup.setDidStopCallback({ (anim, complete) in
-            print("DID STOP")
+            print("DID STOP dragView animationGroup")
         })
         
         if animConfig.enableSecondaryView {

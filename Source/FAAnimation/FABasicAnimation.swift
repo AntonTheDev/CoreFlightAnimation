@@ -204,7 +204,6 @@ internal extension FABasicAnimation {
 internal extension FABasicAnimation {
     
     func valueProgress() -> CGFloat {
-        
         if let presentationLayerObject = animatingLayer?.presentationLayer(),
             let presentationLayer = presentationLayerObject as? CALayer,
             let presentationValue = presentationLayer.anyValueForKeyPath(keyPath!),

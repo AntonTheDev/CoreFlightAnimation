@@ -88,26 +88,48 @@ extension ConfigurationView {
             alphaAnimataion.easingFunction = .InOutSine
             alphaAnimataion.toValue = 1.0
             alphaAnimataion.duration = 0.5
+            
+            
+            let hiddenAlphaAnimation = FABasicAnimation(keyPath: "opacity")
+            hiddenAlphaAnimation.easingFunction = .InOutSine
+            hiddenAlphaAnimation.toValue = 0.0
+            hiddenAlphaAnimation.duration = 0.5
+            atProgressLabel.alpha = 1.0
+            hiddenAlphaAnimation.setDidStopCallback({ (anim, complete) in
+                if self.selectedDelaySegment == 1 {
+                    self.atProgressLabel.text = "Trigger @ Time Progress:  "
+                } else {
+                    self.atProgressLabel.text = "Trigger @ Value Progress: "
+                }
+                
+                self.atProgressLabel.layer.addAnimation(alphaAnimataion, forKey: "")
+            })
       
             let positionAnimation = FABasicAnimation(keyPath: "position")
             positionAnimation.easingFunction = .InOutSine
             positionAnimation.toValue = NSValue(CGPoint: initialCenter)
             positionAnimation.duration = 0.5
             
-            
             let sequence = FASequence()
+            
             sequence.setRootSequenceAnimation(positionAnimation, onView: enableSecondaryViewLabel)
             
-            let labelSequence = sequence.appendSequenceAnimation(alphaAnimataion, onView: progressLabel, atProgress : 0.5)
-            labelSequence?.appendSequenceAnimationOnStart(alphaAnimataion, onView: atProgressLabel)
+            let labelSequence = sequence.appendSequenceAnimation(hiddenAlphaAnimation, onView: progressLabel, atProgress : 0.5)
+            
+    
+
+            
+            labelSequence?.appendSequenceAnimationOnStart(hiddenAlphaAnimation, onView: atProgressLabel)
             labelSequence?.appendSequenceAnimationOnStart(alphaAnimataion, onView: progressTriggerSlider)
           
+          //  dragViewViewAnimationGroup.appendSequenceAnimation(secondaryAnimation(), onView: dragView2)
+            enableSecondaryViewLabel.layer.addSequence(sequence, forKey: nil)
             
-            
+            sequence.startSequence()
             //  sequence.appendSequenceAnimationOnStart(alphaAnimataion, onView : atProgressLabel)
           //  sequence.appendSequenceAnimationOnStart(alphaAnimataion, onView : progressTriggerSlider)
             
-            sequence.startSequence()
+          //  sequence.startSequence()
         /*
             let titleLabelTrigger = FASequenceAnimation(onView: enableSecondaryViewLabel)
             titleLabelTrigger.animation = positionAnimation
@@ -132,14 +154,16 @@ extension ConfigurationView {
             sequence.appendSequenceAnimation(progressTriggerSliderTrigger, relativeTo : progressLabelTrigger)
          
             sequence.startSequence()
- 
+        */
+            
+            /*
             if selectedDelaySegment == 1 {
                 atProgressLabel.text = "Trigger @ Time Progress:  "
             } else {
                 atProgressLabel.text = "Trigger @ Value Progress: "
             }
- 
              */
+ 
         }
     
         interactionDelegate?.didUpdateTriggerType(selectedDelaySegment)

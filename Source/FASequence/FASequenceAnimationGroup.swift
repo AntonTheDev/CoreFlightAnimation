@@ -42,7 +42,6 @@ public class FASequenceAnimationGroup : CAAnimationGroup {
     
     deinit {
         reverseAnimation = nil
-        print("DEINIT GROUP")
     }
     
     override public func copyWithZone(zone: NSZone) -> AnyObject {
