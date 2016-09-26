@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CoreFlightAnimation"
-  s.version      = "0.9.1"
+  s.version      = "0.9.2"
   s.summary      = "Natural Animation Enhancements on Top of Core Animation"
   s.homepage     = "https://github.com/AntonTheDev/CoreFlightAnimation"
   s.license      = 'MIT'
